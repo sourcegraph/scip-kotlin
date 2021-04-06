@@ -16,17 +16,11 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
     compileOnly(kotlin("compiler"))
-
-    testImplementation(kotlin("test-junit5"))
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.0")
+    implementation("com.google.protobuf:protobuf-java:3.15.7")
+    implementation(project(":semanticdb-kotlin"))
 }
 
-tasks.test {
-    useJUnitPlatform()
-}
-
-tasks.withType<KotlinCompile>() {
+tasks.withType<KotlinCompile> {
     kotlinOptions{
         jvmTarget = "1.8"
         //freeCompilerArgs = freeCompilerArgs + "-Xplugin=${project.rootDir}/build/libs/lsif-kotlin-1.0-SNAPSHOT-all.jar"
@@ -50,6 +44,7 @@ tasks.named<ShadowJar>("shadowJar").configure {
     }
     relocate("com.intellij", "org.jetbrains.kotlin.com.intellij")
 }
+
 /*tasks.shadowJar {
     configurations = listOf()
     archiveClassifier.set("embeddable")
