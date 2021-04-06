@@ -1,4 +1,4 @@
-package com.sourcegraph.lsifkotlin
+package com.sourcegraph.semanticdb_kotlinc
 
 import com.intellij.mock.MockProject
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar

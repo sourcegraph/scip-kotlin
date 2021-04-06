@@ -5,9 +5,9 @@
 
 syntax = "proto3";
 
-package com.sourcegraph.semanticdb_kotlin;
+package com.sourcegraph.semanticdb_kotlinc;
 
-option java_package = "com.sourcegraph.semanticdb_kotlin";
+option java_package = "com.sourcegraph.semanticdb_kotlinc";
 option java_multiple_files = false;
 
 enum Schema {

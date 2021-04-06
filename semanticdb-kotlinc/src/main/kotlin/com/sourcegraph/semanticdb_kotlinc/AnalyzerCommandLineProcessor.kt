@@ -1,4 +1,4 @@
-package com.sourcegraph.lsifkotlin
+package com.sourcegraph.semanticdb_kotlinc
 
 import org.jetbrains.kotlin.compiler.plugin.AbstractCliOption
 import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor

@@ -1,4 +1,3 @@
-import com.github.marcoferrer.krotoplus.config.CompilerConfig
 import com.google.protobuf.gradle.*
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
@@ -31,8 +30,7 @@ val SourceSet.kotlin: SourceDirectorySet get() = this.withConvention(KotlinSourc
 
 krotoPlus {
     config {
-        //this.
-        id("main") {
+        create("main") {
             builder.protoBuilders {
                 useDslMarkers = true
                 unwrapBuilders = true
@@ -55,20 +53,16 @@ protobuf {
     }
 
     generateProtoTasks {
-        //val krotoConfig = file("${projectDir}/krotoconfig.json")
+        val krotoConfig = file("${projectDir}/krotoconfig.json")
         all().forEach { task ->
-            //task.inputs.files(krotoConfig)
-            val compConfigBuilder = CompilerConfig.newBuilder()
-            compConfigBuilder.protoBuilders {
-                useDslMarkers = true
-                unwrapBuilders = true
-            }
+            task.inputs.files(krotoConfig)
 
             task.plugins {
                 id("kroto") {
                     outputSubDir = "java"
                     //option(krotoPlus.config["main"].asOption())
-                    option(krotoPlus.config.findByName("main")!!.asOption())
+                    //option(krotoPlus.config.findByName("main")!!.asOption())
+                    option("ConfigPath=${krotoConfig}")
                     //option(compConfigBuilder.build().toString())
                 }
             }

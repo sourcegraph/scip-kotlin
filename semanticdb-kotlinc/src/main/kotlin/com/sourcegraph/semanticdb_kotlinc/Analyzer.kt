@@ -1,4 +1,4 @@
-package com.sourcegraph.lsifkotlin
+package com.sourcegraph.semanticdb_kotlinc
 
 import com.intellij.openapi.project.Project
 import org.jetbrains.kotlin.analyzer.AnalysisResult
@@ -10,7 +10,6 @@ import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.BindingTrace
 import org.jetbrains.kotlin.resolve.DescriptorUtils
 import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
-import org.jetbrains.kotlin.types.KotlinType
 
 class Analyzer: AnalysisHandlerExtension {
     override fun analysisCompleted(

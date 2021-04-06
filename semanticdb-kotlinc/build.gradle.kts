@@ -2,9 +2,9 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
-    kotlin("jvm") version "1.4.32"
-    id("com.github.johnrengelman.shadow") version "6.1.0"
-}
+    kotlin("jvm")
+    id("com.github.johnrengelman.shadow")
+    }
 
 group = "com.sourcegraph"
 version = "1.0-SNAPSHOT"
@@ -13,14 +13,14 @@ repositories {
     mavenCentral()
 }
 
-/*dependencies {
+dependencies {
     implementation(kotlin("stdlib"))
     compileOnly(kotlin("compiler"))
     implementation("com.google.protobuf:protobuf-java:3.15.7")
     implementation(project(":semanticdb-kotlin"))
 }
 
-tasks.withType<KotlinCompile> {
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions{
         jvmTarget = "1.8"
         //freeCompilerArgs = freeCompilerArgs + "-Xplugin=${project.rootDir}/build/libs/lsif-kotlin-1.0-SNAPSHOT-all.jar"
@@ -36,14 +36,14 @@ tasks.jar {
     }
 }
 
-tasks.named<ShadowJar>("shadowJar").configure {
+tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar").configure {
     configurations.add(project.configurations.compileOnly.get())
     dependencies {
         exclude("org.jetbrains.kotlin:kotlin-stdlib")
         exclude("org.jetbrains.kotlin:kotlin-compiler")
     }
     relocate("com.intellij", "org.jetbrains.kotlin.com.intellij")
-}*/
+}
 
 /*tasks.shadowJar {
     configurations = listOf()
