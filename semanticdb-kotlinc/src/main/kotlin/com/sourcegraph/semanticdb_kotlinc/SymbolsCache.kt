@@ -1,18 +1,16 @@
 package com.sourcegraph.semanticdb_kotlinc
 
 import org.jetbrains.kotlin.descriptors.*
-import org.jetbrains.kotlin.descriptors.impl.LocalVariableDescriptor
-import org.jetbrains.kotlin.protobuf.Descriptors
-import org.jetbrains.kotlin.psi.KtNamedDeclaration
-import org.jetbrains.kotlin.psi.KtParameter
 import java.util.*
-import kotlin.Comparator
 import kotlin.collections.ArrayList
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 
+@ExperimentalContracts
 class GlobalSymbolsCache {
     private val globals = IdentityHashMap<DeclarationDescriptor, Symbol>()
 
-    fun semanticdbSymbol(descriptor: DeclarationDescriptor/*, decl: KtNamedDeclaration*/, locals: LocalSymbolsCache): Symbol {
+    fun semanticdbSymbol(descriptor: DeclarationDescriptor, locals: LocalSymbolsCache): Symbol {
         globals[descriptor]?.let { return it }
         locals[descriptor]?.let { return it }
         return uncachedSemanticdbSymbol(descriptor, locals).also {
@@ -20,27 +18,35 @@ class GlobalSymbolsCache {
         }
     }
 
-    private fun isLocalVariable(desc: DeclarationDescriptor): Boolean = desc is LocalVariableDescriptor
+    private fun skip(desc: DeclarationDescriptor?): Boolean {
+        contract { returns(false) implies (desc != null) }
+        return desc == null || desc is ModuleDescriptor
+    }
 
-    private fun isAnonymousClass(desc: DeclarationDescriptor): Boolean = desc is ClassDescriptor /*&& desc.nam*/
-
-    private fun uncachedSemanticdbSymbol(descriptor: DeclarationDescriptor, locals: LocalSymbolsCache): Symbol {
-        val ownerDesc = descriptor.containingDeclaration ?: return NONE
+    private fun uncachedSemanticdbSymbol(descriptor: DeclarationDescriptor?, locals: LocalSymbolsCache): Symbol {
+        if (skip(descriptor)) return Symbol.NONE
+        val ownerDesc = descriptor.containingDeclaration ?: return Symbol.ROOT_PACKAGE
         val owner = semanticdbSymbol(ownerDesc, locals)
-        if (owner == NONE) return ROOT_PACKAGE
-        else if (owner.isLocal() || isLocalVariable(descriptor)) return locals + ownerDesc
+        if (ownerDesc.isObjectDeclaration() || descriptor.isLocalVariable())
+            return locals + ownerDesc
+
         val semanticdbDescriptor = semanticdbDescriptor(descriptor)
-        return createGlobal(owner, semanticdbDescriptor)
+        return Symbol.createGlobal(owner, semanticdbDescriptor)
     }
 
     private fun semanticdbDescriptor(desc: DeclarationDescriptor): Descriptor {
         return when(desc) {
             is ClassDescriptor -> Descriptor(Descriptor.Kind.TYPE, desc.name.toString())
             is FunctionDescriptor -> Descriptor(Descriptor.Kind.METHOD, desc.name.toString(), methodDisambiguator(desc))
-            //is PackageDesc
             is TypeParameterDescriptor -> Descriptor(Descriptor.Kind.TYPE_PARAMETER, desc.name.toString())
+            is ValueParameterDescriptor -> Descriptor(Descriptor.Kind.PARAMETER, desc.name.toString())
             is VariableDescriptor -> Descriptor(Descriptor.Kind.TERM, desc.name.toString())
-            else -> Descriptor.NONE
+            is TypeAliasDescriptor -> Descriptor(Descriptor.Kind.TYPE, desc.name.toString())
+            is PackageFragmentDescriptor -> Descriptor(Descriptor.Kind.PACKAGE, desc.name.toString())
+            else -> {
+                println("unknown descriptor kind ${desc.javaClass.simpleName}")
+                Descriptor.NONE
+            }
         }
     }
 
@@ -51,8 +57,7 @@ class GlobalSymbolsCache {
 
         methods.sortWith { m1, m2 -> compareValues(m1.dispatchReceiverParameter == null, m2.dispatchReceiverParameter == null) }
 
-        val index = methods.indexOf(desc)
-        return when(index) {
+        return when(val index = methods.indexOf(desc)) {
             0 -> "()"
             else -> "(+$index)"
         }
@@ -67,7 +72,7 @@ class LocalSymbolsCache {
 
     operator fun plus(desc: DeclarationDescriptor): Symbol {
         localsCounter++
-        val result = createLocal(localsCounter)
+        val result = Symbol.createLocal(localsCounter)
         symbols[desc] = result
         return result
     }

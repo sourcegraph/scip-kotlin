@@ -14,7 +14,9 @@ import org.jetbrains.kotlin.resolve.calls.callUtil.getResolvedCall
 import org.jetbrains.kotlin.resolve.calls.callUtil.getType
 import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
 import org.jetbrains.kotlin.types.KotlinType
+import kotlin.contracts.ExperimentalContracts
 
+@ExperimentalContracts
 class Analyzer: AnalysisHandlerExtension {
     private val globals = GlobalSymbolsCache()
 
@@ -29,80 +31,54 @@ class Analyzer: AnalysisHandlerExtension {
             file.classes
             x.visitKtFile(file, null)
         }
-        //return AnalysisResult.EMPTY
-        //return AnalysisResult.Companion.success(BindingContext.EMPTY, module, false)
+
         return super.analysisCompleted(project, module, bindingTrace, files)
     }
 
     private inner class Visitor(val bindingTrace: BindingTrace): KtTreeVisitorVoid() {
         private val locals = LocalSymbolsCache()
 
-        /*override fun visitClass(klass: KtClass) {
-            println("CLASS " + klass.fqName)
-            super.visitClass(klass)
-        }*/
-
-        /*override fun visitParameter(parameter: KtParameter) {
-            //val resolvedCall = parameter.getResolvedCall(bindingTrace.bindingContext)
-            val desc = bindingTrace[BindingContext.VALUE_PARAMETER, parameter]!!
-            val descStr = desc.toString()
-            println("PARAM ${DescriptorUtils.getFqName(desc.type.buildPossiblyInnerType()?.classifierDescriptor?.typeConstructor?.declarationDescriptor as ClassDescriptor)}")
-            when(desc.type.constructor) {
-                is ClassDescriptor -> println("PARAM ${DescriptorUtils.getFqName(desc.type.constructor as ClassDescriptor)}")
-                else -> println("PARAM2 ${desc.type}")
-            }
-
-            super.visitParameter(parameter)
-        }*/
-
-        override fun visitPackageDirective(directive: KtPackageDirective) {
-            super.visitPackageDirective(directive)
-        }
-
-        override fun visitNamedDeclaration(declaration: KtNamedDeclaration) {
-            val desc = bindingTrace[BindingContext.DECLARATION_TO_DESCRIPTOR, declaration]!!.original
+        override fun visitClass(klass: KtClass) {
+            val desc = bindingTrace[BindingContext.DECLARATION_TO_DESCRIPTOR, klass]!!
             val symbol = globals.semanticdbSymbol(desc, locals)
-            println("NAMED DECL $declaration ${declaration.javaClass.simpleName} ${desc.javaClass.simpleName} ${desc.name}  $symbol")
-            super.visitNamedDeclaration(declaration)
+            println("NAMED TYPE $klass ${klass.javaClass.simpleName} ${desc.javaClass.simpleName} ${desc.name}  $symbol")
+            super.visitClass(klass)
         }
 
         override fun visitNamedFunction(function: KtNamedFunction) {
-            val desc = bindingTrace[BindingContext.DECLARATION_TO_DESCRIPTOR, function]
+            val desc = bindingTrace[BindingContext.DECLARATION_TO_DESCRIPTOR, function]!!
+            val symbol = globals.semanticdbSymbol(desc, locals)
+            println("NAMED FUN $function ${function.javaClass.simpleName} ${desc.javaClass.simpleName} ${desc.name}  $symbol")
             super.visitNamedFunction(function)
         }
 
         override fun visitProperty(property: KtProperty) {
-            val desc = bindingTrace[BindingContext.DECLARATION_TO_DESCRIPTOR, property]!!.original
+            val desc = bindingTrace[BindingContext.DECLARATION_TO_DESCRIPTOR, property]!!
+            val symbol = globals.semanticdbSymbol(desc, locals)
+            println("NAMED PROP $property ${property.javaClass.simpleName} ${desc.javaClass.simpleName} ${desc.name}  $symbol")
             super.visitProperty(property)
         }
 
         override fun visitParameter(parameter: KtParameter) {
+            val desc = bindingTrace[BindingContext.DECLARATION_TO_DESCRIPTOR, parameter]!!
+            val symbol = globals.semanticdbSymbol(desc, locals)
+            println("NAMED PARAM $parameter ${parameter.javaClass.simpleName} ${desc.javaClass.simpleName} ${desc.name}  $symbol")
             super.visitParameter(parameter)
         }
 
         override fun visitTypeParameter(parameter: KtTypeParameter) {
+            val desc = bindingTrace[BindingContext.DECLARATION_TO_DESCRIPTOR, parameter]!!
+            val symbol = globals.semanticdbSymbol(desc, locals)
+            println("NAMED TYPE-PARAM $parameter ${parameter.javaClass.simpleName} ${desc.javaClass.simpleName} ${desc.name}  $symbol")
             super.visitTypeParameter(parameter)
         }
 
-        override fun visitObjectDeclaration(declaration: KtObjectDeclaration) {
-            val desc = bindingTrace[BindingContext.DECLARATION_TO_DESCRIPTOR, declaration]
-            super.visitObjectDeclaration(declaration)
+        override fun visitTypeAlias(typeAlias: KtTypeAlias) {
+            val desc = bindingTrace[BindingContext.DECLARATION_TO_DESCRIPTOR, typeAlias]!!
+            val symbol = globals.semanticdbSymbol(desc, locals)
+            println("NAMED TYPE-ALIAS $typeAlias ${typeAlias.javaClass.simpleName} ${desc.javaClass.simpleName} ${desc.name}  $symbol")
+            super.visitTypeAlias(typeAlias)
         }
 
-        /*override fun visitCallExpression(expression: KtCallExpression) {
-            *//*println("CALL " + expression.getResolvedCall(ctx)*//**//*?.call?.dispatchReceiver*//**//*
-            + expression.valueArgumentList)*//*
-            //println(expression.valueArguments.map { it.name })
-            super.visitCallExpression(expression)
-        }*/
-
-        /*override fun visitQualifiedExpression(expression: KtQualifiedExpression) {
-            super.visitQualifiedExpression(expression)
-        }
-
-        override fun visitObjectLiteralExpression(expression: KtObjectLiteralExpression) {
-            val desc = bindingTrace[BindingContext.EXPRESSION_TYPE_INFO, expression]!!
-            super.visitObjectLiteralExpression(expression)
-        }*/
     }
 }

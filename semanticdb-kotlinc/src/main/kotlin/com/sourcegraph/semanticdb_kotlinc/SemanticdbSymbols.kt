@@ -1,21 +1,23 @@
 package com.sourcegraph.semanticdb_kotlinc
 
 inline class Symbol(val symbol: String) {
+    companion object {
+        val NONE = Symbol("");
+        val ROOT_PACKAGE = Symbol("_root_/")
+
+        fun createGlobal(owner: Symbol, desc: Descriptor): Symbol = when {
+            desc == Descriptor.NONE -> NONE
+            owner != ROOT_PACKAGE -> Symbol(owner.symbol + desc.encode().symbol)
+            else -> desc.encode()
+        }
+
+        fun createLocal(i: Int) = Symbol("local$i")
+    }
+
     fun isGlobal() = !isLocal()
 
-    fun isLocal() = symbol.startsWith("local")
+    private fun isLocal() = symbol.startsWith("local")
 }
-
-val NONE = Symbol("");
-val ROOT_PACKAGE = Symbol("_root_/")
-
-fun createGlobal(owner: Symbol, desc: Descriptor): Symbol = when {
-    desc == Descriptor.NONE -> NONE
-    owner != ROOT_PACKAGE -> Symbol(owner.symbol + desc.encode().symbol)
-    else -> desc.encode()
-}
-
-fun createLocal(i: Int) = Symbol("local$i")
 
 data class Descriptor(val kind: Kind, val name: String, val disambiguator: String = "") {
     companion object {
