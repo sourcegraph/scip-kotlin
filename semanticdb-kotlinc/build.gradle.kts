@@ -4,7 +4,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 plugins {
     kotlin("jvm")
     id("com.github.johnrengelman.shadow")
-    }
+}
 
 group = "com.sourcegraph"
 version = "1.0-SNAPSHOT"
@@ -20,7 +20,7 @@ dependencies {
     implementation(project(":semanticdb-kotlin"))
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+tasks.withType<KotlinCompile> {
     kotlinOptions{
         jvmTarget = "1.8"
         //freeCompilerArgs = freeCompilerArgs + "-Xplugin=${project.rootDir}/build/libs/lsif-kotlin-1.0-SNAPSHOT-all.jar"
@@ -36,13 +36,14 @@ tasks.jar {
     }
 }
 
-tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar").configure {
+tasks.named<ShadowJar>("shadowJar").configure {
     configurations.add(project.configurations.compileOnly.get())
     dependencies {
         exclude("org.jetbrains.kotlin:kotlin-stdlib")
         exclude("org.jetbrains.kotlin:kotlin-compiler")
     }
     relocate("com.intellij", "org.jetbrains.kotlin.com.intellij")
+    minimize()
 }
 
 /*tasks.shadowJar {
