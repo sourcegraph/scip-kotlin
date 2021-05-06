@@ -64,9 +64,13 @@ class GlobalSymbolsCache {
     }
 
     private fun methodDisambiguator(desc: FunctionDescriptor): String {
-        val methods =
-            (desc.containingDeclaration as ClassDescriptorWithResolutionScopes).declaredCallableMembers.filter { it.name == desc.name }
-            as ArrayList<CallableMemberDescriptor>
+        val methods = when(val ownerDecl = desc.containingDeclaration) {
+            is PackageFragmentDescriptor ->
+                ownerDecl.getMemberScope().getDescriptorsFiltered(DescriptorKindFilter.FUNCTIONS).map { it as CallableMemberDescriptor }
+            is ClassDescriptorWithResolutionScopes ->
+                ownerDecl.declaredCallableMembers.filter { it.name == desc.name }
+            else -> throw Exception("unexpected owner decl type ${ownerDecl.javaClass}")
+        } as ArrayList<CallableMemberDescriptor>
 
         methods.sortWith { m1, m2 -> compareValues(m1.dispatchReceiverParameter == null, m2.dispatchReceiverParameter == null) }
 
