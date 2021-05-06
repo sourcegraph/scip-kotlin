@@ -148,6 +148,10 @@ public final class Semanticdb {
      * <code>JAVA = 2;</code>
      */
     JAVA(2),
+    /**
+     * <code>KOTLIN = 3;</code>
+     */
+    KOTLIN(3),
     UNRECOGNIZED(-1),
     ;
 
@@ -163,6 +167,10 @@ public final class Semanticdb {
      * <code>JAVA = 2;</code>
      */
     public static final int JAVA_VALUE = 2;
+    /**
+     * <code>KOTLIN = 3;</code>
+     */
+    public static final int KOTLIN_VALUE = 3;
 
 
     public final int getNumber() {
@@ -192,6 +200,7 @@ public final class Semanticdb {
         case 0: return UNKNOWN_LANGUAGE;
         case 1: return SCALA;
         case 2: return JAVA;
+        case 3: return KOTLIN;
         default: return null;
       }
     }
@@ -21198,10 +21207,10 @@ public final class Semanticdb {
       "raph.semanticdb_kotlinc.Type\022?\n\014declarat" +
       "ions\030\003 \001(\0132).com.sourcegraph.semanticdb_" +
       "kotlinc.ScopeJ\004\010\002\020\003*6\n\006Schema\022\n\n\006LEGACY\020" +
-      "\000\022\017\n\013SEMANTICDB3\020\003\022\017\n\013SEMANTICDB4\020\004*5\n\010L" +
+      "\000\022\017\n\013SEMANTICDB3\020\003\022\017\n\013SEMANTICDB4\020\004*A\n\010L" +
       "anguage\022\024\n\020UNKNOWN_LANGUAGE\020\000\022\t\n\005SCALA\020\001" +
-      "\022\010\n\004JAVA\020\002B&\n\"com.sourcegraph.semanticdb" +
-      "_kotlincP\000b\006proto3"
+      "\022\010\n\004JAVA\020\002\022\n\n\006KOTLIN\020\003B&\n\"com.sourcegrap" +
+      "h.semanticdb_kotlincP\000b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
