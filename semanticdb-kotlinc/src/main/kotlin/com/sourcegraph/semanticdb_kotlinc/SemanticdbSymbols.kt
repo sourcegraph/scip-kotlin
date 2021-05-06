@@ -5,8 +5,8 @@ inline class Symbol(val symbol: String) {
         val NONE = Symbol("");
         val ROOT_PACKAGE = Symbol("_root_/")
 
-        fun createGlobal(owner: Symbol, desc: Descriptor): Symbol = when {
-            desc == Descriptor.NONE -> NONE
+        fun createGlobal(owner: Symbol, desc: SemanticdbSymbolDescriptor): Symbol = when {
+            desc == SemanticdbSymbolDescriptor.NONE -> NONE
             owner != ROOT_PACKAGE -> Symbol(owner.symbol + desc.encode().symbol)
             else -> desc.encode()
         }
@@ -19,9 +19,9 @@ inline class Symbol(val symbol: String) {
     private fun isLocal() = symbol.startsWith("local")
 }
 
-data class Descriptor(val kind: Kind, val name: String, val disambiguator: String = "") {
+data class SemanticdbSymbolDescriptor(val kind: Kind, val name: String, val disambiguator: String = "") {
     companion object {
-        val NONE = Descriptor(Kind.NONE, "")
+        val NONE = SemanticdbSymbolDescriptor(Kind.NONE, "")
 
         private fun encodeName(name: String): String {
             if (name.isEmpty()) return "``"

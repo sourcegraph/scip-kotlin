@@ -1,14 +1,18 @@
 package com.sourcegraph.semanticdb_kotlinc
 
+import com.sourcegraph.semanticdb_kotlinc.SemanticdbSymbolDescriptor.Kind
 import org.jetbrains.kotlin.descriptors.*
-import java.util.*
+import org.jetbrains.kotlin.load.kotlin.toSourceElement
+import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter
+import org.jetbrains.kotlin.resolve.scopes.getDescriptorsFiltered
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
 @ExperimentalContracts
 class GlobalSymbolsCache {
-    private val globals = IdentityHashMap<DeclarationDescriptor, Symbol>()
+    private val globals = HashMap<DeclarationDescriptor, Symbol>()
 
     fun semanticdbSymbol(descriptor: DeclarationDescriptor, locals: LocalSymbolsCache): Symbol {
         globals[descriptor]?.let { return it }
@@ -26,26 +30,35 @@ class GlobalSymbolsCache {
     private fun uncachedSemanticdbSymbol(descriptor: DeclarationDescriptor?, locals: LocalSymbolsCache): Symbol {
         if (skip(descriptor)) return Symbol.NONE
         val ownerDesc = descriptor.containingDeclaration ?: return Symbol.ROOT_PACKAGE
-        val owner = semanticdbSymbol(ownerDesc, locals)
+
+        var owner = semanticdbSymbol(ownerDesc, locals)
         if (ownerDesc.isObjectDeclaration() || descriptor.isLocalVariable())
             return locals + ownerDesc
+
+        if ((descriptor is FunctionDescriptor || descriptor is VariableDescriptor) && ownerDesc is PackageFragmentDescriptor) {
+            owner = Symbol.createGlobal(owner, SemanticdbSymbolDescriptor(Kind.TYPE, sourceFileToClassSymbol(descriptor.toSourceElement.containingFile)))
+        }
 
         val semanticdbDescriptor = semanticdbDescriptor(descriptor)
         return Symbol.createGlobal(owner, semanticdbDescriptor)
     }
 
-    private fun semanticdbDescriptor(desc: DeclarationDescriptor): Descriptor {
+    // generates the synthetic class name from the source file
+    // https://kotlinlang.org/docs/java-to-kotlin-interop.html#package-level-functions
+    private fun sourceFileToClassSymbol(file: SourceFile) = file.name!!.replace(".kt", "Kt")
+
+    private fun semanticdbDescriptor(desc: DeclarationDescriptor): SemanticdbSymbolDescriptor {
         return when(desc) {
-            is ClassDescriptor -> Descriptor(Descriptor.Kind.TYPE, desc.name.toString())
-            is FunctionDescriptor -> Descriptor(Descriptor.Kind.METHOD, desc.name.toString(), methodDisambiguator(desc))
-            is TypeParameterDescriptor -> Descriptor(Descriptor.Kind.TYPE_PARAMETER, desc.name.toString())
-            is ValueParameterDescriptor -> Descriptor(Descriptor.Kind.PARAMETER, desc.name.toString())
-            is VariableDescriptor -> Descriptor(Descriptor.Kind.TERM, desc.name.toString())
-            is TypeAliasDescriptor -> Descriptor(Descriptor.Kind.TYPE, desc.name.toString())
-            is PackageFragmentDescriptor -> Descriptor(Descriptor.Kind.PACKAGE, desc.name.toString())
+            is ClassDescriptor -> SemanticdbSymbolDescriptor(Kind.TYPE, desc.name.toString())
+            is FunctionDescriptor -> SemanticdbSymbolDescriptor(Kind.METHOD, desc.name.toString(), methodDisambiguator(desc))
+            is TypeParameterDescriptor -> SemanticdbSymbolDescriptor(Kind.TYPE_PARAMETER, desc.name.toString())
+            is ValueParameterDescriptor -> SemanticdbSymbolDescriptor(Kind.PARAMETER, desc.name.toString())
+            is VariableDescriptor -> SemanticdbSymbolDescriptor(Kind.TERM, desc.name.toString())
+            is TypeAliasDescriptor -> SemanticdbSymbolDescriptor(Kind.TYPE, desc.name.toString())
+            is PackageFragmentDescriptor -> SemanticdbSymbolDescriptor(Kind.PACKAGE, desc.name.toString())
             else -> {
                 println("unknown descriptor kind ${desc.javaClass.simpleName}")
-                Descriptor.NONE
+                SemanticdbSymbolDescriptor.NONE
             }
         }
     }
@@ -65,14 +78,13 @@ class GlobalSymbolsCache {
 }
 
 class LocalSymbolsCache {
-    private val symbols = IdentityHashMap<DeclarationDescriptor, Symbol>()
-    private var localsCounter = -1
+    private val symbols = HashMap<DeclarationDescriptor, Symbol>()
+    private var localsCounter = 0
 
     operator fun get(desc: DeclarationDescriptor): Symbol? = symbols[desc]
 
     operator fun plus(desc: DeclarationDescriptor): Symbol {
-        localsCounter++
-        val result = Symbol.createLocal(localsCounter)
+        val result = Symbol.createLocal(localsCounter++)
         symbols[desc] = result
         return result
     }
