@@ -1,11 +1,11 @@
 package com.sourcegraph.semanticdb_kotlinc
 
-/*import com.intellij.openapi.editor.Document
+import com.intellij.openapi.editor.Document
 import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiDocumentManager*/
-import org.jetbrains.kotlin.com.intellij.openapi.editor.Document
+import com.intellij.psi.PsiDocumentManager
+/*import org.jetbrains.kotlin.com.intellij.openapi.editor.Document
 import org.jetbrains.kotlin.com.intellij.openapi.project.Project
-import org.jetbrains.kotlin.com.intellij.psi.PsiDocumentManager
+import org.jetbrains.kotlin.com.intellij.psi.PsiDocumentManager*/
 import org.jetbrains.kotlin.diagnostics.PsiDiagnosticUtils
 import org.jetbrains.kotlin.diagnostics.PsiDiagnosticUtils.LineAndColumn
 import org.jetbrains.kotlin.psi.KtElement

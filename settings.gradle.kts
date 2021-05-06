@@ -3,6 +3,8 @@ rootProject.name = "lsif-kotlin"
 
 include(
     "semanticdb-kotlin",
-    "semanticdb-kotlinc"
+    "semanticdb-kotlinc",
+    "debug-project"
 )
-include("semanticdb-kotlinc")
+
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

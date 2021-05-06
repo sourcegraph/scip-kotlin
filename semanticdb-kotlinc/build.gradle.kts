@@ -17,13 +17,25 @@ dependencies {
     implementation(kotlin("stdlib"))
     compileOnly(kotlin("compiler"))
     implementation("com.google.protobuf:protobuf-java:3.15.7")
-    implementation(project(":semanticdb-kotlin"))
+    implementation(projects.semanticdbKotlin)
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions{
+    dependsOn(":${projects.semanticdbKotlin.name}:build")
+    kotlinOptions {
         jvmTarget = "1.8"
-        //freeCompilerArgs = freeCompilerArgs + "-Xplugin=${project.rootDir}/build/libs/lsif-kotlin-1.0-SNAPSHOT-all.jar"
+    }
+}
+
+val semanticdbJar: Configuration by configurations.creating {
+    isCanBeConsumed = true
+    isCanBeResolved = false
+    outgoing.artifact(tasks.shadowJar.get().outputs.files.first())
+}
+
+artifacts {
+    add("semanticdbJar", tasks.shadowJar.get().outputs.files.first()) {
+       builtBy(tasks.shadowJar)
     }
 }
 

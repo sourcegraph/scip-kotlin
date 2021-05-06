@@ -13,7 +13,7 @@ repositories {
 
 buildscript {
     repositories {
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
@@ -24,6 +24,10 @@ buildscript {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation("com.google.protobuf:protobuf-java:3.15.7")
+}
+
+tasks.processResources {
+    dependsOn(tasks.getByName("generateProto"))
 }
 
 val SourceSet.kotlin: SourceDirectorySet get() = this.withConvention(KotlinSourceSet::class) { kotlin }
