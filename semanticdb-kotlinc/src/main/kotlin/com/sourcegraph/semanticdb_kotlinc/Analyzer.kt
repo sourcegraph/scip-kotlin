@@ -3,17 +3,16 @@ package com.sourcegraph.semanticdb_kotlinc
 import com.intellij.openapi.project.Project
 import com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrence.Role
 import org.jetbrains.kotlin.analyzer.AnalysisResult
-import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
-import org.jetbrains.kotlin.descriptors.buildPossiblyInnerType
-import org.jetbrains.kotlin.js.descriptorUtils.getJetTypeFqName
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.BindingTrace
 import org.jetbrains.kotlin.resolve.DescriptorUtils
-import org.jetbrains.kotlin.resolve.calls.callUtil.getResolvedCall
-import org.jetbrains.kotlin.resolve.calls.callUtil.getType
 import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
+import org.jetbrains.kotlin.types.TypeUtils
+import org.jetbrains.kotlin.types.isNullable
+import org.jetbrains.kotlin.types.typeUtil.isTypeParameter
+import org.jetbrains.kotlin.types.typeUtil.makeNotNullable
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.contracts.ExperimentalContracts
@@ -108,5 +107,21 @@ class Analyzer(val sourceroot: Path, val targetroot: Path, val callback: (Semant
             super.visitTypeAlias(typeAlias)
         }
 
+        override fun visitTypeReference(typeReference: KtTypeReference) {
+            val type = (bindingTrace[BindingContext.TYPE, typeReference]
+                ?: bindingTrace[BindingContext.ABBREVIATED_TYPE, typeReference]!!).let {
+                    if (it.isNullable()) return@let it.makeNotNullable()
+                    else return@let it
+            }
+            val desc = if (!type.isTypeParameter()) {
+                DescriptorUtils.getClassDescriptorForType(type)
+            } else {
+                TypeUtils.getTypeParameterDescriptorOrNull(type)!!
+            }
+            emitter.emitSemanticdbData(desc, typeReference, Role.REFERENCE)
+            val symbol = globals.semanticdbSymbol(desc, locals)
+            println("TYPE REFERENCE $typeReference $type ${desc.name} $symbol")
+            super.visitTypeReference(typeReference)
+        }
     }
 }

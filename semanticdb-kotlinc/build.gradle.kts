@@ -16,6 +16,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
+    compileOnly(kotlin("compiler"))
     implementation("com.google.protobuf", "protobuf-java", "3.15.7")
     implementation(projects.semanticdbKotlin)
 
