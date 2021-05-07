@@ -9,12 +9,13 @@ import java.lang.IllegalArgumentException
 import kotlin.contracts.ExperimentalContracts
 
 @ExperimentalContracts
-class AnalyzerRegistrar: ComponentRegistrar {
+class AnalyzerRegistrar(val callback: (Semanticdb.TextDocument) -> Unit = { _ -> Unit}): ComponentRegistrar {
     override fun registerProjectComponents(project: MockProject, configuration: CompilerConfiguration) {
         AnalysisHandlerExtension.registerExtension(
             project, Analyzer(
                 sourceroot = configuration[KEY_SOURCES] ?: throw IllegalArgumentException("configuration key $KEY_SOURCES missing"),
                 targetroot = configuration[KEY_TARGET] ?: throw IllegalArgumentException("configuration key $KEY_TARGET missing"),
+                callback = callback
             )
         )
     }

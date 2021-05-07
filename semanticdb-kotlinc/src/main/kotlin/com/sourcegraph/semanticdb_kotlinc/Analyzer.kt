@@ -19,7 +19,7 @@ import java.nio.file.Path
 import kotlin.contracts.ExperimentalContracts
 
 @ExperimentalContracts
-class Analyzer(val sourceroot: Path, val targetroot: Path): AnalysisHandlerExtension {
+class Analyzer(val sourceroot: Path, val targetroot: Path, val callback: (Semanticdb.TextDocument) -> Unit): AnalysisHandlerExtension {
     private val globals = GlobalSymbolsCache()
 
     override fun analysisCompleted(
@@ -32,6 +32,7 @@ class Analyzer(val sourceroot: Path, val targetroot: Path): AnalysisHandlerExten
             val lineMap = LineMap(project, file)
             val document = Visitor(bindingTrace, file, lineMap).build()
             Files.write(semanticdbOutPathForFile(file)!!, document.toByteArray())
+            callback(document)
         }
 
         return super.analysisCompleted(project, module, bindingTrace, files)
