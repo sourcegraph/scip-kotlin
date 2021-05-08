@@ -1,6 +1,7 @@
 package com.sourcegraph.semanticdb_kotlinc
 
-inline class Symbol(val symbol: String) {
+@JvmInline
+value class Symbol(val symbol: String) {
     companion object {
         val NONE = Symbol("");
         val ROOT_PACKAGE = Symbol("_root_/")

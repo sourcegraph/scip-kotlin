@@ -1,6 +1,8 @@
 package com.sourcegraph.semanticdb_kotlinc
 
+import org.jetbrains.kotlin.idea.KotlinLanguage
 import com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrence.Role
+import com.intellij.lang.java.JavaLanguage
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtFile
@@ -38,6 +40,11 @@ class SemanticdbEmitter(
     private fun symbolInformation(descriptor: DeclarationDescriptor, element: KtElement): Semanticdb.SymbolInformation {
         return SymbolInformation {
             this.symbol = globals.semanticdbSymbol(descriptor, locals).symbol
+            this.language = when(element.language) {
+                is KotlinLanguage -> Semanticdb.Language.KOTLIN
+                is JavaLanguage -> Semanticdb.Language.JAVA
+                else -> throw IllegalStateException("unexpected language ${element.language}")
+            }
         }
     }
 
