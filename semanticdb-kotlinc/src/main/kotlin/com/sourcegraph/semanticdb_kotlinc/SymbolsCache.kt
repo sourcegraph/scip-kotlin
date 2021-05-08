@@ -3,8 +3,11 @@ package com.sourcegraph.semanticdb_kotlinc
 import com.sourcegraph.semanticdb_kotlinc.SemanticdbSymbolDescriptor.Kind
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.load.kotlin.toSourceElement
+import org.jetbrains.kotlin.psi.KtBlockExpression
+import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter
 import org.jetbrains.kotlin.resolve.scopes.getDescriptorsFiltered
+import org.jetbrains.kotlin.resolve.source.getPsi
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.contracts.ExperimentalContracts
@@ -13,6 +16,7 @@ import kotlin.contracts.contract
 @ExperimentalContracts
 class GlobalSymbolsCache {
     private val globals = HashMap<DeclarationDescriptor, Symbol>()
+    lateinit var resolver: DescriptorResolver
 
     fun semanticdbSymbol(descriptor: DeclarationDescriptor, locals: LocalSymbolsCache): Symbol {
         globals[descriptor]?.let { return it }
@@ -69,7 +73,12 @@ class GlobalSymbolsCache {
                 ownerDecl.getMemberScope().getDescriptorsFiltered(DescriptorKindFilter.FUNCTIONS).map { it as CallableMemberDescriptor }
             is ClassDescriptorWithResolutionScopes ->
                 ownerDecl.declaredCallableMembers.filter { it.name == desc.name }
-            else -> throw Exception("unexpected owner decl type ${ownerDecl.javaClass}")
+            is FunctionDescriptor ->
+                ownerDecl.toSourceElement.getPsi()!!.
+                    children.first { it is KtBlockExpression }.
+                    children.filterIsInstance<KtNamedFunction>().
+                    map { resolver.fromDeclaration(it)!! as CallableMemberDescriptor }
+            else -> throw IllegalStateException("unexpected owner decl type ${ownerDecl.javaClass}")
         } as ArrayList<CallableMemberDescriptor>
 
         methods.sortWith { m1, m2 -> compareValues(m1.dispatchReceiverParameter == null, m2.dispatchReceiverParameter == null) }

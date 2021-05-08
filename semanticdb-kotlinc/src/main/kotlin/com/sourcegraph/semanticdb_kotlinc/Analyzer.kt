@@ -5,7 +5,6 @@ import com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrence.Role
 import org.jetbrains.kotlin.analyzer.AnalysisResult
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.psi.*
-import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.BindingTrace
 import org.jetbrains.kotlin.resolve.DescriptorUtils
 import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
@@ -27,9 +26,11 @@ class Analyzer(val sourceroot: Path, val targetroot: Path, val callback: (Semant
     bindingTrace: BindingTrace,
     files: Collection<KtFile>
     ): AnalysisResult? {
+        val resolver = DescriptorResolver(bindingTrace)
+        globals.resolver = resolver
         for (file in files) {
             val lineMap = LineMap(project, file)
-            val document = Visitor(bindingTrace, file, lineMap).build()
+            val document = Visitor(resolver, file, lineMap).build()
             Files.write(semanticdbOutPathForFile(file)!!, document.toByteArray())
             callback(document)
         }
@@ -50,7 +51,7 @@ class Analyzer(val sourceroot: Path, val targetroot: Path, val callback: (Semant
         return null
     }
 
-    private inner class Visitor(val bindingTrace: BindingTrace, val file: KtFile, lineMap: LineMap): KtTreeVisitorVoid() {
+    private inner class Visitor(val resolver: DescriptorResolver, val file: KtFile, lineMap: LineMap): KtTreeVisitorVoid() {
         private val locals = LocalSymbolsCache()
         private val emitter = SemanticdbEmitter(globals, locals, sourceroot, file, lineMap)
 
@@ -60,7 +61,7 @@ class Analyzer(val sourceroot: Path, val targetroot: Path, val callback: (Semant
         }
 
         override fun visitClass(klass: KtClass) {
-            val desc = bindingTrace[BindingContext.DECLARATION_TO_DESCRIPTOR, klass]!!
+            val desc = resolver.fromDeclaration(klass)!!
             emitter.emitSemanticdbData(desc, klass, Role.DEFINITION)
             val symbol = globals.semanticdbSymbol(desc, locals)
             println("NAMED TYPE $klass ${desc.name} $symbol")
@@ -68,7 +69,7 @@ class Analyzer(val sourceroot: Path, val targetroot: Path, val callback: (Semant
         }
 
         override fun visitNamedFunction(function: KtNamedFunction) {
-            val desc = bindingTrace[BindingContext.DECLARATION_TO_DESCRIPTOR, function]!!
+            val desc = resolver.fromDeclaration(function)!!
             emitter.emitSemanticdbData(desc, function, Role.DEFINITION)
             val symbol = globals.semanticdbSymbol(desc, locals)
             println("NAMED FUN $function ${desc.name} $symbol")
@@ -76,7 +77,7 @@ class Analyzer(val sourceroot: Path, val targetroot: Path, val callback: (Semant
         }
 
         override fun visitProperty(property: KtProperty) {
-            val desc = bindingTrace[BindingContext.DECLARATION_TO_DESCRIPTOR, property]!!
+            val desc = resolver.fromDeclaration(property)!!
             emitter.emitSemanticdbData(desc, property, Role.DEFINITION)
             val symbol = globals.semanticdbSymbol(desc, locals)
             println("NAMED PROP $property ${desc.name} $symbol")
@@ -84,7 +85,7 @@ class Analyzer(val sourceroot: Path, val targetroot: Path, val callback: (Semant
         }
 
         override fun visitParameter(parameter: KtParameter) {
-            val desc = bindingTrace[BindingContext.DECLARATION_TO_DESCRIPTOR, parameter]!!
+            val desc = resolver.fromDeclaration(parameter)!!
             emitter.emitSemanticdbData(desc, parameter, Role.DEFINITION)
             val symbol = globals.semanticdbSymbol(desc, locals)
             println("NAMED PARAM $parameter ${desc.name} $symbol")
@@ -92,7 +93,7 @@ class Analyzer(val sourceroot: Path, val targetroot: Path, val callback: (Semant
         }
 
         override fun visitTypeParameter(parameter: KtTypeParameter) {
-            val desc = bindingTrace[BindingContext.DECLARATION_TO_DESCRIPTOR, parameter]!!
+            val desc = resolver.fromDeclaration(parameter)!!
             emitter.emitSemanticdbData(desc, parameter, Role.DEFINITION)
             val symbol = globals.semanticdbSymbol(desc, locals)
             println("NAMED TYPE-PARAM $parameter ${desc.name} $symbol")
@@ -100,7 +101,7 @@ class Analyzer(val sourceroot: Path, val targetroot: Path, val callback: (Semant
         }
 
         override fun visitTypeAlias(typeAlias: KtTypeAlias) {
-            val desc = bindingTrace[BindingContext.DECLARATION_TO_DESCRIPTOR, typeAlias]!!
+            val desc = resolver.fromDeclaration(typeAlias)!!
             emitter.emitSemanticdbData(desc, typeAlias, Role.DEFINITION)
             val symbol = globals.semanticdbSymbol(desc, locals)
             println("NAMED TYPE-ALIAS $typeAlias ${desc.name} $symbol")
@@ -108,8 +109,7 @@ class Analyzer(val sourceroot: Path, val targetroot: Path, val callback: (Semant
         }
 
         override fun visitTypeReference(typeReference: KtTypeReference) {
-            val type = (bindingTrace[BindingContext.TYPE, typeReference]
-                ?: bindingTrace[BindingContext.ABBREVIATED_TYPE, typeReference]!!).let {
+            val type = resolver.fromTypeReference(typeReference).let {
                     if (it.isNullable()) return@let it.makeNotNullable()
                     else return@let it
             }

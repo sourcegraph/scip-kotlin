@@ -9,7 +9,7 @@ import java.lang.IllegalArgumentException
 import kotlin.contracts.ExperimentalContracts
 
 @ExperimentalContracts
-class AnalyzerRegistrar(val callback: (Semanticdb.TextDocument) -> Unit = { _ -> Unit}): ComponentRegistrar {
+class AnalyzerRegistrar(private val callback: (Semanticdb.TextDocument) -> Unit = {}): ComponentRegistrar {
     override fun registerProjectComponents(project: MockProject, configuration: CompilerConfiguration) {
         AnalysisHandlerExtension.registerExtension(
             project, Analyzer(
