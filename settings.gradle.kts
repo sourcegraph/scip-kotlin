@@ -5,7 +5,8 @@ include(
     "semanticdb-kotlin",
     "semanticdb-kotlinc",
     "semanticdb-kotlinc:minimized",
-    "debug-project"
+    "debug-project",
+    "gradle-plugin"
 )
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
