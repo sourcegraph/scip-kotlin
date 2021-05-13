@@ -29,6 +29,7 @@ dependencies {
 
 tasks.withType<KotlinCompile> {
     dependsOn(":${projects.semanticdbKotlinc.name}:shadowJar")
+    outputs.cacheIf { false }
     val pluginJar = semanticdbJar.incoming.artifacts.artifactFiles.first().path
     val targetroot = File(rootProject.buildDir, "semanticdb-targetroot")
     kotlinOptions {
