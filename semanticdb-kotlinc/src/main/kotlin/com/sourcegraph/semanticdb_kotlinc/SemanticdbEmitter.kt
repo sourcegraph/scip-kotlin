@@ -2,7 +2,7 @@ package com.sourcegraph.semanticdb_kotlinc
 
 import org.jetbrains.kotlin.idea.KotlinLanguage
 import com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrence.Role
-import com.intellij.lang.java.JavaLanguage
+import org.jetbrains.kotlin.com.intellij.lang.java.JavaLanguage
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtFile

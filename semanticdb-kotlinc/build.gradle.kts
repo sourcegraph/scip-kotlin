@@ -16,11 +16,11 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    compileOnly(kotlin("compiler"))
+    compileOnly(kotlin("compiler-embeddable"))
     implementation("com.google.protobuf", "protobuf-java", "3.15.7")
     implementation(projects.semanticdbKotlin)
 
-    testCompileOnly(kotlin("compiler"))
+    testImplementation(kotlin("compiler-embeddable"))
     testImplementation(kotlin("test"))
     testImplementation("io.kotest", "kotest-assertions-core", "4.5.0")
     testImplementation("com.github.tschuchortdev", "kotlin-compile-testing", "1.4.0")
@@ -72,25 +72,9 @@ tasks.jar {
 }
 
 tasks.named<ShadowJar>("shadowJar").configure {
-    configurations.add(project.configurations.compileOnly.get())
-    dependencies {
-        exclude("org.jetbrains.kotlin:kotlin-stdlib")
-        exclude("org.jetbrains.kotlin:kotlin-compiler")
-    }
     relocate("com.intellij", "org.jetbrains.kotlin.com.intellij")
     minimize()
 }
-
-/*tasks.shadowJar {
-    configurations = listOf()
-    archiveClassifier.set("embeddable")
-    relocate("com.intellij", "org.jetbrains.kotlin.com.intellij")
-}
-
-// Create embeddable configuration
-configurations.create("embeddable") {
-    extendsFrom(configurations.shadow.get())
-}*/
 
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {

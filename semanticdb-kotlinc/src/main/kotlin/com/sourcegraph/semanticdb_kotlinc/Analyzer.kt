@@ -1,8 +1,8 @@
 package com.sourcegraph.semanticdb_kotlinc
 
-import com.intellij.openapi.project.Project
 import com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrence.Role
 import org.jetbrains.kotlin.analyzer.AnalysisResult
+import org.jetbrains.kotlin.com.intellij.openapi.project.Project
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingTrace
