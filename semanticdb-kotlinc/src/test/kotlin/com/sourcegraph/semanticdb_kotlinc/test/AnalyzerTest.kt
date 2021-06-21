@@ -8,8 +8,6 @@ import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.PluginOption
 import com.tschuchort.compiletesting.SourceFile
 import io.kotest.assertions.assertSoftly
-import io.kotest.matchers.Matcher
-import io.kotest.matchers.MatcherResult
 import io.kotest.matchers.collections.shouldHaveElementAt
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.io.TempDir
@@ -38,7 +36,6 @@ class AnalyzerTest {
             sources = listOf(source)
             compilerPlugins = listOf(AnalyzerRegistrar(callback))
             verbose = false
-            messageOutputStream = System.err
             pluginOptions = listOf(
                 PluginOption("com.sourcegraph.lsif-kotlin", "sourceroot", path.toString()),
                 PluginOption("com.sourcegraph.lsif-kotlin", "targetroot", buildPath.toString())
@@ -489,7 +486,6 @@ class AnalyzerTest {
             sources = listOf(source)
             compilerPlugins = listOf(AnalyzerRegistrar(callback))
             verbose = false
-            messageOutputStream = System.err
             pluginOptions = listOf(
                 PluginOption("com.sourcegraph.lsif-kotlin", "sourceroot", path.toString()),
                 PluginOption("com.sourcegraph.lsif-kotlin", "targetroot", buildPath.toString())

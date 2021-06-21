@@ -24,7 +24,7 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation("io.kotest", "kotest-assertions-core", "4.5.0")
     testImplementation("com.github.tschuchortdev", "kotlin-compile-testing", "1.4.0")
-
+    testImplementation("org.junit.jupiter", "junit-jupiter-params", "5.7.2")
     testImplementation("org.jetbrains.kotlin", "kotlin-stdlib-jdk8", "1.5.0") {
         version {
             strictly("1.5.0")

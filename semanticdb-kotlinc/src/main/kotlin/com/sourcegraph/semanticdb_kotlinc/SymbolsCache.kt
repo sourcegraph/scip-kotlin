@@ -2,6 +2,7 @@ package com.sourcegraph.semanticdb_kotlinc
 
 import com.sourcegraph.semanticdb_kotlinc.SemanticdbSymbolDescriptor.Kind
 import org.jetbrains.kotlin.descriptors.*
+import org.jetbrains.kotlin.descriptors.impl.AnonymousFunctionDescriptor
 import org.jetbrains.kotlin.load.kotlin.toSourceElement
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
@@ -18,7 +19,7 @@ class GlobalSymbolsCache {
     private val globals = HashMap<DeclarationDescriptor, Symbol>()
     lateinit var resolver: DescriptorResolver
 
-    fun semanticdbSymbol(descriptor: DeclarationDescriptor, locals: LocalSymbolsCache): Symbol {
+    operator fun get(descriptor: DeclarationDescriptor, locals: LocalSymbolsCache): Symbol {
         globals[descriptor]?.let { return it }
         locals[descriptor]?.let { return it }
         return uncachedSemanticdbSymbol(descriptor, locals).also {
@@ -35,8 +36,8 @@ class GlobalSymbolsCache {
         if (skip(descriptor)) return Symbol.NONE
         val ownerDesc = descriptor.containingDeclaration ?: return Symbol.ROOT_PACKAGE
 
-        var owner = semanticdbSymbol(ownerDesc, locals)
-        if (ownerDesc.isObjectDeclaration() || descriptor.isLocalVariable())
+        var owner = this[ownerDesc, locals]
+        if (ownerDesc.isObjectDeclaration() || owner.isLocal() || ownerDesc.isLocalVariable() || ownerDesc is AnonymousFunctionDescriptor || descriptor.isLocalVariable() || descriptor is AnonymousFunctionDescriptor)
             return locals + ownerDesc
 
         if ((descriptor is FunctionDescriptor || descriptor is VariableDescriptor) && ownerDesc is PackageFragmentDescriptor) {
@@ -78,13 +79,14 @@ class GlobalSymbolsCache {
                     children.first { it is KtBlockExpression }.
                     children.filterIsInstance<KtNamedFunction>().
                     map { resolver.fromDeclaration(it)!! as CallableMemberDescriptor }
-            else -> throw IllegalStateException("unexpected owner decl type ${ownerDecl.javaClass}")
+            else -> throw IllegalStateException("unexpected owner decl type ${ownerDecl.javaClass}:\n\t\tMethod: ${desc}\n\t\tParent: ${desc.containingDeclaration}")
         } as ArrayList<CallableMemberDescriptor>
 
         methods.sortWith { m1, m2 -> compareValues(m1.dispatchReceiverParameter == null, m2.dispatchReceiverParameter == null) }
 
         return when(val index = methods.indexOf(desc)) {
             0 -> "()"
+            //-1 -> throw IllegalStateException("failed to find method in parent:\n\t\tMethod: ${desc}\n\t\tParent: ${desc.containingDeclaration}")
             else -> "(+$index)"
         }
     }
@@ -93,6 +95,10 @@ class GlobalSymbolsCache {
 class LocalSymbolsCache {
     private val symbols = HashMap<DeclarationDescriptor, Symbol>()
     private var localsCounter = 0
+
+    val iterator: Iterable<Map.Entry<DeclarationDescriptor, Symbol>> get() = symbols.asIterable()
+
+    val size: Int get() = symbols.size
 
     operator fun get(desc: DeclarationDescriptor): Symbol? = symbols[desc]
 

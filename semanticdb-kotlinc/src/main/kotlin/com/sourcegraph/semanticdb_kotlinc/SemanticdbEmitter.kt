@@ -39,7 +39,7 @@ class SemanticdbEmitter(
 
     private fun symbolInformation(descriptor: DeclarationDescriptor, element: KtElement): Semanticdb.SymbolInformation {
         return SymbolInformation {
-            this.symbol = globals.semanticdbSymbol(descriptor, locals).symbol
+            this.symbol = globals[descriptor, locals].symbol
             this.language = when(element.language) {
                 is KotlinLanguage -> Semanticdb.Language.KOTLIN
                 is JavaLanguage -> Semanticdb.Language.JAVA
@@ -49,13 +49,13 @@ class SemanticdbEmitter(
     }
 
     private fun symbolOccurrence(descriptor: DeclarationDescriptor, element: KtElement, role: Role): Semanticdb.SymbolOccurrence? {
-        /*val symbol = when(val s = globals.semanticdbSymbol(descriptor, locals)) {
+        /*val symbol = when(val s = globals[descriptor, locals]) {
             Symbol.NONE -> return null
             else -> s
         }.symbol*/
 
         return SymbolOccurrence {
-            this.symbol = globals.semanticdbSymbol(descriptor, locals).symbol
+            this.symbol = globals[descriptor, locals].symbol
             this.role = role
             this.range = semanticdbRange(element)
         }

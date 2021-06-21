@@ -17,7 +17,7 @@ value class Symbol(val symbol: String) {
 
     fun isGlobal() = !isLocal()
 
-    private fun isLocal() = symbol.startsWith("local")
+    fun isLocal() = symbol.startsWith("local")
 }
 
 data class SemanticdbSymbolDescriptor(val kind: Kind, val name: String, val disambiguator: String = "") {
