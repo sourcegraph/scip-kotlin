@@ -29,7 +29,7 @@ class GlobalSymbolsCache {
 
     private fun skip(desc: DeclarationDescriptor?): Boolean {
         contract { returns(false) implies (desc != null) }
-        return desc == null || desc is ModuleDescriptor
+        return desc == null || desc is ModuleDescriptor || desc is AnonymousFunctionDescriptor
     }
 
     private fun uncachedSemanticdbSymbol(descriptor: DeclarationDescriptor?, locals: LocalSymbolsCache): Symbol {
@@ -37,7 +37,7 @@ class GlobalSymbolsCache {
         val ownerDesc = descriptor.containingDeclaration ?: return Symbol.ROOT_PACKAGE
 
         var owner = this[ownerDesc, locals]
-        if (ownerDesc.isObjectDeclaration() || owner.isLocal() || ownerDesc.isLocalVariable() || ownerDesc is AnonymousFunctionDescriptor || descriptor.isLocalVariable() || descriptor is AnonymousFunctionDescriptor)
+        if (ownerDesc.isObjectDeclaration() || owner.isLocal() || ownerDesc.isLocalVariable() || ownerDesc is AnonymousFunctionDescriptor || descriptor.isLocalVariable())
             return locals + ownerDesc
 
         if ((descriptor is FunctionDescriptor || descriptor is VariableDescriptor) && ownerDesc is PackageFragmentDescriptor) {
