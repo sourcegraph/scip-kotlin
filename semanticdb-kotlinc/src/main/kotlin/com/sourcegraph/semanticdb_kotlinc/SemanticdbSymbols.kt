@@ -5,6 +5,7 @@ value class Symbol(val symbol: String) {
     companion object {
         val NONE = Symbol("");
         val ROOT_PACKAGE = Symbol("_root_/")
+        val EMPTY_PACKAGE = Symbol("_empty_/")
 
         fun createGlobal(owner: Symbol, desc: SemanticdbSymbolDescriptor): Symbol = when {
             desc == SemanticdbSymbolDescriptor.NONE -> NONE
@@ -19,6 +20,8 @@ value class Symbol(val symbol: String) {
 
     fun isLocal() = symbol.startsWith("local")
 }
+
+fun String.symbol(): Symbol = Symbol(this)
 
 data class SemanticdbSymbolDescriptor(val kind: Kind, val name: String, val disambiguator: String = "") {
     companion object {

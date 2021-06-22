@@ -8,18 +8,24 @@ import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.PluginOption
 import com.tschuchort.compiletesting.SourceFile
 import io.kotest.assertions.assertSoftly
+import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.matchers.collections.shouldHaveElementAt
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
 import java.nio.file.Path
 import kotlin.contracts.ExperimentalContracts
-import kotlin.test.Test
+// import kotlin.test.Test
 
 @ExperimentalContracts
-class AnalyzerTest {
+class AnalyzerTest: AnnotationSpec() {
     @Test
     fun `basic test`(@TempDir path: Path) {
+        /*context("") {
+            test("") {
+
+            }
+        }*/
         val buildPath = File(path.resolve("build").toString()).apply { mkdir() }
 
         val source = SourceFile.kotlin("Banana.kt", """

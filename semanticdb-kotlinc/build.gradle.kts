@@ -22,7 +22,10 @@ dependencies {
 
     testImplementation(kotlin("compiler-embeddable"))
     testImplementation(kotlin("test"))
+    testImplementation("io.kotest", "kotest-core", "4.2.0.RC2")
     testImplementation("io.kotest", "kotest-assertions-core", "4.5.0")
+    testImplementation("io.kotest", "kotest-framework-datatest", "4.6.0")
+    testImplementation("io.kotest", "kotest-runner-junit5-jvm", "4.6.0")
     testImplementation("com.github.tschuchortdev", "kotlin-compile-testing", "1.4.0")
     testImplementation("org.junit.jupiter", "junit-jupiter-params", "5.7.2")
     testImplementation("org.jetbrains.kotlin", "kotlin-stdlib-jdk8", "1.5.0") {
