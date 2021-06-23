@@ -30,7 +30,7 @@ class Analyzer(val sourceroot: Path, val targetroot: Path, val callback: (Semant
         for (file in files) {
             val lineMap = LineMap(project, file)
             val document = Visitor(resolver, file, lineMap).build()
-            Files.write(semanticdbOutPathForFile(file)!!, document.toByteArray())
+            Files.write(semanticdbOutPathForFile(file)!!, TextDocuments { addDocuments(document) }.toByteArray())
             callback(document)
         }
 
