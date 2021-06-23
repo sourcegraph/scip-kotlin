@@ -6,16 +6,19 @@ import org.jetbrains.kotlin.descriptors.impl.AnonymousFunctionDescriptor
 import org.jetbrains.kotlin.load.kotlin.toSourceElement
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
+import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
+import org.jetbrains.kotlin.resolve.descriptorUtil.module
 import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter
 import org.jetbrains.kotlin.resolve.scopes.getDescriptorsFiltered
 import org.jetbrains.kotlin.resolve.source.getPsi
+import java.lang.System.err
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
 @ExperimentalContracts
-class GlobalSymbolsCache {
+class GlobalSymbolsCache: Iterable<Symbol> {
     private val globals = HashMap<DeclarationDescriptor, Symbol>()
     lateinit var resolver: DescriptorResolver
 
@@ -34,7 +37,7 @@ class GlobalSymbolsCache {
 
     private fun uncachedSemanticdbSymbol(descriptor: DeclarationDescriptor?, locals: LocalSymbolsCache): Symbol {
         if (skip(descriptor)) return Symbol.NONE
-        val ownerDesc = descriptor.containingDeclaration ?: return Symbol.ROOT_PACKAGE
+        val ownerDesc = getParentDescriptor(descriptor) ?: return Symbol.ROOT_PACKAGE
 
         var owner = this[ownerDesc, locals]
         if (ownerDesc.isObjectDeclaration() || owner.isLocal() || ownerDesc.isLocalVariable() || ownerDesc is AnonymousFunctionDescriptor || descriptor.isLocalVariable())
@@ -48,8 +51,28 @@ class GlobalSymbolsCache {
         return Symbol.createGlobal(owner, semanticdbDescriptor)
     }
 
-    // generates the synthetic class name from the source file
-    // https://kotlinlang.org/docs/java-to-kotlin-interop.html#package-level-functions
+    /**
+     * Returns the parent DeclarationDescriptor for a given DeclarationDescriptor.
+     * For most descriptor types, this simply returns the 'containing' descriptor.
+     * For Module- or PackageFragmentDescriptors, it returns the descriptor for the parent fqName of the current
+     * descriptors fqName e.g. for the fqName `test.sample.main`, the parent fqName would be `test.sample`.
+     */
+    private fun getParentDescriptor(descriptor: DeclarationDescriptor): DeclarationDescriptor? = when(descriptor) {
+        is ModuleDescriptor -> {
+            val pkg = descriptor.getPackage(descriptor.fqNameSafe).fragments[0]
+            descriptor.getPackage(pkg.fqName.parent()).fragments[0]
+        }
+        is PackageFragmentDescriptor -> {
+            if (descriptor.fqNameSafe.isRoot) null
+            else descriptor.module.getPackage(descriptor.fqNameSafe.parent())
+        }
+        else -> descriptor.containingDeclaration
+    }
+
+    /**
+     * generates the synthetic class name from the source file
+     * https://kotlinlang.org/docs/java-to-kotlin-interop.html#package-level-functions
+     */
     private fun sourceFileToClassSymbol(file: SourceFile) = file.name!!.replace(".kt", "Kt")
 
     private fun semanticdbDescriptor(desc: DeclarationDescriptor): SemanticdbSymbolDescriptor {
@@ -60,9 +83,9 @@ class GlobalSymbolsCache {
             is ValueParameterDescriptor -> SemanticdbSymbolDescriptor(Kind.PARAMETER, desc.name.toString())
             is VariableDescriptor -> SemanticdbSymbolDescriptor(Kind.TERM, desc.name.toString())
             is TypeAliasDescriptor -> SemanticdbSymbolDescriptor(Kind.TYPE, desc.name.toString())
-            is PackageFragmentDescriptor -> SemanticdbSymbolDescriptor(Kind.PACKAGE, desc.name.toString())
+            is PackageFragmentDescriptor, is PackageViewDescriptor -> SemanticdbSymbolDescriptor(Kind.PACKAGE, desc.name.toString())
             else -> {
-                println("unknown descriptor kind ${desc.javaClass.simpleName}")
+                err.println("unknown descriptor kind ${desc.javaClass.simpleName}")
                 SemanticdbSymbolDescriptor.NONE
             }
         }
@@ -90,9 +113,11 @@ class GlobalSymbolsCache {
             else -> "(+$index)"
         }
     }
+
+    override fun iterator(): Iterator<Symbol> = globals.values.iterator()
 }
 
-class LocalSymbolsCache {
+class LocalSymbolsCache: Iterable<Symbol> {
     private val symbols = HashMap<DeclarationDescriptor, Symbol>()
     private var localsCounter = 0
 
@@ -107,4 +132,6 @@ class LocalSymbolsCache {
         symbols[desc] = result
         return result
     }
+
+    override fun iterator(): Iterator<Symbol> = symbols.values.iterator()
 }
