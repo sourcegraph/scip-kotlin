@@ -18,8 +18,10 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
 @ExperimentalContracts
-class GlobalSymbolsCache: Iterable<Symbol> {
-    private val globals = HashMap<DeclarationDescriptor, Symbol>()
+class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
+    private val globals =
+        if (testing) LinkedHashMap<DeclarationDescriptor, Symbol>()
+        else HashMap<DeclarationDescriptor, Symbol>()
     lateinit var resolver: DescriptorResolver
 
     operator fun get(descriptor: DeclarationDescriptor, locals: LocalSymbolsCache): Symbol {

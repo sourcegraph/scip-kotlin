@@ -6,10 +6,8 @@ import com.tschuchort.compiletesting.SourceFile
 import io.kotest.assertions.asClue
 import io.kotest.assertions.assertSoftly
 import io.kotest.assertions.throwables.shouldNotThrowAny
-import io.kotest.assertions.withClue
-import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainAll
-import io.kotest.matchers.collections.shouldContainAnyOf
+import io.kotest.matchers.collections.shouldContainInOrder
 import io.kotest.matchers.shouldBe
 import org.jetbrains.kotlin.analyzer.AnalysisResult
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
@@ -25,90 +23,74 @@ import org.jetbrains.kotlin.types.TypeUtils
 import org.jetbrains.kotlin.types.isNullable
 import org.jetbrains.kotlin.types.typeUtil.isTypeParameter
 import org.jetbrains.kotlin.types.typeUtil.makeNotNullable
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.Arguments
-import org.junit.jupiter.params.provider.MethodSource
+import org.junit.jupiter.api.DynamicTest
+import org.junit.jupiter.api.DynamicTest.*
+import org.junit.jupiter.api.TestFactory
 import kotlin.contracts.ExperimentalContracts
 import kotlin.test.Test
 
 @ExperimentalContracts
 class SymbolsCacheTest {
-    @Test
-    fun `method disambiguator`() {
-        val globals = GlobalSymbolsCache()
-        val locals = LocalSymbolsCache()
-
-        val analyzer = object: ComponentRegistrar {
-            override fun registerProjectComponents(project: MockProject, configuration: CompilerConfiguration) {
-                AnalysisHandlerExtension.registerExtension(project, object : AnalysisHandlerExtension {
-                    override fun analysisCompleted(project: Project, module: ModuleDescriptor, bindingTrace: BindingTrace, files: Collection<KtFile>): AnalysisResult? {
-                        val resolver = DescriptorResolver(bindingTrace).also { globals.resolver = it }
-                        object : KtTreeVisitorVoid() {
-                            override fun visitNamedFunction(function: KtNamedFunction) {
-                                val desc = resolver.fromDeclaration(function)!!
-                                globals[desc, locals]
-                                super.visitNamedFunction(function)
-                            }
-
-                            override fun visitParameter(parameter: KtParameter) {
-                                val desc = resolver.fromDeclaration(parameter)!!
-                                globals[desc, locals]
-                                super.visitParameter(parameter)
-                            }
-                        }.visitKtFile(files.first())
-
-                        return super.analysisCompleted(project, module, bindingTrace, files)
-                    }
-                })
-            }
-        }
-
-        val source = SourceFile.kotlin("Banana.kt", """
-            @file:Suppress("UNUSED_VARIABLE", "UNUSED_PARAMETER")
-            package test
-
-            import kotlin.collections.Map
-
-            class Test {
-                fun sample() {}
-
-                fun sample(s: String) {}
-            }
+    data class ExpectedSymbols(val source: String, val globalChecks: Array<Symbol>, val localsCount: Int? = null)
     
-            fun sampletext() {}
-            
-            val searchQueryGenerators = mapOf<String, (options: List<String>) -> String>(
-                "search" to { it[0] },
-                "raw-search" to {
-                    it.fold("") { acc, next ->
-                        acc + next
-                    }
+    @TestFactory
+    fun `method disambiguator`() =
+        listOf(
+            ExpectedSymbols("""
+                class Test {
+                    fun sample() {}
+                    fun sample(x: Int) {}
                 }
+                """.trimIndent(),
+                arrayOf("Test#sample().".symbol(), "Test#sample(+1).".symbol())),
+            ExpectedSymbols("""
+                class Test(val x: Int) {}
+                """.trimIndent(),
+                arrayOf("Test#`<init>`().(x)".symbol())),
+            ExpectedSymbols("""
+                class Test(val x: Int) {
+                    constructor(y: Long): this(y.toInt())
+                    constructor(z: String): this(z.toInt())
+                }
+                """.trimIndent(),
+                arrayOf("Test#`<init>`().(x)".symbol(), "Test#`<init>`(+1).(y)".symbol()))
+        ).mapIndexed { index, (source, globalChecks) ->
+            dynamicTest("File number ${index + 1}: ${source.lines().first()}") {
+                checkContainsExpectedSymbols(source, globalChecks)
+            }
+        }
+
+    @TestFactory
+    fun `check package symbols`() =
+        listOf(
+            ExpectedSymbols("""
+                package main
+                
+                class Test {}
+                """.trimIndent(),
+                arrayOf("main/Test#".symbol()), 0
+            ),
+            ExpectedSymbols("""
+                package test.sample.main
+                
+                class Test {}
+                """.trimIndent(),
+                arrayOf("test/sample/main/Test#".symbol()), 0
+            ),
+            ExpectedSymbols("""
+                class Test {}
+                """.trimIndent(),
+                arrayOf("Test#".symbol()), 0
             )
-        """.trimIndent())
-
-        val compilation = KotlinCompilation().apply {
-            sources = listOf(source)
-            compilerPlugins = listOf(analyzer)
-            verbose = false
+        ).mapIndexed { index, (source, globalChecks, localsCount) ->
+            dynamicTest("File number ${index + 1}: ${source.lines().first()}") {
+                checkContainsExpectedSymbols(source, globalChecks, localsCount)
+            }
         }
-
-        val result = shouldNotThrowAny { compilation.compile() }
-        result.exitCode shouldBe KotlinCompilation.ExitCode.OK
-        println()
-        locals.iterator.forEach {
-            println("${it.key.javaClass} ${it.key} ${it.value}")
-        }
-        locals.size shouldBe 3
-    }
-
-    @ParameterizedTest
-    @MethodSource("packageTestPairs")
-    fun `check package symbols`(source: String, globalChecks: Array<Symbol>, localsCount: Int) = checkContainsExpectedSymbols(source, globalChecks, localsCount)
 
     private fun checkContainsExpectedSymbols(source: String, globalChecks: Array<Symbol>, localsCount: Int? = null) {
         val source = SourceFile.kotlin("Test.kt", source)
-        val globals = GlobalSymbolsCache()
+        val globals = GlobalSymbolsCache(testing = true)
         val locals = LocalSymbolsCache()
         val analyzer = allVisitorAnalyzer(globals, locals)
         val compilation = KotlinCompilation().apply {
@@ -119,37 +101,9 @@ class SymbolsCacheTest {
         val result = shouldNotThrowAny { compilation.compile() }
         result.exitCode shouldBe KotlinCompilation.ExitCode.OK
         assertSoftly(globals) {
-            (this.iterator().asSequence().toList()).asClue {
-                it.shouldContainAll(*globalChecks)
-            }
+            this.iterator().asSequence().toList().shouldContainInOrder(*globalChecks)
         }
         localsCount?.also { locals.size shouldBe it }
-    }
-
-    companion object {
-        @JvmStatic
-        fun packageTestPairs() = listOf(
-            Arguments.of("""
-                package main
-                
-                class Test {}
-                """.trimIndent(),
-                arrayOf("main/Test#".symbol()), 0
-            ),
-            Arguments.of("""
-                package test.sample.main
-                
-                class Test {}
-                """.trimIndent(),
-                arrayOf("tet/sample/main/Test#".symbol()), 0
-            ),
-            Arguments.of("""
-                class Test {}
-                """.trimIndent(),
-                arrayOf("Test#".symbol()), 0
-            )
-        )
-
     }
 }
 
