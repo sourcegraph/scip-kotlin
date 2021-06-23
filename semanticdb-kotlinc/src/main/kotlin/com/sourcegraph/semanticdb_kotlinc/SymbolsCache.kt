@@ -97,8 +97,19 @@ class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
         val methods = when(val ownerDecl = desc.containingDeclaration) {
             is PackageFragmentDescriptor ->
                 ownerDecl.getMemberScope().getDescriptorsFiltered(DescriptorKindFilter.FUNCTIONS).map { it as CallableMemberDescriptor }
-            is ClassDescriptorWithResolutionScopes ->
-                ownerDecl.declaredCallableMembers.filter { it.name == desc.name }
+            is ClassDescriptorWithResolutionScopes -> {
+                when (desc) {
+                    is ClassConstructorDescriptor -> {
+                        val constructors = (desc.containingDeclaration as ClassDescriptorWithResolutionScopes).constructors as ArrayList
+                        // primary constructor always seems to be last, so move it to the start. TODO is this correct? in what order does Java see them?
+                        // if (constructors.last().isPrimary) {
+                        //     constructors.add(0, constructors.removeLast())
+                        // }
+                        constructors
+                    }
+                    else -> ownerDecl.declaredCallableMembers.filter { it.name == desc.name }
+                }
+            }
             is FunctionDescriptor ->
                 ownerDecl.toSourceElement.getPsi()!!.
                     children.first { it is KtBlockExpression }.
@@ -111,7 +122,7 @@ class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
 
         return when(val index = methods.indexOf(desc)) {
             0 -> "()"
-            //-1 -> throw IllegalStateException("failed to find method in parent:\n\t\tMethod: ${desc}\n\t\tParent: ${desc.containingDeclaration}")
+            -1 -> throw IllegalStateException("failed to find method in parent:\n\t\tMethod: ${desc}\n\t\tParent: ${desc.containingDeclaration}")
             else -> "(+$index)"
         }
     }
