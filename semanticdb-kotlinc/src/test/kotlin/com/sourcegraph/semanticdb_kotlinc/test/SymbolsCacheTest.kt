@@ -53,7 +53,15 @@ class SymbolsCacheTest {
                     constructor(z: String): this(z.toInt())
                 }
                 """.trimIndent(),
-                arrayOf("Test#`<init>`().(x)".symbol(), "Test#`<init>`(+1).(y)".symbol()))
+                arrayOf("Test#`<init>`(+2).(x)".symbol(), "Test#`<init>`().(y)".symbol(), "Test#`<init>`(+1).(z)".symbol())),
+            ExpectedSymbols("""
+                class Test {
+                    fun sample() {}
+                    fun test() {}
+                    fun test(x: Int) {}
+                }
+                """.trimIndent(),
+                arrayOf("Test#test().".symbol(), "Test#test(+1).".symbol()))
         ).mapIndexed { index, (source, globalChecks) ->
             dynamicTest("File number ${index + 1}: ${source.lines().first()}") {
                 checkContainsExpectedSymbols(source, globalChecks)

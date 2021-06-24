@@ -94,7 +94,8 @@ class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
     }
 
     private fun methodDisambiguator(desc: FunctionDescriptor): String {
-        val methods = when(val ownerDecl = desc.containingDeclaration) {
+        val ownerDecl = desc.containingDeclaration
+        val methods = when(ownerDecl) {
             is PackageFragmentDescriptor ->
                 ownerDecl.getMemberScope().getDescriptorsFiltered(DescriptorKindFilter.FUNCTIONS).map { it as CallableMemberDescriptor }
             is ClassDescriptorWithResolutionScopes -> {
@@ -107,7 +108,7 @@ class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
                         // }
                         constructors
                     }
-                    else -> ownerDecl.declaredCallableMembers.filter { it.name == desc.name }
+                    else -> ownerDecl.declaredCallableMembers
                 }
             }
             is FunctionDescriptor ->
@@ -115,14 +116,14 @@ class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
                     children.first { it is KtBlockExpression }.
                     children.filterIsInstance<KtNamedFunction>().
                     map { resolver.fromDeclaration(it)!! as CallableMemberDescriptor }
-            else -> throw IllegalStateException("unexpected owner decl type ${ownerDecl.javaClass}:\n\t\tMethod: ${desc}\n\t\tParent: ${desc.containingDeclaration}")
-        } as ArrayList<CallableMemberDescriptor>
+            else -> throw IllegalStateException("unexpected owner decl type '${ownerDecl.javaClass}':\n\t\tMethod: ${desc}\n\t\tParent: $ownerDecl")
+        }.filter { it.name == desc.name } as ArrayList<CallableMemberDescriptor>
 
         methods.sortWith { m1, m2 -> compareValues(m1.dispatchReceiverParameter == null, m2.dispatchReceiverParameter == null) }
 
         return when(val index = methods.indexOf(desc)) {
             0 -> "()"
-            -1 -> throw IllegalStateException("failed to find method in parent:\n\t\tMethod: ${desc}\n\t\tParent: ${desc.containingDeclaration}")
+            -1 -> throw IllegalStateException("failed to find method in parent:\n\t\tMethod: ${desc}\n\t\tParent: ${ownerDecl.name}\n\t\tMethods: ${methods.joinToString("\n\t\t\t ")}")
             else -> "(+$index)"
         }
     }
