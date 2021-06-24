@@ -45,6 +45,12 @@ class TextDocumentBuildingVisitor(
         return null
     }
 
+    override fun visitCallExpression(expression: KtCallExpression, u: Unit?): Symbol? {
+        val symbol = super.visitCallExpression(expression, Unit)
+        emitter.emitSemanticdbData(symbol!!, expression, Role.REFERENCE)
+        return null
+    }
+
     override fun visitParameter(parameter: KtParameter, u: Unit?): Symbol? {
         val symbol = super.visitParameter(parameter, Unit)
         emitter.emitSemanticdbData(symbol!!, parameter, Role.DEFINITION)
@@ -102,6 +108,13 @@ open class SymbolGenVisitor(
         return symbol
     }
 
+    override fun visitCallExpression(expression: KtCallExpression, u: Unit?): Symbol? {
+        val desc = resolver.fromReference(expression.calleeExpression as KtReferenceExpression)!!
+        val symbol = globals[desc, locals]
+        println("CALL EXPR $expression ${desc.name} $symbol")
+        super.visitCallExpression(expression, Unit)
+        return symbol
+    }
 
     override fun visitParameter(parameter: KtParameter, u: Unit?): Symbol? {
         val desc = resolver.fromDeclaration(parameter)!!
