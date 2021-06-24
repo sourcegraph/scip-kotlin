@@ -22,12 +22,12 @@ class AnalyzerTest {
     fun `basic test`(@TempDir path: Path) {
         val buildPath = File(path.resolve("build").toString()).apply { mkdir() }
 
-        val source = SourceFile.kotlin("Banana.kt", """
+        val source = SourceFile.testKt("""
             package sample
             class Banana {
                 fun foo() { }
             }
-        """.trimIndent())
+        """)
 
         lateinit var document: TextDocument
         val callback = { it: TextDocument -> document = it }
@@ -67,7 +67,7 @@ class AnalyzerTest {
     fun `learn x in y test`(@TempDir path: Path) {
         val buildPath = File(path.resolve("build").toString()).apply { mkdir() }
 
-        val source = SourceFile.kotlin("Full.kt", """
+        val source = SourceFile.testKt("""
             @file:Suppress("UNUSED_VARIABLE", "UNUSED_PARAMETER", "NAME_SHADOWING", "ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE", "UNUSED_VALUE")
             package sample
 
@@ -477,7 +477,7 @@ class AnalyzerTest {
                 counter1() // => The value of the counter is 36
                 println(-counter2) // => Counter(value=-5)
             }
-        """.trimIndent())
+        """)
 
         lateinit var document: TextDocument
         val callback = { it: TextDocument -> document = it }
