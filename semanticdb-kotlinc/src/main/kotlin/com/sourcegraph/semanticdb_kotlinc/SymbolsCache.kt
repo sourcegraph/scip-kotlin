@@ -3,6 +3,8 @@ package com.sourcegraph.semanticdb_kotlinc
 import com.sourcegraph.semanticdb_kotlinc.SemanticdbSymbolDescriptor.Kind
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.impl.AnonymousFunctionDescriptor
+import org.jetbrains.kotlin.load.java.descriptors.JavaClassDescriptor
+import org.jetbrains.kotlin.load.kotlin.JvmPackagePartSource
 import org.jetbrains.kotlin.load.kotlin.toSourceElement
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
@@ -11,6 +13,7 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.module
 import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter
 import org.jetbrains.kotlin.resolve.scopes.getDescriptorsFiltered
 import org.jetbrains.kotlin.resolve.source.getPsi
+import org.jetbrains.kotlin.serialization.deserialization.descriptors.DeserializedSimpleFunctionDescriptor
 import java.lang.System.err
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -46,7 +49,7 @@ class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
             return locals + ownerDesc
 
         if ((descriptor is FunctionDescriptor || descriptor is VariableDescriptor) && ownerDesc is PackageFragmentDescriptor) {
-            owner = Symbol.createGlobal(owner, SemanticdbSymbolDescriptor(Kind.TYPE, sourceFileToClassSymbol(descriptor.toSourceElement.containingFile)))
+            owner = Symbol.createGlobal(owner, SemanticdbSymbolDescriptor(Kind.TYPE, sourceFileToClassSymbol(descriptor.toSourceElement.containingFile, descriptor)))
         }
 
         val semanticdbDescriptor = semanticdbDescriptor(descriptor)
@@ -75,7 +78,14 @@ class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
      * generates the synthetic class name from the source file
      * https://kotlinlang.org/docs/java-to-kotlin-interop.html#package-level-functions
      */
-    private fun sourceFileToClassSymbol(file: SourceFile) = file.name!!.replace(".kt", "Kt")
+    private fun sourceFileToClassSymbol(file: SourceFile, descriptor: DeclarationDescriptor): String = when(val name = file.name) {
+        null -> {
+            val jvmPackagePartSource = (descriptor as DeserializedSimpleFunctionDescriptor).containerSource as JvmPackagePartSource
+            jvmPackagePartSource.facadeClassName?.fqNameForClassNameWithoutDollars?.shortName()?.asString()
+                ?: jvmPackagePartSource.simpleName.asString()
+        }
+        else -> name.replace(".kt", "Kt")
+    }
 
     private fun semanticdbDescriptor(desc: DeclarationDescriptor): SemanticdbSymbolDescriptor {
         return when(desc) {
@@ -103,9 +113,7 @@ class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
                     is ClassConstructorDescriptor -> {
                         val constructors = (desc.containingDeclaration as ClassDescriptorWithResolutionScopes).constructors as ArrayList
                         // primary constructor always seems to be last, so move it to the start. TODO is this correct? in what order does Java see them?
-                        // if (constructors.last().isPrimary) {
-                        //     constructors.add(0, constructors.removeLast())
-                        // }
+                        // if (constructors.last().isPrimary) constructors.add(0, constructors.removeLast())
                         constructors
                     }
                     else -> ownerDecl.declaredCallableMembers
@@ -116,6 +124,16 @@ class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
                     children.first { it is KtBlockExpression }.
                     children.filterIsInstance<KtNamedFunction>().
                     map { resolver.fromDeclaration(it)!! as CallableMemberDescriptor }
+            is ClassDescriptor -> {
+                val methods = ownerDecl.unsubstitutedMemberScope.getContributedDescriptors().filterIsInstance<FunctionDescriptor>()
+                val staticMethods = ownerDecl.staticScope.getContributedDescriptors().filterIsInstance<FunctionDescriptor>()
+                val ctors = ownerDecl.constructors.toList()
+                val allFuncs = ArrayList<FunctionDescriptor>(methods.size + ctors.size + staticMethods.size)
+                allFuncs.addAll(ctors)
+                allFuncs.addAll(methods)
+                allFuncs.addAll(staticMethods)
+                allFuncs
+            }
             else -> throw IllegalStateException("unexpected owner decl type '${ownerDecl.javaClass}':\n\t\tMethod: ${desc}\n\t\tParent: $ownerDecl")
         }.filter { it.name == desc.name } as ArrayList<CallableMemberDescriptor>
 

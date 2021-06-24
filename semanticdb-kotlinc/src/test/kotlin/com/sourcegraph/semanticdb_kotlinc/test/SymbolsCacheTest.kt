@@ -82,11 +82,7 @@ class SymbolsCacheTest {
                 """),
                 listOf("TestKt#test().".symbol(), "TestKt#test(+1).(x)".symbol())
             )
-        ).map { (testName, source, expectedGlobals) ->
-            dynamicTest(testName) {
-                checkContainsExpectedSymbols(source, expectedGlobals)
-            }
-        }
+        ).mapCheckExpectedSymbols()
 
     @TestFactory
     fun `check package symbols`() =
@@ -116,27 +112,53 @@ class SymbolsCacheTest {
                 """),
                 listOf("Test#".symbol()), 0
             )
-        ).map { (testName, source, expectedGlobals, localsCount) ->
-            dynamicTest(testName) {
-                checkContainsExpectedSymbols(source, expectedGlobals, localsCount)
-            }
-        }
+        ).mapCheckExpectedSymbols()
 
-    private fun checkContainsExpectedSymbols(source: SourceFile, expectedGlobals: List<Symbol>, localsCount: Int? = null) {
-        val globals = GlobalSymbolsCache(testing = true)
-        val locals = LocalSymbolsCache()
-        val analyzer = symbolVisitorAnalyzer(globals, locals)
-        val compilation = KotlinCompilation().apply {
-            sources = listOf(source)
-            compilerPlugins = listOf(analyzer)
-            verbose = false
+    @TestFactory
+    fun `builtin symbols`() =
+        listOf(
+            ExpectedSymbols(
+                "builtin types",
+                SourceFile.testKt("""
+                    var x: Int = 1
+                    lateinit var y: Unit
+                    lateinit var z: Any
+                    lateinit var w: Nothing
+                """),
+                listOf("kotlin/Int#".symbol(), "kotlin/Unit#".symbol(), "kotlin/Any#".symbol(), "kotlin/Nothing#".symbol())
+            ),
+            ExpectedSymbols(
+                "builtin functions",
+                SourceFile.testKt(
+                    """
+                    val x = mapOf<Void, Void>()
+                    fun main() {
+                        println()
+                    }
+                """
+                ),
+                listOf("kotlin/collections/MapsKt#mapOf(+1).".symbol(), "kotlin/io/ConsoleKt#println().".symbol())
+            )
+        ).mapCheckExpectedSymbols()
+
+
+    companion object {
+        fun checkContainsExpectedSymbols(source: SourceFile, expectedGlobals: List<Symbol>, localsCount: Int? = null) {
+            val globals = GlobalSymbolsCache(testing = true)
+            val locals = LocalSymbolsCache()
+            val analyzer = symbolVisitorAnalyzer(globals, locals)
+            val compilation = KotlinCompilation().apply {
+                sources = listOf(source)
+                compilerPlugins = listOf(analyzer)
+                verbose = false
+            }
+            val result = shouldNotThrowAny { compilation.compile() }
+            result.exitCode shouldBe KotlinCompilation.ExitCode.OK
+            assertSoftly(globals) {
+                this.iterator().asSequence().toList().shouldContainInOrder(expectedGlobals)
+            }
+            localsCount?.also { locals.size shouldBe it }
         }
-        val result = shouldNotThrowAny { compilation.compile() }
-        result.exitCode shouldBe KotlinCompilation.ExitCode.OK
-        assertSoftly(globals) {
-            this.iterator().asSequence().toList().shouldContainInOrder(expectedGlobals)
-        }
-        localsCount?.also { locals.size shouldBe it }
     }
 }
 
