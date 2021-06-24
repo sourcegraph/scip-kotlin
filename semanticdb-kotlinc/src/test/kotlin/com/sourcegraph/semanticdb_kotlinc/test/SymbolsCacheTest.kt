@@ -100,7 +100,7 @@ class SymbolsCacheTest {
         val source = SourceFile.kotlin("Test.kt", source)
         val globals = GlobalSymbolsCache(testing = true)
         val locals = LocalSymbolsCache()
-        val analyzer = allVisitorAnalyzer(globals, locals)
+        val analyzer = symbolVisitorAnalyzer(globals, locals)
         val compilation = KotlinCompilation().apply {
             sources = listOf(source)
             compilerPlugins = listOf(analyzer)
@@ -116,64 +116,18 @@ class SymbolsCacheTest {
 }
 
 @ExperimentalContracts
-fun allVisitorAnalyzer(globals: GlobalSymbolsCache, locals: LocalSymbolsCache): ComponentRegistrar {
+fun symbolVisitorAnalyzer(globals: GlobalSymbolsCache, locals: LocalSymbolsCache): ComponentRegistrar {
     return object: ComponentRegistrar {
         override fun registerProjectComponents(project: MockProject, configuration: CompilerConfiguration) {
-            AnalysisHandlerExtension.registerExtension(project, object : AnalysisHandlerExtension {
-                override fun analysisCompleted(project: Project, module: ModuleDescriptor, bindingTrace: BindingTrace, files: Collection<KtFile>): AnalysisResult? {
+            AnalysisHandlerExtension.registerExtension(project, object: AnalysisHandlerExtension {
+                override fun analysisCompleted(
+                    project: Project,
+                    module: ModuleDescriptor,
+                    bindingTrace: BindingTrace,
+                    files: Collection<KtFile>
+                ): AnalysisResult? {
                     val resolver = DescriptorResolver(bindingTrace).also { globals.resolver = it }
-                    object : KtTreeVisitorVoid() {
-                        override fun visitClass(klass: KtClass) {
-                            val desc = resolver.fromDeclaration(klass)!!
-                            globals[desc, locals]
-                            super.visitClass(klass)
-                        }
-
-                        override fun visitNamedFunction(function: KtNamedFunction) {
-                            val desc = resolver.fromDeclaration(function)!!
-                            globals[desc, locals]
-                            super.visitNamedFunction(function)
-                        }
-
-                        override fun visitProperty(property: KtProperty) {
-                            val desc = resolver.fromDeclaration(property)!!
-                            globals[desc, locals]
-                            super.visitProperty(property)
-                        }
-
-                        override fun visitParameter(parameter: KtParameter) {
-                            val desc = resolver.fromDeclaration(parameter)!!
-                            globals[desc, locals]
-                            super.visitParameter(parameter)
-                        }
-
-                        override fun visitTypeParameter(parameter: KtTypeParameter) {
-                            val desc = resolver.fromDeclaration(parameter)!!
-                            globals[desc, locals]
-                            super.visitTypeParameter(parameter)
-                        }
-
-                        override fun visitTypeAlias(typeAlias: KtTypeAlias) {
-                            val desc = resolver.fromDeclaration(typeAlias)!!
-                            globals[desc, locals]
-                            super.visitTypeAlias(typeAlias)
-                        }
-
-                        override fun visitTypeReference(typeReference: KtTypeReference) {
-                            val type = resolver.fromTypeReference(typeReference).let {
-                                if (it.isNullable()) return@let it.makeNotNullable()
-                                else return@let it
-                            }
-                            val desc = if (!type.isTypeParameter()) {
-                                DescriptorUtils.getClassDescriptorForType(type)
-                            } else {
-                                TypeUtils.getTypeParameterDescriptorOrNull(type)!!
-                            }
-                            globals[desc, locals]
-                            super.visitTypeReference(typeReference)
-                        }
-                    }.visitKtFile(files.first())
-
+                    SymbolGenVisitor(resolver, globals, locals).visitKtFile(files.first(), Unit)
                     return super.analysisCompleted(project, module, bindingTrace, files)
                 }
             })

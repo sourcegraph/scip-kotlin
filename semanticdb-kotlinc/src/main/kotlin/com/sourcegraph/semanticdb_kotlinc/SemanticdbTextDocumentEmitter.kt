@@ -3,7 +3,6 @@ package com.sourcegraph.semanticdb_kotlinc
 import org.jetbrains.kotlin.idea.KotlinLanguage
 import com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrence.Role
 import org.jetbrains.kotlin.com.intellij.lang.java.JavaLanguage
-import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtFile
 import java.nio.file.Path
@@ -12,9 +11,7 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.text.Charsets.UTF_8
 
 @ExperimentalContracts
-class SemanticdbEmitter(
-    private val globals: GlobalSymbolsCache,
-    private val locals: LocalSymbolsCache,
+class SemanticdbTextDocumentEmitter(
     private val sourceroot: Path,
     private val file: KtFile,
     private val lineMap: LineMap
@@ -32,14 +29,14 @@ class SemanticdbEmitter(
         this.addAllSymbols(symbols)
     }
 
-    fun emitSemanticdbData(descriptor: DeclarationDescriptor, element: KtElement, role: Role) {
-        symbolOccurrence(descriptor, element, role)?.let(occurrences::add)
-        if (role == Role.DEFINITION) symbolInformation(descriptor, element).let(symbols::add)
+    fun emitSemanticdbData(symbol: Symbol, element: KtElement, role: Role) {
+        symbolOccurrence(symbol, element, role)?.let(occurrences::add)
+        if (role == Role.DEFINITION) symbolInformation(symbol, element).let(symbols::add)
     }
 
-    private fun symbolInformation(descriptor: DeclarationDescriptor, element: KtElement): Semanticdb.SymbolInformation {
+    private fun symbolInformation(symbol: Symbol, element: KtElement): Semanticdb.SymbolInformation {
         return SymbolInformation {
-            this.symbol = globals[descriptor, locals].symbol
+            this.symbol = symbol.toString()
             this.language = when(element.language) {
                 is KotlinLanguage -> Semanticdb.Language.KOTLIN
                 is JavaLanguage -> Semanticdb.Language.JAVA
@@ -48,14 +45,14 @@ class SemanticdbEmitter(
         }
     }
 
-    private fun symbolOccurrence(descriptor: DeclarationDescriptor, element: KtElement, role: Role): Semanticdb.SymbolOccurrence? {
+    private fun symbolOccurrence(symbol: Symbol, element: KtElement, role: Role): Semanticdb.SymbolOccurrence? {
         /*val symbol = when(val s = globals[descriptor, locals]) {
             Symbol.NONE -> return null
             else -> s
         }.symbol*/
 
         return SymbolOccurrence {
-            this.symbol = globals[descriptor, locals].symbol
+            this.symbol = symbol.toString()
             this.role = role
             this.range = semanticdbRange(element)
         }

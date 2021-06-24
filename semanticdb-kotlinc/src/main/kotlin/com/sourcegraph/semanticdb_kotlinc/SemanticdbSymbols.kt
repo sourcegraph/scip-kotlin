@@ -1,9 +1,9 @@
 package com.sourcegraph.semanticdb_kotlinc
 
 @JvmInline
-value class Symbol(val symbol: String) {
+value class Symbol(private val symbol: String) {
     companion object {
-        val NONE = Symbol("");
+        val NONE = Symbol("")
         val ROOT_PACKAGE = Symbol("_root_/")
         val EMPTY_PACKAGE = Symbol("_empty_/")
 
@@ -19,6 +19,8 @@ value class Symbol(val symbol: String) {
     fun isGlobal() = !isLocal()
 
     fun isLocal() = symbol.startsWith("local")
+
+    override fun toString(): String = symbol
 }
 
 fun String.symbol(): Symbol = Symbol(this)
