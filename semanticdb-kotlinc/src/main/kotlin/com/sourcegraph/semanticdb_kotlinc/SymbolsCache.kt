@@ -121,7 +121,8 @@ class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
 
         methods.sortWith { m1, m2 -> compareValues(m1.dispatchReceiverParameter == null, m2.dispatchReceiverParameter == null) }
 
-        return when(val index = methods.indexOf(desc)) {
+        // need to get original to get method without type projections
+        return when(val index = methods.indexOf(desc.original)) {
             0 -> "()"
             -1 -> throw IllegalStateException("failed to find method in parent:\n\t\tMethod: ${desc}\n\t\tParent: ${ownerDecl.name}\n\t\tMethods: ${methods.joinToString("\n\t\t\t ")}")
             else -> "(+$index)"
