@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.load.kotlin.JvmPackagePartSource
 import org.jetbrains.kotlin.load.kotlin.toSourceElement
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
+import org.jetbrains.kotlin.resolve.ImportedFromObjectCallableDescriptor
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
 import org.jetbrains.kotlin.resolve.descriptorUtil.module
 import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter
@@ -120,6 +121,8 @@ class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
         val originalDesc = when(desc) {
             // if is a TypeAliasConstructorDescriptor, unwrap to get the descriptor of the underlying type. So much ceremony smh
             is TypeAliasConstructorDescriptor -> desc.underlyingConstructorDescriptor
+            // kotlin equivalent of static import
+            is ImportedFromObjectCallableDescriptor<*> -> desc.callableFromObject
             else -> desc.original
         }
 
