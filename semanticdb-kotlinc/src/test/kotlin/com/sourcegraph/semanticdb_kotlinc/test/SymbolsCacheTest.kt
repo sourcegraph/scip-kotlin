@@ -158,6 +158,18 @@ class SymbolsCacheTest {
             )
         ).mapCheckExpectedSymbols()
 
+    @TestFactory
+    fun `random scratchpad`() = listOf(
+        ExpectedSymbols(
+            "asdf",
+            SourceFile.testKt(
+                """
+                val occurrences = arrayOf<String>()
+            """
+            ), listOf("kotlin/LibraryKt#arrayOf().".symbol())
+        )
+    ).mapCheckExpectedSymbols()
+
     companion object {
         fun checkContainsExpectedSymbols(source: SourceFile, expectedGlobals: List<Symbol>, localsCount: Int? = null) {
             val globals = GlobalSymbolsCache(testing = true)

@@ -1,6 +1,7 @@
 package com.sourcegraph.semanticdb_kotlinc
 
 import com.sourcegraph.semanticdb_kotlinc.SemanticdbSymbolDescriptor.Kind
+import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.impl.AnonymousFunctionDescriptor
 import org.jetbrains.kotlin.load.java.descriptors.JavaClassDescriptor
@@ -49,6 +50,7 @@ class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
         if (ownerDesc.isObjectDeclaration() || owner.isLocal() || ownerDesc.isLocalVariable() || ownerDesc is AnonymousFunctionDescriptor || descriptor.isLocalVariable())
             return locals + ownerDesc
 
+        // if is a top-level function or variable, Kotlin creates a wrapping class
         if ((descriptor is FunctionDescriptor || descriptor is VariableDescriptor) && ownerDesc is PackageFragmentDescriptor) {
             owner = Symbol.createGlobal(owner, SemanticdbSymbolDescriptor(Kind.TYPE, sourceFileToClassSymbol(descriptor.toSourceElement.containingFile, descriptor)))
         }
@@ -81,9 +83,14 @@ class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
      */
     private fun sourceFileToClassSymbol(file: SourceFile, descriptor: DeclarationDescriptor): String = when(val name = file.name) {
         null -> {
-            val jvmPackagePartSource = (descriptor as DescriptorWithContainerSource).containerSource as JvmPackagePartSource
+            // TODO: see how its referenced on Java side
+            if (KotlinBuiltIns.isBuiltIn(descriptor)) "LibraryKt"
+            else {
+                val jvmPackagePartSource =
+                    (descriptor as DescriptorWithContainerSource).containerSource as JvmPackagePartSource
             jvmPackagePartSource.facadeClassName?.fqNameForClassNameWithoutDollars?.shortName()?.asString()
                 ?: jvmPackagePartSource.simpleName.asString()
+        }
         }
         else -> name.replace(".kt", "Kt")
     }
