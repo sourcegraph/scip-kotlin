@@ -81,6 +81,28 @@ class SymbolsCacheTest {
                     fun test(x: Int) {}
                 """),
                 listOf("TestKt#test().".symbol(), "TestKt#test(+1).(x)".symbol())
+            ),
+            ExpectedSymbols(
+                "Annotations incl annotation type alias",
+                SourceFile.testKt("""
+                    import kotlin.contracts.ExperimentalContracts
+                    import kotlin.test.Test
+
+                    @ExperimentalContracts   
+                    class Banaan {
+                        @Test
+                        fun test() {}                   
+                   } 
+                """),
+                listOf("kotlin/contracts/ExperimentalContracts#".symbol(), "kotlin/test/Test#".symbol())
+            ),
+            ExpectedSymbols(
+                "Method call with type parameters",
+                SourceFile.testKt("""
+                    import org.junit.jupiter.api.io.TempDir
+                    val burger = LinkedHashMap<String, TempDir>() 
+                """),
+                listOf("kotlin/collection/TypeAliasesKt#LinkedHashMap#`<init>`().".symbol())
             )
         ).mapCheckExpectedSymbols()
 
@@ -177,6 +199,7 @@ class SymbolsCacheTest {
             val analyzer = symbolVisitorAnalyzer(globals, locals)
             val compilation = KotlinCompilation().apply {
                 sources = listOf(source)
+                inheritClassPath = true
                 compilerPlugins = listOf(analyzer)
                 verbose = false
             }

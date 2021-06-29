@@ -4,7 +4,7 @@ import com.sourcegraph.semanticdb_kotlinc.SemanticdbSymbolDescriptor.Kind
 import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.impl.AnonymousFunctionDescriptor
-import org.jetbrains.kotlin.load.java.descriptors.JavaClassDescriptor
+import org.jetbrains.kotlin.descriptors.impl.TypeAliasConstructorDescriptor
 import org.jetbrains.kotlin.load.kotlin.JvmPackagePartSource
 import org.jetbrains.kotlin.load.kotlin.toSourceElement
 import org.jetbrains.kotlin.psi.KtBlockExpression
@@ -15,7 +15,7 @@ import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter
 import org.jetbrains.kotlin.resolve.scopes.getDescriptorsFiltered
 import org.jetbrains.kotlin.resolve.source.getPsi
 import org.jetbrains.kotlin.serialization.deserialization.descriptors.DescriptorWithContainerSource
-import org.jetbrains.kotlin.serialization.deserialization.descriptors.DeserializedSimpleFunctionDescriptor
+import org.jetbrains.kotlin.types.TypeUtils
 import java.lang.System.err
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -113,7 +113,25 @@ class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
 
     private fun methodDisambiguator(desc: FunctionDescriptor): String {
         val ownerDecl = desc.containingDeclaration
-        val methods = when(ownerDecl) {
+        val methods = getAllMethods(desc, ownerDecl).filter { it.name == desc.name } as ArrayList<CallableMemberDescriptor>
+
+        methods.sortWith { m1, m2 -> compareValues(m1.dispatchReceiverParameter == null, m2.dispatchReceiverParameter == null) }
+
+        val originalDesc = when(desc) {
+            // if is a TypeAliasConstructorDescriptor, unwrap to get the descriptor of the underlying type. So much ceremony smh
+            is TypeAliasConstructorDescriptor -> desc.underlyingConstructorDescriptor
+            else -> desc.original
+        }
+
+        // need to get original to get method without type projections
+        return when(val index = methods.indexOf(originalDesc)) {
+            0 -> "()"
+            -1 -> throw IllegalStateException("failed to find method in parent:\n\t\tMethod: ${originalDesc}\n\t\tParent: ${ownerDecl.name}\n\t\tMethods: ${methods.joinToString("\n\t\t\t ")}")
+            else -> "(+$index)"
+        }
+    }
+
+    private fun getAllMethods(desc: FunctionDescriptor, ownerDecl: DeclarationDescriptor): Collection<CallableMemberDescriptor> = when(ownerDecl) {
             is PackageFragmentDescriptor ->
                 ownerDecl.getMemberScope().getDescriptorsFiltered(DescriptorKindFilter.FUNCTIONS).map { it as CallableMemberDescriptor }
             is ClassDescriptorWithResolutionScopes -> {
@@ -133,6 +151,7 @@ class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
                     children.filterIsInstance<KtNamedFunction>().
                     map { resolver.fromDeclaration(it)!! as CallableMemberDescriptor }
             is ClassDescriptor -> {
+            // Do we have to go recursively? https://sourcegraph.com/github.com/JetBrains/kotlin/-/blob/idea/src/org/jetbrains/kotlin/idea/actions/generate/utils.kt?L32:5
                 val methods = ownerDecl.unsubstitutedMemberScope.getContributedDescriptors().filterIsInstance<FunctionDescriptor>()
                 val staticMethods = ownerDecl.staticScope.getContributedDescriptors().filterIsInstance<FunctionDescriptor>()
                 val ctors = ownerDecl.constructors.toList()
@@ -142,17 +161,11 @@ class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
                 allFuncs.addAll(staticMethods)
                 allFuncs
             }
-            else -> throw IllegalStateException("unexpected owner decl type '${ownerDecl.javaClass}':\n\t\tMethod: ${desc}\n\t\tParent: $ownerDecl")
-        }.filter { it.name == desc.name } as ArrayList<CallableMemberDescriptor>
-
-        methods.sortWith { m1, m2 -> compareValues(m1.dispatchReceiverParameter == null, m2.dispatchReceiverParameter == null) }
-
-        // need to get original to get method without type projections
-        return when(val index = methods.indexOf(desc.original)) {
-            0 -> "()"
-            -1 -> throw IllegalStateException("failed to find method in parent:\n\t\tMethod: ${desc}\n\t\tParent: ${ownerDecl.name}\n\t\tMethods: ${methods.joinToString("\n\t\t\t ")}")
-            else -> "(+$index)"
+        is TypeAliasDescriptor -> {
+            // We get the underlying class descriptor and restart the process recursively
+            getAllMethods(desc, TypeUtils.getClassDescriptor(ownerDecl.underlyingType)!!)
         }
+            else -> throw IllegalStateException("unexpected owner decl type '${ownerDecl.javaClass}':\n\t\tMethod: ${desc}\n\t\tParent: $ownerDecl")
     }
 
     override fun iterator(): Iterator<Symbol> = globals.values.iterator()
