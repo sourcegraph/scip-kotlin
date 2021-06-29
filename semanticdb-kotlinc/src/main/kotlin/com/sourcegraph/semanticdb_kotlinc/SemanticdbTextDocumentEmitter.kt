@@ -37,6 +37,7 @@ class SemanticdbTextDocumentEmitter(
     private fun symbolInformation(symbol: Symbol, element: KtElement): Semanticdb.SymbolInformation {
         return SymbolInformation {
             this.symbol = symbol.toString()
+            this.displayName = element.name ?: element.text
             this.language = when(element.language) {
                 is KotlinLanguage -> Semanticdb.Language.KOTLIN
                 is JavaLanguage -> Semanticdb.Language.JAVA
