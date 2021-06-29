@@ -13,6 +13,7 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.module
 import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter
 import org.jetbrains.kotlin.resolve.scopes.getDescriptorsFiltered
 import org.jetbrains.kotlin.resolve.source.getPsi
+import org.jetbrains.kotlin.serialization.deserialization.descriptors.DescriptorWithContainerSource
 import org.jetbrains.kotlin.serialization.deserialization.descriptors.DeserializedSimpleFunctionDescriptor
 import java.lang.System.err
 import kotlin.collections.ArrayList
@@ -80,7 +81,7 @@ class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
      */
     private fun sourceFileToClassSymbol(file: SourceFile, descriptor: DeclarationDescriptor): String = when(val name = file.name) {
         null -> {
-            val jvmPackagePartSource = (descriptor as DeserializedSimpleFunctionDescriptor).containerSource as JvmPackagePartSource
+            val jvmPackagePartSource = (descriptor as DescriptorWithContainerSource).containerSource as JvmPackagePartSource
             jvmPackagePartSource.facadeClassName?.fqNameForClassNameWithoutDollars?.shortName()?.asString()
                 ?: jvmPackagePartSource.simpleName.asString()
         }

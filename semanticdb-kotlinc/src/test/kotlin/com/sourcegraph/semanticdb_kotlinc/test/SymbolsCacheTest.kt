@@ -141,6 +141,22 @@ class SymbolsCacheTest {
             )
         ).mapCheckExpectedSymbols()
 
+    @TestFactory
+    fun `reference expressions`() =
+        listOf(
+            ExpectedSymbols(
+                "dot qualified expression",
+                SourceFile.testKt("""
+                    import java.lang.System
+
+                    fun main() {
+                        System.err
+                    }
+                """
+                ),
+                listOf("java/lang/System#err.".symbol())
+            )
+        ).mapCheckExpectedSymbols()
 
     companion object {
         fun checkContainsExpectedSymbols(source: SourceFile, expectedGlobals: List<Symbol>, localsCount: Int? = null) {
