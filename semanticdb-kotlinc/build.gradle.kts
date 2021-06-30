@@ -14,6 +14,17 @@ repositories {
     mavenCentral()
 }
 
+// create a new sourceset for the subproject JavaExec tasks to consume as a runtime classpath
+// maybe we should move snapshot to its own subproject?
+val snapshots: SourceSet by sourceSets.creating {
+    java.srcDirs("src/snapshots/kotlin")
+}
+
+// create a new configuration independent from the one consumed by the shadowJar task
+val snapshotsImplementation: Configuration by configurations.getting {
+    extendsFrom(configurations.testImplementation.get())
+}
+
 dependencies {
     implementation(kotlin("stdlib"))
     compileOnly(kotlin("compiler-embeddable"))
@@ -32,6 +43,8 @@ dependencies {
     }.because("transitive dependencies introduce 1.4.31 to the classpath which conflicts, can't use testRuntimeOnly")
     testImplementation(kotlin("reflect"))
     testImplementation(kotlin("script-runtime", "1.5.0"))
+
+    snapshotsImplementation("com.sourcegraph", "lsif-java_2.13", "0.5.6")
 }
 
 tasks.withType<KotlinCompile> {
@@ -79,4 +92,66 @@ tasks.named<ShadowJar>("shadowJar").configure {
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
     freeCompilerArgs = listOf("-Xinline-classes")
+}
+
+subprojects {
+    apply(plugin = "org.jetbrains.kotlin.jvm")
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        implementation(kotlin("stdlib"))
+    }
+
+    afterEvaluate {
+        val semanticdbJar: Configuration by configurations.creating {
+            isCanBeConsumed = false
+            isCanBeResolved = true
+        }
+
+        dependencies {
+            semanticdbJar(project(mapOf(
+                "path" to ":" + this@afterEvaluate.projects.semanticdbKotlinc.name,
+                "configuration" to "semanticdbJar"
+            )))
+        }
+
+        tasks.withType<KotlinCompile> {
+            dependsOn(":${this@afterEvaluate.projects.semanticdbKotlinc.name}:shadowJar")
+            outputs.cacheIf { false } // we can probably improve this
+            val pluginJar = semanticdbJar.incoming.artifacts.artifactFiles.first().path
+            val targetroot = File(this@afterEvaluate.project.buildDir, "semanticdb-targetroot")
+            kotlinOptions {
+                jvmTarget = "1.8"
+                freeCompilerArgs = freeCompilerArgs + listOf(
+                    "-Xplugin=$pluginJar",
+                    "-P",
+                    "plugin:com.sourcegraph.lsif-kotlin:sourceroot=${projectDir.path}",
+                    "-P",
+                    "plugin:com.sourcegraph.lsif-kotlin:targetroot=${targetroot}"
+                )
+            }
+        }
+
+        // create a sourceset in which to output the generated snapshots.
+        // we may choose to not use sourcesets down the line
+        val generatedSnapshots: SourceSet by sourceSets.creating {
+            resources.srcDir("generatedSnapshots")
+        }
+
+        // for each subproject e.g. 'minimized', create a JavaExec task that invokes the snapshot creating main class
+        task("snapshots", JavaExec::class) {
+            dependsOn(project.getTasksByName("compileKotlin", false).first().path)
+            main = "com.sourcegraph.lsif_kotlin.SnapshotKt"
+            // this is required as the main class SnapshotKt is in this classpath
+            classpath = snapshots.runtimeClasspath
+            systemProperties = mapOf(
+                "sourceDir" to kotlin.sourceSets.main.get().kotlin.srcDirs.first(), // TODO support multiple sourcesets e.g. java+kotlin
+                "sourceroot" to projectDir.path,
+                "targetroot" to this@afterEvaluate.project.buildDir.resolve("semanticdb-targetroot"),
+                "snapshotDir" to generatedSnapshots.resources.srcDirs.first())
+        }
+    }
 }
