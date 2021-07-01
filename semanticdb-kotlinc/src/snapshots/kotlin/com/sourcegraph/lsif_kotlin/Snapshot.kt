@@ -10,24 +10,33 @@ import java.nio.file.Path
 import kotlin.io.path.Path
 import kotlin.io.path.relativeTo
 
-fun main() {
+fun main(args: Array<String>) {
     val snapshotDir = Path(System.getProperty("snapshotDir"))
-    val sourceDir = Path(System.getProperty("sourceDir"))
     val sourceroot = Path(System.getProperty("sourceroot"))
     val targetroot = Path(System.getProperty("targetroot"))
-    val files = SemanticdbFile.fromDirectory(sourceDir, sourceroot, targetroot)
 
-    files.forEach {
-        val snapshot = SemanticdbPrinters.printTextDocument(it.textDocument, CommentSyntax.default())
-        val relativeToSourceDir = it.javaPath.relativeTo(it.sourceDir)
-        val expectedOutPath = snapshotDir.resolve(relativeToSourceDir)
-        Files.createDirectories(expectedOutPath.parent)
-        Files.write(expectedOutPath, snapshot.toByteArray(StandardCharsets.UTF_8))
+    val sourceDirs = args.slice(1..args.size-1).map(::Path).map(Path::getParent)
+
+    sourceDirs.forEach { dir ->
+        val files = SemanticdbFile.fromDirectory(dir, sourceroot, targetroot)
+
+        files.forEach {
+            val sdbTextDocument = if (it.textDocument.text?.length == 0) {
+                it.textDocument.toBuilder().apply {
+                    this.text = Files.readString(sourceroot.resolve(it.relativePath))
+                }.build()
+            } else it.textDocument
+            val snapshot = SemanticdbPrinters.printTextDocument(sdbTextDocument, CommentSyntax.default())
+            val relativeToSourceDir = it.javaPath.relativeTo(it.sourceDir)
+            val expectedOutPath = snapshotDir.resolve(relativeToSourceDir)
+            Files.createDirectories(expectedOutPath.parent)
+            Files.write(expectedOutPath, snapshot.toByteArray(StandardCharsets.UTF_8))
+        }
     }
 }
 
 // because its not shipped as part of lsif_java jar...
-class SemanticdbFile(val sourceDir: Path, sourceroot: Path, relativePath: Path, targetroot: Path) {
+class SemanticdbFile(val sourceDir: Path, sourceroot: Path, val relativePath: Path, targetroot: Path) {
     companion object {
         fun fromDirectory(sourceDir: Path, sourceroot: Path, targetroot: Path): Sequence<SemanticdbFile> =
             sourceDir.toFile().walkTopDown().mapNotNull {

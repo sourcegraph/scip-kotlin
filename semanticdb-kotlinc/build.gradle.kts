@@ -103,6 +103,7 @@ subprojects {
 
     dependencies {
         implementation(kotlin("stdlib"))
+        implementation("com.sourcegraph", "semanticdb-javac", "0.5.6")
     }
 
     afterEvaluate {
@@ -118,21 +119,31 @@ subprojects {
             )))
         }
 
+        val sourceroot = projectDir.path
+        val targetroot = this@afterEvaluate.project.buildDir.resolve( "semanticdb-targetroot")
+
         tasks.withType<KotlinCompile> {
             dependsOn(":${this@afterEvaluate.projects.semanticdbKotlinc.name}:shadowJar")
             outputs.cacheIf { false } // we can probably improve this
             val pluginJar = semanticdbJar.incoming.artifacts.artifactFiles.first().path
-            val targetroot = File(this@afterEvaluate.project.buildDir, "semanticdb-targetroot")
             kotlinOptions {
                 jvmTarget = "1.8"
                 freeCompilerArgs = freeCompilerArgs + listOf(
                     "-Xplugin=$pluginJar",
                     "-P",
-                    "plugin:com.sourcegraph.lsif-kotlin:sourceroot=${projectDir.path}",
+                    "plugin:com.sourcegraph.lsif-kotlin:sourceroot=${sourceroot}",
                     "-P",
                     "plugin:com.sourcegraph.lsif-kotlin:targetroot=${targetroot}"
                 )
             }
+        }
+
+        tasks.withType<JavaCompile> {
+            dependsOn(":${this@afterEvaluate.projects.semanticdbKotlinc.name}:shadowJar")
+            outputs.cacheIf { false } // we can probably improve this
+            options.compilerArgs = options.compilerArgs + listOf(
+                "-Xplugin:semanticdb -sourceroot:$sourceroot -targetroot:$targetroot"
+            )
         }
 
         // create a sourceset in which to output the generated snapshots.
@@ -143,12 +154,18 @@ subprojects {
 
         // for each subproject e.g. 'minimized', create a JavaExec task that invokes the snapshot creating main class
         task("snapshots", JavaExec::class) {
-            dependsOn(project.getTasksByName("compileKotlin", false).first().path)
+            dependsOn(
+                project.getTasksByName("compileKotlin", false).first().path,
+                project.getTasksByName("compileJava", false).first().path
+            )
             main = "com.sourcegraph.lsif_kotlin.SnapshotKt"
             // this is required as the main class SnapshotKt is in this classpath
             classpath = snapshots.runtimeClasspath
+            args = listOf(
+                kotlin.sourceSets.main.get().kotlin.srcDirs.first().canonicalPath,
+                sourceSets.main.get().java.srcDirs.first().canonicalPath
+            )
             systemProperties = mapOf(
-                "sourceDir" to kotlin.sourceSets.main.get().kotlin.srcDirs.first(), // TODO support multiple sourcesets e.g. java+kotlin
                 "sourceroot" to projectDir.path,
                 "targetroot" to this@afterEvaluate.project.buildDir.resolve("semanticdb-targetroot"),
                 "snapshotDir" to generatedSnapshots.resources.srcDirs.first())
