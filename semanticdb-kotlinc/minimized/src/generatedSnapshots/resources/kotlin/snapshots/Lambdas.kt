@@ -5,7 +5,6 @@ val x = arrayListOf<String>().forEachIndexed { i, s ->
 //  ^ definition snapshots/LambdasKt#x. x
 //      ^^^^^^^^^^^ reference kotlin/collections/CollectionsKt#arrayListOf().
 //                  ^^^^^^ reference kotlin/String#
-//                  ^^^^^^ reference kotlin/String#
 //                            ^^^^^^^^^^^^^^ reference kotlin/collections/CollectionsKt#forEachIndexed(+9).
 //                                             ^ definition local0 i
 //                                                ^ definition local1 s
@@ -27,7 +26,9 @@ val z = y.let {
 //  ^ definition snapshots/LambdasKt#z. z
 //      ^ reference snapshots/LambdasKt#y.
 //        ^^^ reference kotlin/StandardKt#let().
+    val w = 1
+//      ^ definition local4 w
     it.size
-//  ^^ reference local4
+//  ^^ reference local5
 //     ^^^^ reference kotlin/ByteArray#size.
 }

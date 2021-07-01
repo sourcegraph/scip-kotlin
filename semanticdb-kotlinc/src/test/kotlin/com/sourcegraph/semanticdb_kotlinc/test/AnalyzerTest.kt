@@ -8,7 +8,8 @@ import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.PluginOption
 import com.tschuchort.compiletesting.SourceFile
 import io.kotest.assertions.assertSoftly
-import io.kotest.matchers.collections.shouldHaveElementAt
+import io.kotest.assertions.withClue
+import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
@@ -26,8 +27,7 @@ class AnalyzerTest {
             package sample
             class Banana {
                 fun foo() { }
-            }
-        """)
+            }""")
 
         lateinit var document: TextDocument
         val callback = { it: TextDocument -> document = it }
@@ -46,19 +46,24 @@ class AnalyzerTest {
 
         result.exitCode shouldBe KotlinCompilation.ExitCode.OK
         val occurrences = arrayOf(
+            SymbolOccurrence { role = Role.REFERENCE; symbol = "sample/"; range { startLine = 0; startCharacter = 8; endLine = 0; endCharacter = 14 } },
             SymbolOccurrence { role = Role.DEFINITION; symbol = "sample/Banana#"; range { startLine = 1; startCharacter = 6; endLine = 1; endCharacter = 12 } },
             SymbolOccurrence { role = Role.DEFINITION; symbol = "sample/Banana#foo()."; range { startLine = 2; startCharacter = 8; endLine = 2; endCharacter = 11 } }
         )
         assertSoftly(document.occurrencesList) {
-            occurrences.forEachIndexed(this::shouldHaveElementAt)
+            withClue(this) {
+                occurrences.forEach(::shouldContain)
+            }
         }
 
         val symbols = arrayOf(
-            SymbolInformation { symbol = "sample/Banana#"; language = KOTLIN },
-            SymbolInformation { symbol = "sample/Banana#foo()."; language = KOTLIN }
+            SymbolInformation { symbol = "sample/Banana#"; language = KOTLIN; displayName = "Banana" },
+            SymbolInformation { symbol = "sample/Banana#foo()."; language = KOTLIN; displayName = "foo" }
         )
         assertSoftly(document.symbolsList) {
-            symbols.forEachIndexed(this::shouldHaveElementAt)
+            withClue(this) {
+                symbols.forEach(::shouldContain)
+            }
         }
     }
 

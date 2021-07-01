@@ -3,11 +3,6 @@ package com.sourcegraph.semanticdb_kotlinc
 import com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrence.Role
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.psi.*
-import org.jetbrains.kotlin.resolve.DescriptorUtils
-import org.jetbrains.kotlin.types.TypeUtils
-import org.jetbrains.kotlin.types.isNullable
-import org.jetbrains.kotlin.types.typeUtil.isTypeParameter
-import org.jetbrains.kotlin.types.typeUtil.makeNotNullable
 import java.nio.file.Path
 import kotlin.contracts.ExperimentalContracts
 
@@ -66,12 +61,6 @@ class TextDocumentBuildingVisitor(
     override fun visitSimpleNameExpression(expression: KtSimpleNameExpression, data: Unit?): Symbol? {
         val symbol = super.visitSimpleNameExpression(expression, data) ?: return null
         emitter.emitSemanticdbData(symbol, expression, Role.REFERENCE)
-        return null
-    }
-
-    override fun visitTypeReference(typeReference: KtTypeReference, u: Unit?): Symbol? {
-        val symbol = super.visitTypeReference(typeReference, Unit)
-        emitter.emitSemanticdbData(symbol!!, typeReference, Role.REFERENCE)
         return null
     }
 }
@@ -141,22 +130,6 @@ open class SymbolGenVisitor(
         val symbol = globals[desc, locals]
         println("NAME EXPRESSION $expression ${expression.javaClass} ${desc.name} $symbol")
         super.visitSimpleNameExpression(expression, data)
-        return symbol
-    }
-
-    override fun visitTypeReference(typeReference: KtTypeReference, u: Unit?): Symbol? {
-        val type = resolver.fromTypeReference(typeReference).let {
-            if (it.isNullable()) return@let it.makeNotNullable()
-            else return@let it
-        }
-        val desc = if (!type.isTypeParameter()) {
-            DescriptorUtils.getClassDescriptorForType(type)
-        } else {
-            TypeUtils.getTypeParameterDescriptorOrNull(type)!!
-        }
-        val symbol = globals[desc, locals]
-        println("TYPE REFERENCE $typeReference $type ${desc.name} $symbol")
-        super.visitTypeReference(typeReference, Unit)
         return symbol
     }
 }

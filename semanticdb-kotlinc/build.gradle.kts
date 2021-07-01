@@ -158,6 +158,7 @@ subprojects {
                 project.getTasksByName("compileKotlin", false).first().path,
                 project.getTasksByName("compileJava", false).first().path
             )
+            outputs.cacheIf { false } // we can probably improve this
             main = "com.sourcegraph.lsif_kotlin.SnapshotKt"
             // this is required as the main class SnapshotKt is in this classpath
             classpath = snapshots.runtimeClasspath
