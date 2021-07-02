@@ -1,10 +1,12 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.publish.maven.MavenPublication
 
 plugins {
     kotlin("jvm")
     id("com.github.johnrengelman.shadow")
+    id("maven-publish")
 }
 
 group = "com.sourcegraph"
@@ -63,6 +65,17 @@ val semanticdbJar: Configuration by configurations.creating {
 artifacts {
     add("semanticdbJar", tasks.shadowJar.get().outputs.files.first()) {
        builtBy(tasks.shadowJar)
+    }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            shadow.component(this)
+        }
+    }
+    repositories {
+        mavenLocal()
     }
 }
 

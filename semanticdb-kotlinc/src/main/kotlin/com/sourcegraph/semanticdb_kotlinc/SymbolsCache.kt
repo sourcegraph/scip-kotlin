@@ -89,9 +89,9 @@ class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
             else {
                 val jvmPackagePartSource =
                     (descriptor as DescriptorWithContainerSource).containerSource as JvmPackagePartSource
-            jvmPackagePartSource.facadeClassName?.fqNameForClassNameWithoutDollars?.shortName()?.asString()
-                ?: jvmPackagePartSource.simpleName.asString()
-        }
+                jvmPackagePartSource.facadeClassName?.fqNameForClassNameWithoutDollars?.shortName()?.asString()
+                    ?: jvmPackagePartSource.simpleName.asString()
+            }
         }
         else -> name.replace(".kt", "Kt")
     }
@@ -135,40 +135,40 @@ class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
     }
 
     private fun getAllMethods(desc: FunctionDescriptor, ownerDecl: DeclarationDescriptor): Collection<CallableMemberDescriptor> = when(ownerDecl) {
-            is PackageFragmentDescriptor ->
-                ownerDecl.getMemberScope().getDescriptorsFiltered(DescriptorKindFilter.FUNCTIONS).map { it as CallableMemberDescriptor }
-            is ClassDescriptorWithResolutionScopes -> {
-                when (desc) {
-                    is ClassConstructorDescriptor -> {
-                        val constructors = (desc.containingDeclaration as ClassDescriptorWithResolutionScopes).constructors as ArrayList
-                        // primary constructor always seems to be last, so move it to the start. TODO is this correct? in what order does Java see them?
-                        // if (constructors.last().isPrimary) constructors.add(0, constructors.removeLast())
-                        constructors
-                    }
-                    else -> ownerDecl.declaredCallableMembers
+        is PackageFragmentDescriptor ->
+            ownerDecl.getMemberScope().getDescriptorsFiltered(DescriptorKindFilter.FUNCTIONS).map { it as CallableMemberDescriptor }
+        is ClassDescriptorWithResolutionScopes -> {
+            when (desc) {
+                is ClassConstructorDescriptor -> {
+                    val constructors = (desc.containingDeclaration as ClassDescriptorWithResolutionScopes).constructors as ArrayList
+                    // primary constructor always seems to be last, so move it to the start. TODO is this correct? in what order does Java see them?
+                    // if (constructors.last().isPrimary) constructors.add(0, constructors.removeLast())
+                    constructors
                 }
+                else -> ownerDecl.declaredCallableMembers
             }
-            is FunctionDescriptor ->
-                ownerDecl.toSourceElement.getPsi()!!.
-                    children.first { it is KtBlockExpression }.
-                    children.filterIsInstance<KtNamedFunction>().
-                    map { resolver.fromDeclaration(it)!! as CallableMemberDescriptor }
-            is ClassDescriptor -> {
+        }
+        is FunctionDescriptor ->
+            ownerDecl.toSourceElement.getPsi()!!.
+            children.first { it is KtBlockExpression }.
+            children.filterIsInstance<KtNamedFunction>().
+            map { resolver.fromDeclaration(it)!! as CallableMemberDescriptor }
+        is ClassDescriptor -> {
             // Do we have to go recursively? https://sourcegraph.com/github.com/JetBrains/kotlin/-/blob/idea/src/org/jetbrains/kotlin/idea/actions/generate/utils.kt?L32:5
-                val methods = ownerDecl.unsubstitutedMemberScope.getContributedDescriptors().filterIsInstance<FunctionDescriptor>()
-                val staticMethods = ownerDecl.staticScope.getContributedDescriptors().filterIsInstance<FunctionDescriptor>()
-                val ctors = ownerDecl.constructors.toList()
-                val allFuncs = ArrayList<FunctionDescriptor>(methods.size + ctors.size + staticMethods.size)
-                allFuncs.addAll(ctors)
-                allFuncs.addAll(methods)
-                allFuncs.addAll(staticMethods)
-                allFuncs
-            }
+            val methods = ownerDecl.unsubstitutedMemberScope.getContributedDescriptors().filterIsInstance<FunctionDescriptor>()
+            val staticMethods = ownerDecl.staticScope.getContributedDescriptors().filterIsInstance<FunctionDescriptor>()
+            val ctors = ownerDecl.constructors.toList()
+            val allFuncs = ArrayList<FunctionDescriptor>(methods.size + ctors.size + staticMethods.size)
+            allFuncs.addAll(ctors)
+            allFuncs.addAll(methods)
+            allFuncs.addAll(staticMethods)
+            allFuncs
+        }
         is TypeAliasDescriptor -> {
             // We get the underlying class descriptor and restart the process recursively
             getAllMethods(desc, TypeUtils.getClassDescriptor(ownerDecl.underlyingType)!!)
         }
-            else -> throw IllegalStateException("unexpected owner decl type '${ownerDecl.javaClass}':\n\t\tMethod: ${desc}\n\t\tParent: $ownerDecl")
+        else -> throw IllegalStateException("unexpected owner decl type '${ownerDecl.javaClass}':\n\t\tMethod: ${desc}\n\t\tParent: $ownerDecl")
     }
 
     override fun iterator(): Iterator<Symbol> = globals.values.iterator()
