@@ -30,7 +30,11 @@ class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
         else HashMap<DeclarationDescriptor, Symbol>()
     lateinit var resolver: DescriptorResolver
 
-    operator fun get(descriptor: DeclarationDescriptor, locals: LocalSymbolsCache): Symbol {
+    operator fun get(descriptor: DeclarationDescriptor, locals: LocalSymbolsCache): Sequence<Symbol> = sequence {
+        yield(getSymbol(descriptor, locals))
+    }
+
+    private fun getSymbol(descriptor: DeclarationDescriptor, locals: LocalSymbolsCache): Symbol {
         globals[descriptor]?.let { return it }
         locals[descriptor]?.let { return it }
         return uncachedSemanticdbSymbol(descriptor, locals).also {
@@ -47,7 +51,7 @@ class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
         if (skip(descriptor)) return Symbol.NONE
         val ownerDesc = getParentDescriptor(descriptor) ?: return Symbol.ROOT_PACKAGE
 
-        var owner = this[ownerDesc, locals]
+        var owner = this.getSymbol(ownerDesc, locals)
         if (ownerDesc.isObjectDeclaration() || owner.isLocal() || ownerDesc.isLocalVariable() || ownerDesc is AnonymousFunctionDescriptor || descriptor.isLocalVariable())
             return locals + ownerDesc
 

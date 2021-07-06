@@ -24,7 +24,7 @@ class Analyzer(val sourceroot: Path, val targetroot: Path, val callback: (Semant
         val resolver = DescriptorResolver(bindingTrace).also { globals.resolver = it }
         for (file in files) {
             val lineMap = LineMap(project, file)
-            val document = TextDocumentBuildingVisitor(sourceroot, resolver, file, lineMap, globals).build()
+            val document = SemanticdbVisitor(sourceroot, resolver, file, lineMap, globals).build()
             Files.write(semanticdbOutPathForFile(file), TextDocuments { addDocuments(document) }.toByteArray())
             callback(document)
         }

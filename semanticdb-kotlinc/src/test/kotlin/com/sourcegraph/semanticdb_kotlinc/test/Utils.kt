@@ -114,7 +114,7 @@ fun semanticdbVisitorAnalyzer(globals: GlobalSymbolsCache, locals: LocalSymbolsC
                 ): AnalysisResult? {
                     val resolver = DescriptorResolver(bindingTrace).also { globals.resolver = it }
                     val lineMap = LineMap(project, files.first())
-                    hook(TextDocumentBuildingVisitor(sourceroot, resolver, files.first(), lineMap, globals, locals).build())
+                    hook(SemanticdbVisitor(sourceroot, resolver, files.first(), lineMap, globals, locals).build())
                     return super.analysisCompleted(project, module, bindingTrace, files)
                 }
             })
