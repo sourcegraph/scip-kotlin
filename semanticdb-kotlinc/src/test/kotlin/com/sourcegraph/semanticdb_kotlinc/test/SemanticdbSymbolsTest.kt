@@ -1,6 +1,7 @@
 package com.sourcegraph.semanticdb_kotlinc.test
 
 import com.sourcegraph.semanticdb_kotlinc.*
+import com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrence.Role
 import com.sourcegraph.semanticdb_kotlinc.test.ExpectedSymbols.SemanticdbData
 import com.sourcegraph.semanticdb_kotlinc.test.ExpectedSymbols.SymbolCacheData
 import com.tschuchort.compiletesting.SourceFile
@@ -185,4 +186,67 @@ class SemanticdbSymbolsTest {
             )
         ).mapCheckExpectedSymbols()
 
+    @TestFactory
+    fun `properties with getters-setters`() = listOf(
+        ExpectedSymbols(
+            "top level properties - implicit",
+            SourceFile.testKt(
+                """
+                var x: Int = 5
+            """),
+            semanticdb = SemanticdbData(
+                expectedOccurrences = listOf(
+                    SymbolOccurrence { role = Role.DEFINITION; symbol = "TestKt#x."; range { startLine = 0; startCharacter = 4; endLine = 0; endCharacter = 5; } },
+                    SymbolOccurrence { role = Role.DEFINITION; symbol = "TestKt#getX()."; range { startLine = 0; startCharacter = 4; endLine = 0; endCharacter = 5; } },
+                    SymbolOccurrence { role = Role.DEFINITION; symbol = "TestKt#setX()."; range { startLine = 0; startCharacter = 4; endLine = 0; endCharacter = 5; } }
+                )
+            ),
+        ),
+        ExpectedSymbols(
+            "top level properties - explicit getter",
+            SourceFile.testKt(
+                """
+                var x: Int = 5
+                    get() = field + 10
+            """),
+            semanticdb = SemanticdbData(
+                expectedOccurrences = listOf(
+                    SymbolOccurrence { role = Role.DEFINITION; symbol = "TestKt#x."; range { startLine = 0; startCharacter = 4; endLine = 0; endCharacter = 5; } },
+                    SymbolOccurrence { role = Role.DEFINITION; symbol = "TestKt#setX()."; range { startLine = 0; startCharacter = 4; endLine = 0; endCharacter = 5; } },
+                    SymbolOccurrence { role = Role.DEFINITION; symbol = "TestKt#getX()."; range { startLine = 1; startCharacter = 4; endLine = 1; endCharacter = 7; } }
+                )
+            ),
+        ),
+        ExpectedSymbols(
+            "top level properties - explicit setter",
+            SourceFile.testKt(
+                """
+                var x: Int = 5
+                    set(value) { field = value + 5 }
+            """),
+            semanticdb = SemanticdbData(
+                expectedOccurrences = listOf(
+                    SymbolOccurrence { role = Role.DEFINITION; symbol = "TestKt#x."; range { startLine = 0; startCharacter = 4; endLine = 0; endCharacter = 5; } },
+                    SymbolOccurrence { role = Role.DEFINITION; symbol = "TestKt#getX()."; range { startLine = 0; startCharacter = 4; endLine = 0; endCharacter = 5; } },
+                    SymbolOccurrence { role = Role.DEFINITION; symbol = "TestKt#setX()."; range { startLine = 1; startCharacter = 4; endLine = 1; endCharacter = 7; } }
+                )
+            ),
+        ),
+        ExpectedSymbols(
+            "top level properties - explicit getter & setter",
+            SourceFile.testKt(
+                """
+                var x: Int = 5
+                    get() = field + 10
+                    set(value) { field = value + 10 }
+            """),
+            semanticdb = SemanticdbData(
+                expectedOccurrences = listOf(
+                    SymbolOccurrence { role = Role.DEFINITION; symbol = "TestKt#x."; range { startLine = 0; startCharacter = 4; endLine = 0; endCharacter = 5; } },
+                    SymbolOccurrence { role = Role.DEFINITION; symbol = "TestKt#getX()."; range { startLine = 1; startCharacter = 4; endLine = 1; endCharacter = 7; } },
+                    SymbolOccurrence { role = Role.DEFINITION; symbol = "TestKt#setX()."; range { startLine = 2; startCharacter = 4; endLine = 2; endCharacter = 7; } }
+                )
+            ),
+        ),
+    ).mapCheckExpectedSymbols()
 }

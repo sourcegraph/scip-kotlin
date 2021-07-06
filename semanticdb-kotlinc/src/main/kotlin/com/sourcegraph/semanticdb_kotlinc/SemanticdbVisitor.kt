@@ -68,6 +68,13 @@ class SemanticdbVisitor(
         super.visitTypeAlias(typeAlias)
     }
 
+    override fun visitPropertyAccessor(accessor: KtPropertyAccessor) {
+        val desc = resolver.fromDeclaration(accessor)!!
+        val symbols = globals[desc, locals].emitAll(accessor, Role.DEFINITION)
+        println("PROPERTY ACCESSOR $accessor ${desc.name} $symbols")
+        super.visitPropertyAccessor(accessor)
+    }
+
     override fun visitSimpleNameExpression(expression: KtSimpleNameExpression) {
         val desc = resolver.fromReference(expression) ?: run {
             println("NULL DESCRIPTOR FROM NAME EXPRESSION $expression ${expression.javaClass}")

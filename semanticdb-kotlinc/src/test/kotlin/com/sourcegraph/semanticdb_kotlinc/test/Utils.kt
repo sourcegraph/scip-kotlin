@@ -29,8 +29,8 @@ data class ExpectedSymbols(
     val semanticdb: SemanticdbData? = null
 ) {
     data class SemanticdbData(
-        val expectedOccurrences: List<Semanticdb.SymbolOccurrence>?,
-        val expectedSymbols: List<Semanticdb.SymbolInformation>?
+        val expectedOccurrences: List<Semanticdb.SymbolOccurrence>? = null,
+        val expectedSymbols: List<Semanticdb.SymbolInformation>? = null
     )
 
     data class SymbolCacheData(
@@ -55,13 +55,13 @@ fun List<ExpectedSymbols>.mapCheckExpectedSymbols(): List<DynamicTest> = this.fl
         },
         DynamicTest.dynamicTest("$testName - symbols") {
             symbolsData?.apply {
-                println("checking symbols")
+                println("checking symbols: ${expectedGlobals.size} globals and presence of $localsCount locals")
                 checkContainsExpectedSymbols(globals, locals, expectedGlobals, localsCount)
             }
         },
         DynamicTest.dynamicTest("$testName - semanticdb") {
             semanticdbData?.apply {
-                println("checking semanticdb")
+                println("checking semanticdb: ${expectedOccurrences?.size ?: 0} occurrences and ${expectedSymbols?.size ?: 0} symbols")
                 checkContainsExpectedSemanticdb(document, expectedOccurrences, expectedSymbols)
             }
         }
@@ -79,10 +79,14 @@ fun checkContainsExpectedSymbols(globals: GlobalSymbolsCache, locals: LocalSymbo
 @ExperimentalContracts
 fun checkContainsExpectedSemanticdb(document: Semanticdb.TextDocument, expectedOccurrences: List<Semanticdb.SymbolOccurrence>?, expectedSymbols: List<Semanticdb.SymbolInformation>?) {
     assertSoftly(document.occurrencesList) {
-        this.shouldContainInOrder(expectedOccurrences)
+        expectedOccurrences?.let {
+            this.shouldContainInOrder(it)
+        }
     }
     assertSoftly(document.symbolsList) {
-        this.shouldContainInOrder(expectedSymbols)
+        expectedSymbols?.let {
+            this.shouldContainInOrder(it)
+        }
     }
 }
 

@@ -3,6 +3,7 @@ package snapshots
 
 val x = arrayListOf<String>().forEachIndexed { i, s ->
 //  ^ definition snapshots/LambdasKt#x. x
+//  ^ definition snapshots/LambdasKt#getX(). x
 //      ^^^^^^^^^^^ reference kotlin/collections/CollectionsKt#arrayListOf().
 //                  ^^^^^^ reference kotlin/String#
 //                            ^^^^^^^^^^^^^^ reference kotlin/collections/CollectionsKt#forEachIndexed(+9).
@@ -16,6 +17,7 @@ val x = arrayListOf<String>().forEachIndexed { i, s ->
 
 val y = "fdsa".run {
 //  ^ definition snapshots/LambdasKt#y. y
+//  ^ definition snapshots/LambdasKt#getY(). y
 //             ^^^ reference kotlin/StandardKt#run(+1).
     this.toByteArray()
 //  ^^^^ reference 
@@ -24,11 +26,12 @@ val y = "fdsa".run {
 
 val z = y.let {
 //  ^ definition snapshots/LambdasKt#z. z
+//  ^ definition snapshots/LambdasKt#getZ(). z
 //      ^ reference snapshots/LambdasKt#y.
+//      ^ reference snapshots/LambdasKt#getY().
 //        ^^^ reference kotlin/StandardKt#let().
-    val w = 1
-//      ^ definition local4 w
     it.size
-//  ^^ reference local5
+//  ^^ reference local4
 //     ^^^^ reference kotlin/ByteArray#size.
+//     ^^^^ reference kotlin/ByteArray#getSize().
 }

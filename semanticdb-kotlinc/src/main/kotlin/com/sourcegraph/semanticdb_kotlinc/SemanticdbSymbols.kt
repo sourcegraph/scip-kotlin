@@ -25,7 +25,7 @@ value class Symbol(private val symbol: String) {
 
 fun String.symbol(): Symbol = Symbol(this)
 
-data class SemanticdbSymbolDescriptor(val kind: Kind, val name: String, val disambiguator: String = "") {
+data class SemanticdbSymbolDescriptor(val kind: Kind, val name: String, val disambiguator: String = "()") {
     companion object {
         val NONE = SemanticdbSymbolDescriptor(Kind.NONE, "")
 

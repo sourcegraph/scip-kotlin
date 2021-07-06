@@ -17,6 +17,7 @@ import org.jetbrains.kotlin.resolve.scopes.getDescriptorsFiltered
 import org.jetbrains.kotlin.resolve.source.getPsi
 import org.jetbrains.kotlin.serialization.deserialization.descriptors.DescriptorWithContainerSource
 import org.jetbrains.kotlin.types.TypeUtils
+import org.jetbrains.kotlin.util.capitalizeDecapitalize.capitalizeAsciiOnly
 import java.lang.System.err
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -31,9 +32,28 @@ class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
     lateinit var resolver: DescriptorResolver
 
     operator fun get(descriptor: DeclarationDescriptor, locals: LocalSymbolsCache): Sequence<Symbol> = sequence {
-        yield(getSymbol(descriptor, locals))
+        emitSymbols(descriptor, locals)
     }
 
+    /**
+     * called whenever a new symbol should be yielded in the sequence e.g. for properties we also want to yield for every
+     * implicit getter/setter, but wouldn't want to yield for e.g. the package symbol parts that a class symbol is
+     * composed of.
+     */
+    private suspend fun SequenceScope<Symbol>.emitSymbols(descriptor: DeclarationDescriptor, locals: LocalSymbolsCache) {
+        yield(getSymbol(descriptor, locals))
+        when(descriptor) {
+            is PropertyDescriptor -> {
+                if (descriptor.getter!!.isDefault) emitSymbols(descriptor.getter!!, locals)
+                if (descriptor.setter?.isDefault == true) emitSymbols(descriptor.setter!!, locals)
+            }
+        }
+    }
+
+    /**
+     * Entrypoint for building or looking-up a symbol without yielding a value in the sequence. Called recursively
+     * for every part of a symbol, unless a cached result short circuits.
+     */
     private fun getSymbol(descriptor: DeclarationDescriptor, locals: LocalSymbolsCache): Symbol {
         globals[descriptor]?.let { return it }
         locals[descriptor]?.let { return it }
@@ -103,6 +123,8 @@ class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
     private fun semanticdbDescriptor(desc: DeclarationDescriptor): SemanticdbSymbolDescriptor {
         return when(desc) {
             is ClassDescriptor -> SemanticdbSymbolDescriptor(Kind.TYPE, desc.name.toString())
+            is PropertySetterDescriptor -> SemanticdbSymbolDescriptor(Kind.METHOD, "set" + desc.correspondingProperty.name.toString().capitalizeAsciiOnly())
+            is PropertyGetterDescriptor -> SemanticdbSymbolDescriptor(Kind.METHOD, "get" + desc.correspondingProperty.name.toString().capitalizeAsciiOnly())
             is FunctionDescriptor -> SemanticdbSymbolDescriptor(Kind.METHOD, desc.name.toString(), methodDisambiguator(desc))
             is TypeParameterDescriptor -> SemanticdbSymbolDescriptor(Kind.TYPE_PARAMETER, desc.name.toString())
             is ValueParameterDescriptor -> SemanticdbSymbolDescriptor(Kind.PARAMETER, desc.name.toString())
