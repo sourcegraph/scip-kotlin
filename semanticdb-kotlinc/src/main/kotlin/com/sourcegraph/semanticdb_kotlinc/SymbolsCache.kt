@@ -44,7 +44,7 @@ class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
         yield(getSymbol(descriptor, locals))
         when(descriptor) {
             is PropertyDescriptor -> {
-                if (descriptor.getter!!.isDefault) emitSymbols(descriptor.getter!!, locals)
+                if (descriptor.getter?.isDefault == true) emitSymbols(descriptor.getter!!, locals)
                 if (descriptor.setter?.isDefault == true) emitSymbols(descriptor.setter!!, locals)
             }
         }
