@@ -73,7 +73,7 @@ class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
 
         var owner = this.getSymbol(ownerDesc, locals)
         if (ownerDesc.isObjectDeclaration() || owner.isLocal() || ownerDesc.isLocalVariable() || ownerDesc is AnonymousFunctionDescriptor || descriptor.isLocalVariable())
-            return locals + ownerDesc
+            return locals + descriptor
 
         // if is a top-level function or variable, Kotlin creates a wrapping class
         if ((descriptor is FunctionDescriptor || descriptor is VariableDescriptor) && ownerDesc is PackageFragmentDescriptor) {

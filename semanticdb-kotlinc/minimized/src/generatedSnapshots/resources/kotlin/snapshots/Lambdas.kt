@@ -11,8 +11,8 @@ val x = arrayListOf<String>().forEachIndexed { i, s ->
 //                                                ^ definition local1 s
     println("$i $s")
 //  ^^^^^^^ reference kotlin/io/ConsoleKt#println(+1).
-//            ^ reference local2
-//               ^ reference local3
+//            ^ reference local0
+//               ^ reference local1
 }
 
 val y = "fdsa".run {
@@ -31,7 +31,7 @@ val z = y.let {
 //      ^ reference snapshots/LambdasKt#getY().
 //        ^^^ reference kotlin/StandardKt#let().
     it.size
-//  ^^ reference local4
+//  ^^ reference local2
 //     ^^^^ reference kotlin/ByteArray#size.
 //     ^^^^ reference kotlin/ByteArray#getSize().
 }
