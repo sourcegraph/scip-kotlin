@@ -27,49 +27,50 @@ class SemanticdbVisitor(
     }?.toList()
 
     override fun visitClass(klass: KtClass) {
-        val desc = resolver.fromDeclaration(klass)!!
+        val desc = resolver.fromDeclaration(klass).single()
         val symbols = globals[desc, locals].emitAll(klass, Role.DEFINITION)
         println("NAMED TYPE $klass ${desc.name} $symbols")
         super.visitClass(klass)
     }
 
     override fun visitNamedFunction(function: KtNamedFunction) {
-        val desc = resolver.fromDeclaration(function)!!
+        val desc = resolver.fromDeclaration(function).single()
         val symbols = globals[desc, locals].emitAll(function, Role.DEFINITION)
         println("NAMED FUN $function ${desc.name} $symbols")
         super.visitNamedFunction(function)
     }
 
     override fun visitProperty(property: KtProperty) {
-        val desc = resolver.fromDeclaration(property)!!
+        val desc = resolver.fromDeclaration(property).single()
         val symbols = globals[desc, locals].emitAll(property, Role.DEFINITION)
         println("NAMED PROP $property ${desc.name} $symbols")
         super.visitProperty(property)
     }
 
     override fun visitParameter(parameter: KtParameter) {
-        val desc = resolver.fromDeclaration(parameter)!!
-        val symbols = globals[desc, locals].emitAll(parameter, Role.DEFINITION)
-        println("NAMED PARAM $parameter ${desc.name} $symbols")
+        val symbols = resolver.fromDeclaration(parameter).flatMap { desc ->
+            globals[desc, locals]
+        }.emitAll(parameter, Role.DEFINITION)
+        println("NAMED PARAM $parameter $symbols")
         super.visitParameter(parameter)
     }
 
     override fun visitTypeParameter(parameter: KtTypeParameter) {
-        val desc = resolver.fromDeclaration(parameter)!!
+        val desc = resolver.fromDeclaration(parameter).single()
         val symbols = globals[desc, locals].emitAll(parameter, Role.DEFINITION)
         println("NAMED TYPE-PARAM $parameter ${desc.name} $symbols")
         super.visitTypeParameter(parameter)
     }
 
     override fun visitTypeAlias(typeAlias: KtTypeAlias) {
-        val desc = resolver.fromDeclaration(typeAlias)!!
+        val desc = resolver.fromDeclaration(typeAlias).single()
         val symbols = globals[desc, locals].emitAll(typeAlias, Role.DEFINITION)
         println("NAMED TYPE-ALIAS $typeAlias ${desc.name} $symbols")
         super.visitTypeAlias(typeAlias)
     }
 
     override fun visitPropertyAccessor(accessor: KtPropertyAccessor) {
-        val desc = resolver.fromDeclaration(accessor)!!
+        val desc = resolver.fromDeclaration(accessor).single()
         val symbols = globals[desc, locals].emitAll(accessor, Role.DEFINITION)
         println("PROPERTY ACCESSOR $accessor ${desc.name} $symbols")
         super.visitPropertyAccessor(accessor)

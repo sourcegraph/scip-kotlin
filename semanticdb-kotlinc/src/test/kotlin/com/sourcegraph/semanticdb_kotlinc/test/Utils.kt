@@ -34,7 +34,7 @@ data class ExpectedSymbols(
     )
 
     data class SymbolCacheData(
-        val expectedGlobals: List<Symbol>,
+        val expectedGlobals: List<Symbol>? = null,
         val localsCount: Int? = null
     )
 }
@@ -55,7 +55,7 @@ fun List<ExpectedSymbols>.mapCheckExpectedSymbols(): List<DynamicTest> = this.fl
         },
         DynamicTest.dynamicTest("$testName - symbols") {
             symbolsData?.apply {
-                println("checking symbols: ${expectedGlobals.size} globals and presence of $localsCount locals")
+                println("checking symbols: ${expectedGlobals?.size ?: 0} globals and presence of $localsCount locals")
                 checkContainsExpectedSymbols(globals, locals, expectedGlobals, localsCount)
             }
         },
@@ -69,9 +69,11 @@ fun List<ExpectedSymbols>.mapCheckExpectedSymbols(): List<DynamicTest> = this.fl
 }
 
 @ExperimentalContracts
-fun checkContainsExpectedSymbols(globals: GlobalSymbolsCache, locals: LocalSymbolsCache, expectedGlobals: List<Symbol>, localsCount: Int? = null) {
+fun checkContainsExpectedSymbols(globals: GlobalSymbolsCache, locals: LocalSymbolsCache, expectedGlobals: List<Symbol>?, localsCount: Int? = null) {
     assertSoftly(globals) {
-        this.shouldContainInOrder(expectedGlobals)
+        expectedGlobals?.let {
+            this.shouldContainInOrder(it)
+        }
     }
     localsCount?.also { locals.size shouldBe it }
 }
