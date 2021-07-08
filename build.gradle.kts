@@ -14,16 +14,18 @@ repositories {
 }
 
 // allprojects {
-//     tasks.withType<KotlinCompile> {
-//         val targetroot = File(this@allprojects.buildDir, "semanticdb-targetroot")
-//         kotlinOptions {
-//             freeCompilerArgs = freeCompilerArgs + listOf(
-//                 "-Xplugin=/home/noah/Sourcegraph/lsif-kotlin/semanticdb-kotlinc-1.0-SNAPSHOT-all.jar",
-//                 "-P",
-//                 "plugin:com.sourcegraph.lsif-kotlin:sourceroot=${rootDir.path}",
-//                 "-P",
-//                 "plugin:com.sourcegraph.lsif-kotlin:targetroot=${targetroot}"
-//             )
+//     afterEvaluate {
+//         tasks.withType<KotlinCompile> {
+//             val targetroot = File(this@afterEvaluate.buildDir, "semanticdb-targetroot")
+//             kotlinOptions {
+//                 freeCompilerArgs = freeCompilerArgs + listOf(
+//                     "-Xplugin=/home/noah/Sourcegraph/lsif-kotlin/semanticdb-kotlinc-1.0-SNAPSHOT-all.jar",
+//                     "-P",
+//                     "plugin:com.sourcegraph.lsif-kotlin:sourceroot=${rootDir.path}",
+//                     "-P",
+//                     "plugin:com.sourcegraph.lsif-kotlin:targetroot=${targetroot}"
+//                 )
+//             }
 //         }
 //     }
 // }

@@ -1,5 +1,4 @@
 import com.google.protobuf.gradle.*
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
 plugins {
     kotlin("jvm")
@@ -24,13 +23,27 @@ buildscript {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation("com.google.protobuf:protobuf-java:3.15.7")
+    implementation("com.sourcegraph", "semanticdb-javac", "0.5.6")
 }
 
-tasks.processResources {
-    dependsOn(tasks.getByName("generateProto"))
-}
 
-val SourceSet.kotlin: SourceDirectorySet get() = this.withConvention(KotlinSourceSet::class) { kotlin }
+afterEvaluate {
+    tasks.processResources {
+        dependsOn(tasks.getByName("generateProto"))
+    }
+
+    tasks.compileKotlin {
+        dependsOn(tasks.getByName("generateProto"))
+    }
+
+    tasks.withType<JavaCompile> {
+        val sourceroot = rootDir.path
+        val targetroot = this.project.buildDir.resolve( "semanticdb-targetroot")
+        options.compilerArgs = options.compilerArgs + listOf(
+            "-Xplugin:semanticdb -sourceroot:$sourceroot -targetroot:$targetroot"
+        )
+    }
+}
 
 krotoPlus {
     config {
@@ -48,7 +61,7 @@ protobuf {
         artifact = "com.google.protobuf:protoc:3.15.7"
     }
 
-    generatedFilesBaseDir = sourceSets.main.get().kotlin.sourceDirectories.asPath.split(":")[0].removeSuffix("main/kotlin")
+    generatedFilesBaseDir = kotlin.sourceSets.main.get().kotlin.srcDirs.first().path.split(":")[0].removeSuffix("main/kotlin")
 
     plugins {
         id("kroto") {
@@ -64,10 +77,7 @@ protobuf {
             task.plugins {
                 id("kroto") {
                     outputSubDir = "java"
-                    //option(krotoPlus.config["main"].asOption())
-                    //option(krotoPlus.config.findByName("main")!!.asOption())
                     option("ConfigPath=${krotoConfig}")
-                    //option(compConfigBuilder.build().toString())
                 }
             }
         }

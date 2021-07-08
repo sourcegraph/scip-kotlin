@@ -53,6 +53,7 @@ tasks.withType<KotlinCompile> {
     dependsOn(":${projects.semanticdbKotlin.name}:build")
     kotlinOptions {
         jvmTarget = "1.8"
+        freeCompilerArgs = freeCompilerArgs + listOf("-Xinline-classes")
     }
 }
 
@@ -100,11 +101,6 @@ tasks.jar {
 tasks.named<ShadowJar>("shadowJar").configure {
     relocate("com.intellij", "org.jetbrains.kotlin.com.intellij")
     minimize()
-}
-
-val compileKotlin: KotlinCompile by tasks
-compileKotlin.kotlinOptions {
-    freeCompilerArgs = listOf("-Xinline-classes")
 }
 
 subprojects {
@@ -155,7 +151,7 @@ subprojects {
             dependsOn(":${this@afterEvaluate.projects.semanticdbKotlinc.name}:shadowJar")
             outputs.cacheIf { false } // we can probably improve this
             options.compilerArgs = options.compilerArgs + listOf(
-                "-Xplugin:semanticdb -sourceroot:$sourceroot -targetroot:$targetroot"
+                "-Xplugin:semanticdb -sourceroot:${rootDir.path} -targetroot:$targetroot"
             )
         }
 
