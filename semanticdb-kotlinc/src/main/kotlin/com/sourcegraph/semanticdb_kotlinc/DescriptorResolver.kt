@@ -1,13 +1,12 @@
 package com.sourcegraph.semanticdb_kotlinc
 
+import org.jetbrains.kotlin.descriptors.ConstructorDescriptor
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor
-import org.jetbrains.kotlin.psi.KtDeclaration
-import org.jetbrains.kotlin.psi.KtNamedDeclaration
-import org.jetbrains.kotlin.psi.KtReferenceExpression
-import org.jetbrains.kotlin.psi.KtTypeReference
+import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.BindingTrace
+import org.jetbrains.kotlin.types.KotlinType
 
 class DescriptorResolver(private val bindingTrace: BindingTrace) {
     fun fromDeclaration(declaration: KtDeclaration): Sequence<DeclarationDescriptor> = sequence {
@@ -20,8 +19,10 @@ class DescriptorResolver(private val bindingTrace: BindingTrace) {
         descriptor?.let { yield(it) }
     }
 
-    fun fromReference(reference: KtReferenceExpression) = bindingTrace[BindingContext.REFERENCE_TARGET, reference]
+    fun syntheticConstructor(klass: KtClass): ConstructorDescriptor? = bindingTrace[BindingContext.CONSTRUCTOR, klass]
 
-    fun fromTypeReference(reference: KtTypeReference) = bindingTrace[BindingContext.TYPE, reference]
+    fun fromReference(reference: KtReferenceExpression): DeclarationDescriptor? = bindingTrace[BindingContext.REFERENCE_TARGET, reference]
+
+    fun fromTypeReference(reference: KtTypeReference): KotlinType = bindingTrace[BindingContext.TYPE, reference]
         ?: bindingTrace[BindingContext.ABBREVIATED_TYPE, reference]!!
 }

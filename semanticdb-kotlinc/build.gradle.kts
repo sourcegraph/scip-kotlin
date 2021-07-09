@@ -128,12 +128,12 @@ subprojects {
             )))
         }
 
-        val sourceroot = projectDir.path
+        val sourceroot = rootDir.path
         val targetroot = this@afterEvaluate.project.buildDir.resolve( "semanticdb-targetroot")
 
         tasks.withType<KotlinCompile> {
             dependsOn(":${this@afterEvaluate.projects.semanticdbKotlinc.name}:shadowJar")
-            outputs.cacheIf { false } // we can probably improve this
+            outputs.upToDateWhen { false }
             val pluginJar = semanticdbJar.incoming.artifacts.artifactFiles.first().path
             kotlinOptions {
                 jvmTarget = "1.8"
@@ -149,9 +149,9 @@ subprojects {
 
         tasks.withType<JavaCompile> {
             dependsOn(":${this@afterEvaluate.projects.semanticdbKotlinc.name}:shadowJar")
-            outputs.cacheIf { false } // we can probably improve this
+            outputs.upToDateWhen { false }
             options.compilerArgs = options.compilerArgs + listOf(
-                "-Xplugin:semanticdb -sourceroot:${rootDir.path} -targetroot:$targetroot"
+                "-Xplugin:semanticdb -sourceroot:$sourceroot -targetroot:$targetroot"
             )
         }
 
@@ -167,7 +167,7 @@ subprojects {
                 project.getTasksByName("compileKotlin", false).first().path,
                 project.getTasksByName("compileJava", false).first().path
             )
-            outputs.cacheIf { false } // we can probably improve this
+            outputs.upToDateWhen { false }
             main = "com.sourcegraph.lsif_kotlin.SnapshotKt"
             // this is required as the main class SnapshotKt is in this classpath
             classpath = snapshots.runtimeClasspath
@@ -176,7 +176,7 @@ subprojects {
                 sourceSets.main.get().java.srcDirs.first().canonicalPath
             )
             systemProperties = mapOf(
-                "sourceroot" to projectDir.path,
+                "sourceroot" to sourceroot,
                 "targetroot" to this@afterEvaluate.project.buildDir.resolve("semanticdb-targetroot"),
                 "snapshotDir" to generatedSnapshots.resources.srcDirs.first())
         }

@@ -1,8 +1,10 @@
 package com.sourcegraph.semanticdb_kotlinc
 
 import com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrence.Role
+import org.jetbrains.kotlin.com.intellij.psi.NavigatablePsiElement
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.psi.*
+import org.jetbrains.kotlin.psi.psiUtil.containingClass
 import java.nio.file.Path
 import kotlin.contracts.ExperimentalContracts
 
@@ -22,15 +24,33 @@ class SemanticdbVisitor(
         return emitter.buildSemanticdbTextDocument()
     }
 
-    private fun Sequence<Symbol>?.emitAll(element: KtElement, role: Role): List<Symbol>? = this?.onEach {
+    private fun Sequence<Symbol>?.emitAll(element: PsiElement, role: Role): List<Symbol>? = this?.onEach {
         emitter.emitSemanticdbData(it, element, role)
     }?.toList()
 
     override fun visitClass(klass: KtClass) {
         val desc = resolver.fromDeclaration(klass).single()
-        val symbols = globals[desc, locals].emitAll(klass, Role.DEFINITION)
-        println("NAMED TYPE $klass ${desc.name} $symbols")
+        var symbols = globals[desc, locals].emitAll(klass, Role.DEFINITION)
+        println("CLASS $klass ${desc.name} $symbols")
+        if (!klass.hasExplicitPrimaryConstructor()) {
+            resolver.syntheticConstructor(klass)?.apply {
+                symbols = globals[this, locals].emitAll(klass, Role.DEFINITION)
+                println("SYNTHETIC CONSTRUCTOR $klass ${this.name} $symbols")
+            }
+        }
         super.visitClass(klass)
+    }
+
+    override fun visitPrimaryConstructor(constructor: KtPrimaryConstructor) {
+        val desc = resolver.fromDeclaration(constructor).single()
+        // if the constructor is not denoted by the 'constructor' keyword, we want to link it to the class ident
+        val symbols = if (!constructor.hasConstructorKeyword()) {
+            globals[desc, locals].emitAll(constructor.containingClass()!!, Role.DEFINITION)
+        } else {
+            globals[desc, locals].emitAll(constructor.getConstructorKeyword()!!, Role.DEFINITION)
+        }
+        println("PRIMARY CONSTRUCTOR ${constructor.identifyingElement ?: constructor.containingClass()} ${desc.name} $symbols")
+        super.visitPrimaryConstructor(constructor)
     }
 
     override fun visitNamedFunction(function: KtNamedFunction) {

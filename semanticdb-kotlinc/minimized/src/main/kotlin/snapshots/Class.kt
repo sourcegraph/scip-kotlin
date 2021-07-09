@@ -1,6 +1,14 @@
 package snapshots
 
-class Class(private var banana: Int, apple: String): Throwable(banana.toString()) {
+class Class constructor(private var banana: Int, apple: String): Throwable(banana.toString()) {
+    init {
+        println("")
+    }
+
+    constructor(): this(1, "")
+
+    constructor(banana: Int): this(banana, "")
+
     fun run() {
         println(Class::class)
         println("I eat $banana for lunch")

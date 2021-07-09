@@ -2,9 +2,14 @@ package com.sourcegraph.semanticdb_kotlinc
 
 import org.jetbrains.kotlin.idea.KotlinLanguage
 import com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrence.Role
+import org.jetbrains.kotlin.asJava.namedUnwrappedElement
 import org.jetbrains.kotlin.com.intellij.lang.java.JavaLanguage
-import org.jetbrains.kotlin.psi.KtElement
+import org.jetbrains.kotlin.com.intellij.navigation.NavigationItem
+import org.jetbrains.kotlin.com.intellij.psi.PsiElement
+import org.jetbrains.kotlin.psi.KtConstructor
 import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.psi.KtPropertyAccessor
+import java.lang.IllegalArgumentException
 import java.nio.file.Path
 import java.security.MessageDigest
 import kotlin.contracts.ExperimentalContracts
@@ -29,24 +34,24 @@ class SemanticdbTextDocumentEmitter(
         this.addAllSymbols(symbols)
     }
 
-    fun emitSemanticdbData(symbol: Symbol, element: KtElement, role: Role) {
+    fun emitSemanticdbData(symbol: Symbol, element: PsiElement, role: Role) {
         symbolOccurrence(symbol, element, role)?.let(occurrences::add)
         if (role == Role.DEFINITION) symbolInformation(symbol, element).let(symbols::add)
     }
 
-    private fun symbolInformation(symbol: Symbol, element: KtElement): Semanticdb.SymbolInformation {
+    private fun symbolInformation(symbol: Symbol, element: PsiElement): Semanticdb.SymbolInformation {
         return SymbolInformation {
             this.symbol = symbol.toString()
-            this.displayName = element.name ?: element.text
+            this.displayName = displayName(element)
             this.language = when(element.language) {
                 is KotlinLanguage -> Semanticdb.Language.KOTLIN
                 is JavaLanguage -> Semanticdb.Language.JAVA
-                else -> throw IllegalStateException("unexpected language ${element.language}")
+                else -> throw IllegalArgumentException("unexpected language ${element.language}")
             }
         }
     }
 
-    private fun symbolOccurrence(symbol: Symbol, element: KtElement, role: Role): Semanticdb.SymbolOccurrence? {
+    private fun symbolOccurrence(symbol: Symbol, element: PsiElement, role: Role): Semanticdb.SymbolOccurrence? {
         /*val symbol = when(val s = globals[descriptor, locals]) {
             Symbol.NONE -> return null
             else -> s
@@ -59,7 +64,7 @@ class SemanticdbTextDocumentEmitter(
         }
     }
 
-    private fun semanticdbRange(element: KtElement): Semanticdb.Range {
+    private fun semanticdbRange(element: PsiElement): Semanticdb.Range {
         return Range {
             startCharacter = lineMap.startCharacter(element) - 1
             startLine = lineMap.lineNumber(element) - 1
@@ -75,5 +80,16 @@ class SemanticdbTextDocumentEmitter(
     }
 
     private fun semanticdbMD5(): String = MessageDigest.getInstance("MD5").digest(file.text.toByteArray(UTF_8)).joinToString("") { "%02X".format(it) }
+
+    companion object {
+        private fun displayName(element: PsiElement): String = when(element) {
+            is KtPropertyAccessor -> element.namePlaceholder.text
+            is NavigationItem -> when(element.namedUnwrappedElement) {
+                is KtConstructor<*> -> (element.namedUnwrappedElement as KtConstructor<*>).name!!
+                else -> element.name ?: element.text
+            }
+            else -> element.text
+        }
+    }
 }
 

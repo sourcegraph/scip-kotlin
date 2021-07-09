@@ -2,7 +2,6 @@ package com.sourcegraph.semanticdb_kotlinc.test
 
 import com.sourcegraph.semanticdb_kotlinc.*
 import com.tschuchort.compiletesting.KotlinCompilation
-import com.tschuchort.compiletesting.KotlinCompilation.Result
 import com.tschuchort.compiletesting.SourceFile
 import io.kotest.assertions.assertSoftly
 import io.kotest.assertions.throwables.shouldNotThrowAny
@@ -18,7 +17,9 @@ import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.BindingTrace
 import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
+import org.junit.jupiter.api.Assumptions.assumeFalse
 import org.junit.jupiter.api.DynamicTest
+import org.junit.jupiter.api.DynamicTest.dynamicTest
 import java.nio.file.Path
 import kotlin.contracts.ExperimentalContracts
 
@@ -49,21 +50,21 @@ fun List<ExpectedSymbols>.mapCheckExpectedSymbols(): List<DynamicTest> = this.fl
     lateinit var document: Semanticdb.TextDocument
     val compilation = configureTestCompiler(source, globals, locals) { document = it }
     listOf(
-        DynamicTest.dynamicTest("$testName - compilation") {
+        dynamicTest("$testName - compilation") {
             val result = shouldNotThrowAny { compilation.compile() }
             result.exitCode shouldBe KotlinCompilation.ExitCode.OK
         },
-        DynamicTest.dynamicTest("$testName - symbols") {
+        dynamicTest("$testName - symbols") {
             symbolsData?.apply {
                 println("checking symbols: ${expectedGlobals?.size ?: 0} globals and presence of $localsCount locals")
                 checkContainsExpectedSymbols(globals, locals, expectedGlobals, localsCount)
-            }
+            } ?: assumeFalse(true)
         },
-        DynamicTest.dynamicTest("$testName - semanticdb") {
+        dynamicTest("$testName - semanticdb") {
             semanticdbData?.apply {
                 println("checking semanticdb: ${expectedOccurrences?.size ?: 0} occurrences and ${expectedSymbols?.size ?: 0} symbols")
                 checkContainsExpectedSemanticdb(document, expectedOccurrences, expectedSymbols)
-            }
+            } ?: assumeFalse(true)
         }
     )
 }

@@ -283,4 +283,45 @@ class SemanticdbSymbolsTest {
             )
         )
     ).mapCheckExpectedSymbols()
+
+    @TestFactory
+    fun `class constructors`() = listOf(
+        ExpectedSymbols(
+            "implicit primary constructor",
+            SourceFile.testKt(
+                """
+                class Banana
+            """),
+            semanticdb = SemanticdbData(
+                expectedOccurrences = listOf(
+                    SymbolOccurrence { role = Role.DEFINITION; symbol = "Banana#"; range { startLine = 0; startCharacter = 6; endLine = 0; endCharacter = 12; } },
+                    SymbolOccurrence { role = Role.DEFINITION; symbol = "Banana#`<init>`()."; range { startLine = 0; startCharacter = 6; endLine = 0; endCharacter = 12; } },
+                )
+            )
+        ),
+        ExpectedSymbols(
+            "explicit primary constructor without keyword",
+            SourceFile.testKt("""
+               class Banana(size: Int)
+            """),
+            semanticdb = SemanticdbData(
+                expectedOccurrences = listOf(
+                    SymbolOccurrence { role = Role.DEFINITION; symbol = "Banana#"; range { startLine = 0; startCharacter = 6; endLine = 0; endCharacter = 12; } },
+                    SymbolOccurrence { role = Role.DEFINITION; symbol = "Banana#`<init>`()."; range { startLine = 0; startCharacter = 6; endLine = 0; endCharacter = 12; } },
+                )
+            )
+        ),
+        ExpectedSymbols(
+            "explicit primary constructor with keyword",
+            SourceFile.testKt("""
+               class Banana constructor(size: Int) 
+            """),
+            semanticdb = SemanticdbData(
+                expectedOccurrences = listOf(
+                    SymbolOccurrence { role = Role.DEFINITION; symbol = "Banana#"; range { startLine = 0; startCharacter = 6; endLine = 0; endCharacter = 12; } },
+                    SymbolOccurrence { role = Role.DEFINITION; symbol = "Banana#`<init>`()."; range { startLine = 0; startCharacter = 13; endLine = 0; endCharacter = 24; } },
+                )
+            )
+        )
+    ).mapCheckExpectedSymbols()
 }
