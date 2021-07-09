@@ -167,8 +167,8 @@ class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
             when (desc) {
                 is ClassConstructorDescriptor -> {
                     val constructors = (desc.containingDeclaration as ClassDescriptorWithResolutionScopes).constructors as ArrayList
-                    // primary constructor always seems to be last, so move it to the start. TODO is this correct? in what order does Java see them?
-                    // if (constructors.last().isPrimary) constructors.add(0, constructors.removeLast())
+                    // primary constructor always seems to be last, so move it to the start.
+                    if (constructors.last().isPrimary) constructors.add(0, constructors.removeLast())
                     constructors
                 }
                 else -> ownerDecl.declaredCallableMembers

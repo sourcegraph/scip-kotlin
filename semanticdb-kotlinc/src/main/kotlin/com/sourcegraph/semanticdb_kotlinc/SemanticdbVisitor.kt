@@ -49,8 +49,15 @@ class SemanticdbVisitor(
         } else {
             globals[desc, locals].emitAll(constructor.getConstructorKeyword()!!, Role.DEFINITION)
         }
-        println("PRIMARY CONSTRUCTOR ${constructor.identifyingElement ?: constructor.containingClass()} ${desc.name} $symbols")
+        println("PRIMARY CONSTRUCTOR ${constructor.identifyingElement?.parent ?: constructor.containingClass()} ${desc.name} $symbols")
         super.visitPrimaryConstructor(constructor)
+    }
+
+    override fun visitSecondaryConstructor(constructor: KtSecondaryConstructor) {
+        val desc = resolver.fromDeclaration(constructor).single()
+        val symbols = globals[desc, locals].emitAll(constructor.getConstructorKeyword(), Role.DEFINITION)
+        println("SECONDARY COSNTRUCTOR ${constructor.parent} ${desc.name} $symbols")
+        super.visitSecondaryConstructor(constructor)
     }
 
     override fun visitNamedFunction(function: KtNamedFunction) {
