@@ -13,7 +13,7 @@ class SemanticdbVisitor(
     sourceroot: Path,
     private val resolver: DescriptorResolver,
     private val file: KtFile,
-    lineMap: LineMap,
+    private val lineMap: LineMap,
     private val globals: GlobalSymbolsCache,
     private val locals: LocalSymbolsCache = LocalSymbolsCache()
 ): KtTreeVisitorVoid() {
@@ -24,9 +24,15 @@ class SemanticdbVisitor(
         return emitter.buildSemanticdbTextDocument()
     }
 
-    private fun Sequence<Symbol>?.emitAll(element: PsiElement, role: Role): List<Symbol>? = this?.onEach {
-        emitter.emitSemanticdbData(it, element, role)
-    }?.toList()
+    override fun visitKtElement(element: KtElement) {
+        try {
+            super.visitKtElement(element)
+        } catch (e: VisitorException) {
+            throw e
+        } catch (e: Exception) {
+            throw VisitorException("exception throw when visiting ${element::class} in ${file.virtualFilePath}: (${lineMap.lineNumber(element)}, ${lineMap.startCharacter(element)})", e)
+        }
+    }
 
     override fun visitClass(klass: KtClass) {
         val desc = resolver.fromDeclaration(klass).single()
@@ -114,3 +120,5 @@ class SemanticdbVisitor(
         super.visitSimpleNameExpression(expression)
     }
 }
+
+class VisitorException(msg: String, throwable: Throwable): Exception(msg, throwable)

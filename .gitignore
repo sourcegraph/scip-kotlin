@@ -3,3 +3,5 @@
 .gradle/*
 *.jar
 *.lsif
+generated/*
+*.svg

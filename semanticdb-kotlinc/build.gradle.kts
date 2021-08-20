@@ -13,6 +13,7 @@ group = "com.sourcegraph"
 version = "1.0-SNAPSHOT"
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
@@ -52,7 +53,6 @@ dependencies {
 tasks.withType<KotlinCompile> {
     dependsOn(":${projects.semanticdbKotlin.name}:build")
     kotlinOptions {
-        jvmTarget = "1.8"
         freeCompilerArgs = freeCompilerArgs + listOf("-Xinline-classes")
     }
 }
@@ -71,7 +71,7 @@ artifacts {
 
 publishing {
     publications {
-        create<MavenPublication>("maven") {
+        create<MavenPublication>("shadow") {
             shadow.component(this)
         }
     }
@@ -112,7 +112,7 @@ subprojects {
 
     dependencies {
         implementation(kotlin("stdlib"))
-        implementation("com.sourcegraph", "semanticdb-javac", "0.5.6")
+        compileOnly("com.sourcegraph", "semanticdb-javac", "0.6.4")
     }
 
     afterEvaluate {
