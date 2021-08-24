@@ -5,12 +5,15 @@ import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.impl.AnonymousFunctionDescriptor
 import org.jetbrains.kotlin.descriptors.impl.TypeAliasConstructorDescriptor
+import org.jetbrains.kotlin.descriptors.synthetic.FunctionInterfaceConstructorDescriptor
 import org.jetbrains.kotlin.load.kotlin.JvmPackagePartSource
 import org.jetbrains.kotlin.load.kotlin.toSourceElement
 import org.jetbrains.kotlin.psi.KtBlockExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
+import org.jetbrains.kotlin.resolve.DescriptorToSourceUtils
 import org.jetbrains.kotlin.resolve.ImportedFromObjectCallableDescriptor
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
+import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameUnsafe
 import org.jetbrains.kotlin.resolve.descriptorUtil.module
 import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter
 import org.jetbrains.kotlin.resolve.scopes.getDescriptorsFiltered
@@ -76,7 +79,9 @@ class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
             return locals + descriptor
 
         // if is a top-level function or variable, Kotlin creates a wrapping class
-        if ((descriptor is FunctionDescriptor || descriptor is VariableDescriptor) && ownerDesc is PackageFragmentDescriptor) {
+        if (((descriptor is FunctionDescriptor && descriptor !is FunctionInterfaceConstructorDescriptor)
+                    || descriptor is VariableDescriptor)
+            && ownerDesc is PackageFragmentDescriptor) {
             owner = Symbol.createGlobal(owner, SemanticdbSymbolDescriptor(Kind.TYPE, sourceFileToClassSymbol(descriptor.toSourceElement.containingFile, descriptor)))
         }
 
@@ -108,13 +113,13 @@ class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
      */
     private fun sourceFileToClassSymbol(file: SourceFile, descriptor: DeclarationDescriptor): String = when(val name = file.name) {
         null -> {
-            // TODO: see how its referenced on Java side
             if (KotlinBuiltIns.isBuiltIn(descriptor)) "LibraryKt"
-            else {
-                val jvmPackagePartSource =
-                    (descriptor as DescriptorWithContainerSource).containerSource as JvmPackagePartSource
+            else if (descriptor is DescriptorWithContainerSource) {
+                val jvmPackagePartSource = descriptor.containerSource as JvmPackagePartSource
                 jvmPackagePartSource.facadeClassName?.fqNameForClassNameWithoutDollars?.shortName()?.asString()
                     ?: jvmPackagePartSource.simpleName.asString()
+            } else {
+                DescriptorToSourceUtils.getEffectiveReferencedDescriptors(descriptor).first().fqNameUnsafe.shortName().asString()
             }
         }
         else -> name.replace(".kt", "Kt")
@@ -122,6 +127,7 @@ class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
 
     private fun semanticdbDescriptor(desc: DeclarationDescriptor): SemanticdbSymbolDescriptor {
         return when(desc) {
+            is FunctionInterfaceConstructorDescriptor -> semanticdbDescriptor(desc.baseDescriptorForSynthetic)
             is ClassDescriptor -> SemanticdbSymbolDescriptor(Kind.TYPE, desc.name.toString())
             is PropertySetterDescriptor -> SemanticdbSymbolDescriptor(Kind.METHOD, "set" + desc.correspondingProperty.name.toString().capitalizeAsciiOnly())
             is PropertyGetterDescriptor -> SemanticdbSymbolDescriptor(Kind.METHOD, "get" + desc.correspondingProperty.name.toString().capitalizeAsciiOnly())
@@ -155,7 +161,8 @@ class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
         // need to get original to get method without type projections
         return when(val index = methods.indexOf(originalDesc)) {
             0 -> "()"
-            -1 -> throw IllegalStateException("failed to find method in parent:\n\t\tMethod: ${originalDesc}\n\t\tParent: ${ownerDecl.name}\n\t\tMethods: ${methods.joinToString("\n\t\t\t ")}")
+            // help pls https://kotlinlang.slack.com/archives/C7L3JB43G/p1624995376114900
+            // -1 -> throw IllegalStateException("failed to find method in parent:\n\t\tMethod: ${originalDesc}\n\t\tParent: ${ownerDecl.name}\n\t\tMethods: ${methods.joinToString("\n\t\t\t ")}")
             else -> "(+$index)"
         }
     }

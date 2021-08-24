@@ -324,4 +324,22 @@ class SemanticdbSymbolsTest {
             )
         )
     ).mapCheckExpectedSymbols()
+
+    @TestFactory
+    fun `Single Abstract Method interface`() = listOf(
+        ExpectedSymbols(
+            "basic java.lang.Runnable",
+            SourceFile.testKt(
+                """
+                val x = Runnable { }.run()
+            """
+            ),
+            semanticdb = SemanticdbData(
+                expectedOccurrences = listOf(
+                    SymbolOccurrence { role = Role.REFERENCE; symbol = "java/lang/Runnable#"; range { startLine = 0; startCharacter = 8; endLine = 0; endCharacter = 16; } },
+                    SymbolOccurrence { role = Role.REFERENCE; symbol = "java/lang/Runnable#run()."; range { startLine = 0; startCharacter = 21; endLine = 0; endCharacter = 24; } }
+                )
+            )
+        )
+    ).mapCheckExpectedSymbols()
 }
