@@ -25,14 +25,16 @@ class Analyzer(val sourceroot: Path, val targetroot: Path, val callback: (Semant
         for (file in files) {
             val lineMap = LineMap(project, file)
             val document = SemanticdbVisitor(sourceroot, resolver, file, lineMap, globals).build()
-            Files.write(semanticdbOutPathForFile(file), TextDocuments { addDocuments(document) }.toByteArray())
+            semanticdbOutPathForFile(file)?.apply {
+                Files.write(this, TextDocuments { addDocuments(document) }.toByteArray())
+            }
             callback(document)
         }
 
         return super.analysisCompleted(project, module, bindingTrace, files)
     }
 
-    private fun semanticdbOutPathForFile(file: KtFile): Path {
+    private fun semanticdbOutPathForFile(file: KtFile): Path? {
         val normalizedPath = Path.of(file.virtualFilePath).normalize()
         if (normalizedPath.startsWith(sourceroot)) {
             val relative = sourceroot.relativize(normalizedPath)
@@ -43,6 +45,7 @@ class Analyzer(val sourceroot: Path, val targetroot: Path, val callback: (Semant
             Files.createDirectories(semanticdbOutPath.parent)
             return semanticdbOutPath
         }
-        throw IllegalStateException("given file is not under the sourceroot.\n\t\tSourceroot: $sourceroot\n\t\tFile path: ${file.virtualFilePath}\n\t\tNormalized file path: $normalizedPath")
+        System.err.println("given file is not under the sourceroot.\n\tSourceroot: $sourceroot\n\tFile path: ${file.virtualFilePath}\n\tNormalized file path: $normalizedPath")
+        return null
     }
 }
