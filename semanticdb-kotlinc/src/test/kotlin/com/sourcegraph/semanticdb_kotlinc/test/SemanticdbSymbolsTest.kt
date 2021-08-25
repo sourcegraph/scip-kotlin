@@ -43,9 +43,9 @@ class SemanticdbSymbolsTest {
             """),
             symbolsCacheData = SymbolCacheData(
                 listOf(
-                    "Test#`<init>`(+2).(x)".symbol(),
-                    "Test#`<init>`().(y)".symbol(),
-                    "Test#`<init>`(+1).(z)".symbol()
+                    "Test#`<init>`().(x)".symbol(),
+                    "Test#`<init>`(+1).(y)".symbol(),
+                    "Test#`<init>`(+2).(z)".symbol()
                 )
             )
         ),

@@ -185,7 +185,7 @@ class GlobalSymbolsCache(testing: Boolean = false): Iterable<Symbol> {
             ownerDecl.toSourceElement.getPsi()!!.
             children.first { it is KtBlockExpression }.
             children.filterIsInstance<KtNamedFunction>().
-            map { resolver.fromDeclaration(it)!! as CallableMemberDescriptor }
+            map { resolver.fromDeclaration(it).single() as CallableMemberDescriptor }
         is ClassDescriptor -> {
             // Do we have to go recursively? https://sourcegraph.com/github.com/JetBrains/kotlin/-/blob/idea/src/org/jetbrains/kotlin/idea/actions/generate/utils.kt?L32:5
             val methods = ownerDecl.unsubstitutedMemberScope.getContributedDescriptors().filterIsInstance<FunctionDescriptor>()

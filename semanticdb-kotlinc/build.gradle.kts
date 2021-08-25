@@ -10,7 +10,6 @@ plugins {
 }
 
 group = "com.sourcegraph"
-version = "1.0-SNAPSHOT"
 
 repositories {
     mavenLocal()
@@ -23,7 +22,7 @@ val snapshots: SourceSet by sourceSets.creating {
     java.srcDirs("src/snapshots/kotlin")
 }
 
-// create a new configuration independent from the one consumed by the shadowJar task
+// create a new configuration independent of the one consumed by the shadowJar task
 val snapshotsImplementation: Configuration by configurations.getting {
     extendsFrom(configurations.testImplementation.get())
 }
@@ -85,7 +84,7 @@ tasks.test {
     testLogging {
         showStandardStreams = true
         exceptionFormat = TestExceptionFormat.FULL
-        events("passed", "skipped", "failed")
+        events("passed", "failed")
     }
 }
 
@@ -112,7 +111,7 @@ subprojects {
 
     dependencies {
         implementation(kotlin("stdlib"))
-        compileOnly("com.sourcegraph", "semanticdb-javac", "0.6.4")
+        compileOnly("com.sourcegraph", "semanticdb-javac", "0.6.6")
     }
 
     afterEvaluate {
@@ -168,7 +167,7 @@ subprojects {
                 project.getTasksByName("compileJava", false).first().path
             )
             outputs.upToDateWhen { false }
-            main = "com.sourcegraph.lsif_kotlin.SnapshotKt"
+            mainClass.set("com.sourcegraph.lsif_kotlin.SnapshotKt")
             // this is required as the main class SnapshotKt is in this classpath
             classpath = snapshots.runtimeClasspath
             args = listOf(

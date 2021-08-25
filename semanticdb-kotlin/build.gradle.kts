@@ -2,7 +2,7 @@ import com.google.protobuf.gradle.*
 
 plugins {
     kotlin("jvm")
-    id("com.google.protobuf") version "0.8.15"
+    id("com.google.protobuf") version "0.8.17"
     id("com.github.marcoferrer.kroto-plus") version "0.6.1"
 }
 
@@ -16,14 +16,14 @@ buildscript {
     }
 
     dependencies {
-        classpath("com.google.protobuf:protobuf-java:3.15.7")
+        classpath("com.google.protobuf:protobuf-java:3.17.3")
     }
 }
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation("com.google.protobuf:protobuf-java:3.15.7")
-    implementation("com.sourcegraph", "semanticdb-javac", "0.5.6")
+    implementation("com.google.protobuf:protobuf-java:3.17.3")
+    compileOnly("com.sourcegraph", "semanticdb-javac", "0.6.6")
 }
 
 

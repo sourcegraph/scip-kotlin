@@ -1,7 +1,7 @@
 **/build/*
 .idea/*
 .gradle/*
-*.jar
+semanticdb-*.jar
 *.lsif
 generated/*
 *.svg
