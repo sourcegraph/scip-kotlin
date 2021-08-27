@@ -1,3 +1,4 @@
+import java.net.URI
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
@@ -7,9 +8,8 @@ plugins {
     kotlin("jvm")
     id("com.github.johnrengelman.shadow")
     id("maven-publish")
+    signing
 }
-
-group = "com.sourcegraph"
 
 repositories {
     mavenLocal()
@@ -71,12 +71,53 @@ artifacts {
 publishing {
     publications {
         create<MavenPublication>("shadow") {
-            shadow.component(this)
+            this.apply {
+                pom {
+                    url.set("https://github.com/sourcegraph/lsif-kotlin")
+                    developers {
+                        developer {
+                            id.set("strum355")
+                            name.set("Noah Santschi-Cooney")
+                            email.set("noah@sourcegraph.com")
+                        }
+                        developer {
+                            id.set("olafurpg")
+                            name.set("Ólafur Páll Geirsson")
+                            email.set("olafurpg@sourcegraph.com")
+                        }
+                    }
+                    scm {
+                        url.set("https://github.com/sourcegraph/lsif-kotlin")
+                    }
+                }
+                shadow.component(this)
+            }
         }
     }
     repositories {
         mavenLocal()
+        maven {
+            name = "sonatype"
+            url =
+                if (!(version as String).endsWith("-SNAPSHOT"))
+                    URI("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
+                else
+                    URI("https://oss.sonatype.org/content/repositories/snapshots/")
+            credentials {
+                username = System.getenv("SONATYPE_USERNAME")
+                password = System.getenv("SONATYPE_PASSWORD")
+            }
+        }
     }
+}
+
+signing {
+    useGpgCmd()
+    sign(publishing.publications["shadow"])
+}
+
+tasks.withType<Sign>().configureEach {
+    onlyIf { !(project.version as String).contains("SNAPSHOT") }
 }
 
 tasks.test {
@@ -98,6 +139,7 @@ tasks.jar {
 }
 
 tasks.named<ShadowJar>("shadowJar").configure {
+    archiveClassifier.set("")
     relocate("com.intellij", "org.jetbrains.kotlin.com.intellij")
     minimize()
 }

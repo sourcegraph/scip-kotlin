@@ -88,7 +88,8 @@ class SemanticdbSymbolsTest {
                 listOf("kotlin/contracts/ExperimentalContracts#".symbol(), "kotlin/test/Test#".symbol())
             )
         ),
-        ExpectedSymbols(
+        // https://kotlinlang.slack.com/archives/C7L3JB43G/p1624995376114900
+        /*ExpectedSymbols(
             "Method call with type parameters",
             SourceFile.testKt("""
                 import org.junit.jupiter.api.io.TempDir
@@ -97,7 +98,7 @@ class SemanticdbSymbolsTest {
             symbolsCacheData = SymbolCacheData(
                 listOf("kotlin/collection/TypeAliasesKt#LinkedHashMap#`<init>`().".symbol())
             )
-        )
+        )*/
     ).mapCheckExpectedSymbols()
 
     @TestFactory

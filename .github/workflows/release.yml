@@ -1,0 +1,27 @@
+name: Release
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get tag
+        id: tag
+        run: echo "::set-output name=version::${GITHUB_REF/refs\/tags\/v/}"
+      - id: install-secret-key
+        name: Install gpg secret key
+        run: |
+          echo "${{ secrets.PGP_SECRET }}" | base64 -d | gpg --batch --import
+          gpg --list-secret-keys --keyid-format SHORT
+      - uses: actions/setup-java@v2
+        with: 
+          java-version: '8'
+          distribution: 'adopt'
+      - name: Publish ${{ github.ref }}
+        run: ./gradlew -Pversion=${{ steps.tag.outputs.version }} -Psigning.password=${{ secrets.PGP_PASSPHRASE }} publish
+        env:
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
