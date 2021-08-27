@@ -6,6 +6,7 @@ import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
 import java.nio.file.Path
+import java.nio.file.Paths
 
 const val VAL_SOURCES = "sourceroot"
 val KEY_SOURCES = CompilerConfigurationKey<Path>(VAL_SOURCES)
@@ -32,8 +33,8 @@ class AnalyzerCommandLineProcessor: CommandLineProcessor {
 
     override fun processOption(option: AbstractCliOption, value: String, configuration: CompilerConfiguration) {
         when (option.optionName) {
-            VAL_SOURCES -> configuration.put(KEY_SOURCES, Path.of(value))
-            VAL_TARGET -> configuration.put(KEY_TARGET, Path.of(value))
+            VAL_SOURCES -> configuration.put(KEY_SOURCES, Paths.get(value))
+            VAL_TARGET -> configuration.put(KEY_TARGET, Paths.get(value))
         }
     }
 }

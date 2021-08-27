@@ -6,11 +6,13 @@ import org.jetbrains.kotlin.asJava.namedUnwrappedElement
 import org.jetbrains.kotlin.com.intellij.lang.java.JavaLanguage
 import org.jetbrains.kotlin.com.intellij.navigation.NavigationItem
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
+import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.psi.KtConstructor
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtPropertyAccessor
 import java.lang.IllegalArgumentException
 import java.nio.file.Path
+import java.nio.file.Paths
 import java.security.MessageDigest
 import kotlin.contracts.ExperimentalContracts
 import kotlin.text.Charsets.UTF_8
@@ -34,12 +36,12 @@ class SemanticdbTextDocumentEmitter(
         this.addAllSymbols(symbols)
     }
 
-    fun emitSemanticdbData(symbol: Symbol, element: PsiElement, role: Role) {
+    fun emitSemanticdbData(symbol: Symbol, descriptor: DeclarationDescriptor, element: PsiElement, role: Role) {
         symbolOccurrence(symbol, element, role)?.let(occurrences::add)
-        if (role == Role.DEFINITION) symbolInformation(symbol, element).let(symbols::add)
+        if (role == Role.DEFINITION) symbols.add(symbolInformation(symbol, descriptor, element))
     }
 
-    private fun symbolInformation(symbol: Symbol, element: PsiElement): Semanticdb.SymbolInformation {
+    private fun symbolInformation(symbol: Symbol, descriptor: DeclarationDescriptor, element: PsiElement): Semanticdb.SymbolInformation {
         return SymbolInformation {
             this.symbol = symbol.toString()
             this.displayName = displayName(element)
@@ -75,7 +77,7 @@ class SemanticdbTextDocumentEmitter(
 
     private fun semanticdbURI(): String {
         // TODO: unix-style only
-        val relative = sourceroot.relativize(Path.of(file.virtualFilePath))
+        val relative = sourceroot.relativize(Paths.get(file.virtualFilePath))
         return relative.toString()
     }
 

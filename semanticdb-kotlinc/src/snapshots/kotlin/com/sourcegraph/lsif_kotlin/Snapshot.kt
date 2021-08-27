@@ -23,7 +23,7 @@ fun main(args: Array<String>) {
         files.forEach {
             val sdbTextDocument = if (it.textDocument.text?.length == 0) {
                 it.textDocument.toBuilder().apply {
-                    this.text = Files.readString(sourceroot.resolve(it.relativePath))
+                    this.text = Files.readAllBytes(sourceroot.resolve(it.relativePath)).toString()
                 }.build()
             } else it.textDocument
             val snapshot = SemanticdbPrinters.printTextDocument(sdbTextDocument, CommentSyntax.default())

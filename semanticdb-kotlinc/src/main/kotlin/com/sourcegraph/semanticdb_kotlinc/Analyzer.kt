@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
 import java.lang.IllegalStateException
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.Paths
 import kotlin.contracts.ExperimentalContracts
 
 @ExperimentalContracts
@@ -35,7 +36,7 @@ class Analyzer(val sourceroot: Path, val targetroot: Path, val callback: (Semant
     }
 
     private fun semanticdbOutPathForFile(file: KtFile): Path? {
-        val normalizedPath = Path.of(file.virtualFilePath).normalize()
+        val normalizedPath = Paths.get(file.virtualFilePath).normalize()
         if (normalizedPath.startsWith(sourceroot)) {
             val relative = sourceroot.relativize(normalizedPath)
             val filename = relative.fileName.toString() + ".semanticdb"
