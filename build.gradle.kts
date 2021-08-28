@@ -13,7 +13,7 @@ val versionDetails: Closure<VersionDetails> by extra
 allprojects {
     group = "com.sourcegraph"
     version = (project.properties["version"] as String).let {
-        if (it != "unspecified") return@let it
+        if (it != "unspecified" && !it.startsWith("refs")) return@let it
         val lastTag = versionDetails().lastTag
         val tag =
             if(lastTag.startsWith("v")) lastTag.removePrefix("v")
