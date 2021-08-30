@@ -123,7 +123,7 @@ signing {
 }
 
 tasks.withType<Sign>().configureEach {
-    onlyIf { !(project.version as String).contains("SNAPSHOT") }
+    onlyIf { !(project.version as String).endsWith("SNAPSHOT") }
 }
 
 tasks.test {

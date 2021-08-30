@@ -18,7 +18,7 @@ allprojects {
             return@let it.removePrefix("v")
         val lastTag = versionDetails().lastTag
         val tag =
-            if(lastTag.startsWith("v")) lastTag.removePrefix("v")
+            if (lastTag.startsWith("v")) lastTag.removePrefix("v")
             else "0.0.0"
         val lastNum = tag.split(".").last().toInt() + 1
         "${tag.split(".").subList(0, 2).joinToString(".")}.$lastNum-SNAPSHOT"
@@ -42,7 +42,9 @@ tasks.withType<PublishToMavenRepository> {
     doFirst {
         println("Publishing ${publication.groupId}:${publication.artifactId}:${publication.version} to ${repository.url}")
     }
-    finalizedBy(tasks.closeAndReleaseStagingRepository)
+    if (!(version as String).endsWith("SNAPSHOT")) {
+        finalizedBy(tasks.closeAndReleaseStagingRepository)
+    }
 }
 
 allprojects {
