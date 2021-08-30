@@ -15,7 +15,7 @@ fun main(args: Array<String>) {
     val sourceroot = Path(System.getProperty("sourceroot"))
     val targetroot = Path(System.getProperty("targetroot"))
 
-    val sourceDirs = args.slice(1..args.size-1).map(::Path).map(Path::getParent)
+    val sourceDirs = args.slice(1 until args.size).map(::Path).map(Path::getParent)
 
     sourceDirs.forEach { dir ->
         val files = SemanticdbFile.fromDirectory(dir, sourceroot, targetroot)
@@ -23,7 +23,7 @@ fun main(args: Array<String>) {
         files.forEach {
             val sdbTextDocument = if (it.textDocument.text?.length == 0) {
                 it.textDocument.toBuilder().apply {
-                    this.text = Files.readAllBytes(sourceroot.resolve(it.relativePath)).toString()
+                    this.text = Files.readAllBytes(sourceroot.resolve(it.relativePath)).decodeToString()
                 }.build()
             } else it.textDocument
             val snapshot = SemanticdbPrinters.printTextDocument(sdbTextDocument, CommentSyntax.default())
@@ -35,7 +35,7 @@ fun main(args: Array<String>) {
     }
 }
 
-// because its not shipped as part of lsif_java jar...
+// because it's not shipped as part of lsif_java jar...
 class SemanticdbFile(val sourceDir: Path, sourceroot: Path, val relativePath: Path, targetroot: Path) {
     companion object {
         fun fromDirectory(sourceDir: Path, sourceroot: Path, targetroot: Path): Sequence<SemanticdbFile> =

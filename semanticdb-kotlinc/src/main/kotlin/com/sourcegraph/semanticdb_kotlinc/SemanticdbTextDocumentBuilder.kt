@@ -18,15 +18,16 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.text.Charsets.UTF_8
 
 @ExperimentalContracts
-class SemanticdbTextDocumentEmitter(
+class SemanticdbTextDocumentBuilder(
     private val sourceroot: Path,
     private val file: KtFile,
-    private val lineMap: LineMap
+    private val lineMap: LineMap,
+    private val cache: SymbolsCache
 ) {
     private val occurrences = mutableListOf<Semanticdb.SymbolOccurrence>()
     private val symbols = mutableListOf<Semanticdb.SymbolInformation>()
 
-    fun buildSemanticdbTextDocument() = TextDocument {
+    fun build() = TextDocument {
         this.text = file.text
         this.uri = semanticdbURI()
         this.md5 = semanticdbMD5()

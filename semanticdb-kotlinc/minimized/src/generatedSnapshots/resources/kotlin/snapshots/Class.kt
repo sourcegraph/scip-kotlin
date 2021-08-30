@@ -19,6 +19,14 @@ class Class constructor(private var banana: Int, apple: String): Throwable(banan
 //      ^^^^^^^ reference kotlin/io/ConsoleKt#println(+1).
     }
 
+    val asdf = object {
+//      ^^^^ definition snapshots/Class#asdf. asdf
+//      ^^^^ definition snapshots/Class#getAsdf(). asdf
+        fun doStuff() = Unit
+//          ^^^^^^^ definition local0 doStuff
+//                      ^^^^ reference kotlin/Unit#
+    }
+
     constructor(): this(1, "")
 //  ^^^^^^^^^^^ definition snapshots/Class#`<init>`(+1). Class
 

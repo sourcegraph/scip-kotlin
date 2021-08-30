@@ -5,6 +5,10 @@ class Class constructor(private var banana: Int, apple: String): Throwable(banan
         println("")
     }
 
+    val asdf = object {
+        fun doStuff() = Unit
+    }
+
     constructor(): this(1, "")
 
     constructor(banana: Int): this(banana, "")

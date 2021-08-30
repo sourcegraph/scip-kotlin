@@ -483,12 +483,9 @@ class AnalyzerTest {
             }
         """)
 
-        lateinit var document: TextDocument
-        val callback = { it: TextDocument -> document = it }
-
         val result = KotlinCompilation().apply {
             sources = listOf(source)
-            compilerPlugins = listOf(AnalyzerRegistrar(callback))
+            compilerPlugins = listOf(AnalyzerRegistrar())
             verbose = false
             pluginOptions = listOf(
                 PluginOption("com.sourcegraph.lsif-kotlin", "sourceroot", path.toString()),

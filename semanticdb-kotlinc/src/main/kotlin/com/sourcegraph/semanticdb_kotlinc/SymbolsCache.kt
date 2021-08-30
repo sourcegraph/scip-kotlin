@@ -225,3 +225,8 @@ class LocalSymbolsCache: Iterable<Symbol> {
 
     override fun iterator(): Iterator<Symbol> = symbols.values.iterator()
 }
+
+@ExperimentalContracts
+class SymbolsCache(private val globals: GlobalSymbolsCache, private val locals: LocalSymbolsCache) {
+    operator fun get(descriptor: DeclarationDescriptor) = globals[descriptor, locals]
+}

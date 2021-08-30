@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.BindingTrace
 import org.jetbrains.kotlin.types.KotlinType
 
-class DescriptorResolver(private val bindingTrace: BindingTrace) {
+class DescriptorResolver(/* leave public for debugging */ val bindingTrace: BindingTrace) {
     fun fromDeclaration(declaration: KtDeclaration): Sequence<DeclarationDescriptor> = sequence {
         val descriptor = bindingTrace[BindingContext.DECLARATION_TO_DESCRIPTOR, declaration]
         if (descriptor is ValueParameterDescriptor) {

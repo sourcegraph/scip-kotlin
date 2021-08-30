@@ -132,6 +132,7 @@ tasks.test {
 }
 
 tasks.jar {
+    archiveClassifier.set("-slim")
     manifest {
         attributes["Specification-Title"] = project.name
         attributes["Specification-Version"] = project.version
@@ -155,7 +156,7 @@ subprojects {
 
     dependencies {
         implementation(kotlin("stdlib"))
-        compileOnly("com.sourcegraph", "semanticdb-javac", "0.6.6")
+        compileOnly("com.sourcegraph", "semanticdb-javac", "0.6.8")
     }
 
     afterEvaluate {
@@ -206,6 +207,9 @@ subprojects {
 
         // for each subproject e.g. 'minimized', create a JavaExec task that invokes the snapshot creating main class
         task("snapshots", JavaExec::class) {
+            javaLauncher.set(javaToolchains.launcherFor {
+                languageVersion.set(JavaLanguageVersion.of(8))
+            })
             dependsOn(
                 project.getTasksByName("compileKotlin", false).first().path,
                 project.getTasksByName("compileJava", false).first().path
