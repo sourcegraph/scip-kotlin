@@ -44,7 +44,7 @@ subprojects {
             println("Publishing ${publication.groupId}:${publication.artifactId}:${publication.version} to ${repository.url}")
         }
         if (!(version as String).endsWith("SNAPSHOT")) {
-            finalizedBy(tasks.closeAndReleaseStagingRepository)
+            finalizedBy(rootProject.tasks.closeAndReleaseStagingRepository)
         }
     }
 }
