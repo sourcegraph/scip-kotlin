@@ -50,21 +50,25 @@ dependencies {
 }
 
 tasks.withType<KotlinCompile> {
-    dependsOn(":${projects.semanticdbKotlin.name}:build")
+    dependsOn(projects.semanticdbKotlin.dependencyProject.tasks.build.get().path)
     kotlinOptions {
         freeCompilerArgs = freeCompilerArgs + listOf("-Xinline-classes")
     }
 }
 
 val semanticdbJar: Configuration by configurations.creating {
-    isCanBeConsumed = true
-    isCanBeResolved = false
-    outgoing.artifact(tasks.shadowJar.get().outputs.files.first())
+    afterEvaluate {
+        isCanBeConsumed = true
+        isCanBeResolved = false
+        outgoing.artifact(tasks.shadowJar.get().outputs.files.first())
+    }
 }
 
 artifacts {
-    add("semanticdbJar", tasks.shadowJar.get().outputs.files.first()) {
-       builtBy(tasks.shadowJar)
+    afterEvaluate {
+        add("semanticdbJar", tasks.shadowJar.get().outputs.files.first()) {
+            builtBy(tasks.shadowJar)
+        }
     }
 }
 
@@ -111,12 +115,6 @@ publishing {
     }
 }
 
-tasks.withType<PublishToMavenRepository> {
-    doFirst {
-        println("Publishing ${publication.groupId}:${publication.artifactId}:${publication.version} to ${repository.url}")
-    }
-}
-
 signing {
     val signingKey: String? by project
     val signingPassword: String? by project
@@ -147,7 +145,7 @@ tasks.jar {
     }
 }
 
-tasks.named<ShadowJar>("shadowJar").configure {
+tasks.shadowJar {
     archiveClassifier.set("")
     relocate("com.intellij", "org.jetbrains.kotlin.com.intellij")
     minimize()
@@ -173,16 +171,16 @@ subprojects {
 
         dependencies {
             semanticdbJar(project(mapOf(
-                "path" to ":" + this@afterEvaluate.projects.semanticdbKotlinc.name,
+                "path" to projects.semanticdbKotlinc.dependencyProject.path,
                 "configuration" to "semanticdbJar"
             )))
         }
 
         val sourceroot = rootDir.path
-        val targetroot = this@afterEvaluate.project.buildDir.resolve( "semanticdb-targetroot")
+        val targetroot = project.buildDir.resolve( "semanticdb-targetroot")
 
         tasks.withType<KotlinCompile> {
-            dependsOn(":${this@afterEvaluate.projects.semanticdbKotlinc.name}:shadowJar")
+            dependsOn(projects.semanticdbKotlinc.dependencyProject.tasks.shadowJar.get().path)
             outputs.upToDateWhen { false }
             val pluginJar = semanticdbJar.incoming.artifacts.artifactFiles.first().path
             kotlinOptions {
@@ -198,7 +196,7 @@ subprojects {
         }
 
         tasks.withType<JavaCompile> {
-            dependsOn(":${this@afterEvaluate.projects.semanticdbKotlinc.name}:shadowJar")
+            dependsOn(projects.semanticdbKotlinc.dependencyProject.tasks.shadowJar.get().path)
             outputs.upToDateWhen { false }
             options.compilerArgs = options.compilerArgs + listOf(
                 "-Xplugin:semanticdb -sourceroot:$sourceroot -targetroot:$targetroot"
@@ -212,13 +210,13 @@ subprojects {
         }
 
         // for each subproject e.g. 'minimized', create a JavaExec task that invokes the snapshot creating main class
-        task("snapshots", JavaExec::class) {
+        task<JavaExec>("snapshots") {
             javaLauncher.set(javaToolchains.launcherFor {
                 languageVersion.set(JavaLanguageVersion.of(8))
             })
             dependsOn(
-                project.getTasksByName("compileKotlin", false).first().path,
-                project.getTasksByName("compileJava", false).first().path
+                project.tasks.compileKotlin.get().path,
+                project.tasks.compileJava.get().path
             )
             outputs.upToDateWhen { false }
             mainClass.set("com.sourcegraph.lsif_kotlin.SnapshotKt")
@@ -230,7 +228,7 @@ subprojects {
             )
             systemProperties = mapOf(
                 "sourceroot" to sourceroot,
-                "targetroot" to this@afterEvaluate.project.buildDir.resolve("semanticdb-targetroot"),
+                "targetroot" to project.buildDir.resolve("semanticdb-targetroot"),
                 "snapshotDir" to generatedSnapshots.resources.srcDirs.first())
         }
     }

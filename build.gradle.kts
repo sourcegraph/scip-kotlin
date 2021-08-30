@@ -6,6 +6,7 @@ plugins {
     kotlin("jvm") version "1.5.30"
     id("com.github.johnrengelman.shadow") version "6.1.0"
     id("com.palantir.git-version") version "0.12.3"
+    id("io.github.gradle-nexus.publish-plugin") version "1.0.0"
 }
 
 val versionDetails: Closure<VersionDetails> by extra
@@ -26,6 +27,22 @@ allprojects {
 
 repositories {
     mavenCentral()
+}
+
+nexusPublishing {
+    repositories {
+        sonatype {
+            username.set(System.getenv("SONATYPE_USERNAME"))
+            password.set(System.getenv("SONATYPE_PASSWORD"))
+        }
+    }
+}
+
+tasks.withType<PublishToMavenRepository> {
+    doFirst {
+        println("Publishing ${publication.groupId}:${publication.artifactId}:${publication.version} to ${repository.url}")
+    }
+    finalizedBy(tasks.closeAndReleaseStagingRepository)
 }
 
 allprojects {
