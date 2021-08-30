@@ -72,11 +72,41 @@ artifacts {
     }
 }
 
+tasks.jar {
+    archiveClassifier.set("-slim")
+    manifest {
+        attributes["Specification-Title"] = project.name
+        attributes["Specification-Version"] = project.version
+        attributes["Implementation-Title"] = "com.sourcegraph.lsif-kotlin"
+        attributes["Implementation-Version"] = project.version
+    }
+}
+
+tasks.shadowJar {
+    archiveClassifier.set("")
+    relocate("com.intellij", "org.jetbrains.kotlin.com.intellij")
+    minimize()
+}
+
+val sourceJar = task<Jar>("sourceJar") {
+    dependsOn(tasks.classes)
+    archiveClassifier.set("sources")
+    from(sourceSets.main.get().allSource)
+}
+
+val javadocJar = task<Jar>("javadocJar") {
+    dependsOn(tasks.javadoc)
+    archiveClassifier.set("javadoc")
+    from(tasks.javadoc.get().destinationDir)
+}
+
 publishing {
     publications {
         create<MavenPublication>("shadow") {
             this.apply {
                 pom {
+                    name.set("semanticdb-kotlinc")
+                    description.set("A kotlinc plugin to emit SemanticDB information")
                     url.set("https://github.com/sourcegraph/lsif-kotlin")
                     developers {
                         developer {
@@ -90,11 +120,19 @@ publishing {
                             email.set("olafurpg@sourcegraph.com")
                         }
                     }
+                    licenses {
+                        license {
+                            name.set("The Apache License, Version 2.0")
+                            url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                        }
+                    }
                     scm {
                         url.set("https://github.com/sourcegraph/lsif-kotlin")
                     }
                 }
                 shadow.component(this)
+                artifact(sourceJar)
+                artifact(javadocJar)
             }
         }
     }
@@ -133,22 +171,6 @@ tasks.test {
         exceptionFormat = TestExceptionFormat.FULL
         events("passed", "failed")
     }
-}
-
-tasks.jar {
-    archiveClassifier.set("-slim")
-    manifest {
-        attributes["Specification-Title"] = project.name
-        attributes["Specification-Version"] = project.version
-        attributes["Implementation-Title"] = "com.sourcegraph.lsif-kotlin"
-        attributes["Implementation-Version"] = project.version
-    }
-}
-
-tasks.shadowJar {
-    archiveClassifier.set("")
-    relocate("com.intellij", "org.jetbrains.kotlin.com.intellij")
-    minimize()
 }
 
 subprojects {
