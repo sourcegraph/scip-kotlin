@@ -36,8 +36,8 @@ class AnalyzerTest {
             compilerPlugins = listOf(AnalyzerRegistrar { document = it })
             verbose = false
             pluginOptions = listOf(
-                PluginOption("com.sourcegraph.lsif-kotlin", "sourceroot", path.toString()),
-                PluginOption("com.sourcegraph.lsif-kotlin", "targetroot", buildPath.toString())
+                PluginOption("semanticdb-kotlinc", "sourceroot", path.toString()),
+                PluginOption("semanticdb-kotlinc", "targetroot", buildPath.toString())
             )
             commandLineProcessors = listOf(AnalyzerCommandLineProcessor())
             workingDir = path.toFile()
@@ -488,8 +488,8 @@ class AnalyzerTest {
             compilerPlugins = listOf(AnalyzerRegistrar())
             verbose = false
             pluginOptions = listOf(
-                PluginOption("com.sourcegraph.lsif-kotlin", "sourceroot", path.toString()),
-                PluginOption("com.sourcegraph.lsif-kotlin", "targetroot", buildPath.toString())
+                PluginOption("semanticdb-kotlinc", "sourceroot", path.toString()),
+                PluginOption("semanticdb-kotlinc", "targetroot", buildPath.toString())
             )
             commandLineProcessors = listOf(AnalyzerCommandLineProcessor())
             workingDir = path.toFile()
