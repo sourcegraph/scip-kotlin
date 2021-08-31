@@ -77,7 +77,7 @@ tasks.jar {
     manifest {
         attributes["Specification-Title"] = project.name
         attributes["Specification-Version"] = project.version
-        attributes["Implementation-Title"] = "com.sourcegraph.lsif-kotlin"
+        attributes["Implementation-Title"] = "semanticdb-kotlinc"
         attributes["Implementation-Version"] = project.version
     }
 }
@@ -210,9 +210,9 @@ subprojects {
                 freeCompilerArgs = freeCompilerArgs + listOf(
                     "-Xplugin=$pluginJar",
                     "-P",
-                    "plugin:com.sourcegraph.lsif-kotlin:sourceroot=${sourceroot}",
+                    "plugin:semanticdb-kotlinc:sourceroot=${sourceroot}",
                     "-P",
-                    "plugin:com.sourcegraph.lsif-kotlin:targetroot=${targetroot}"
+                    "plugin:semanticdb-kotlinc:targetroot=${targetroot}"
                 )
             }
         }

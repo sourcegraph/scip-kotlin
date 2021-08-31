@@ -15,7 +15,7 @@ const val VAL_TARGET = "targetroot"
 val KEY_TARGET = CompilerConfigurationKey<Path>(VAL_TARGET)
 
 class AnalyzerCommandLineProcessor: CommandLineProcessor {
-    override val pluginId: String = "com.sourcegraph.lsif-kotlin"
+    override val pluginId: String = "semanticdb-kotlinc"
     override val pluginOptions: Collection<AbstractCliOption> = listOf(
         CliOption(
             VAL_SOURCES ,
