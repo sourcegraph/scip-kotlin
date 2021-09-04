@@ -5,4 +5,4 @@ This project implements a Kotlin compiler plugin that generates an LSIF index fr
 
 It is still highly under development, and as such includes no install/usage instructions.
 
-Visit [lsif.dev](lsif.dev) to learn about LSIF.
+Visit [lsif.dev](https://lsif.dev) to learn about LSIF.
