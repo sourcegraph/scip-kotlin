@@ -1,21 +1,21 @@
 package com.sourcegraph.semanticdb_kotlinc
 
-import org.jetbrains.kotlin.idea.KotlinLanguage
 import com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrence.Role
-import org.jetbrains.kotlin.asJava.namedUnwrappedElement
-import org.jetbrains.kotlin.com.intellij.lang.java.JavaLanguage
-import org.jetbrains.kotlin.com.intellij.navigation.NavigationItem
-import org.jetbrains.kotlin.com.intellij.psi.PsiElement
-import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
-import org.jetbrains.kotlin.psi.KtConstructor
-import org.jetbrains.kotlin.psi.KtFile
-import org.jetbrains.kotlin.psi.KtPropertyAccessor
 import java.lang.IllegalArgumentException
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.security.MessageDigest
 import kotlin.contracts.ExperimentalContracts
 import kotlin.text.Charsets.UTF_8
+import org.jetbrains.kotlin.asJava.namedUnwrappedElement
+import org.jetbrains.kotlin.com.intellij.lang.java.JavaLanguage
+import org.jetbrains.kotlin.com.intellij.navigation.NavigationItem
+import org.jetbrains.kotlin.com.intellij.psi.PsiElement
+import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
+import org.jetbrains.kotlin.idea.KotlinLanguage
+import org.jetbrains.kotlin.psi.KtConstructor
+import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.psi.KtPropertyAccessor
 
 @ExperimentalContracts
 class SemanticdbTextDocumentBuilder(
@@ -37,24 +37,39 @@ class SemanticdbTextDocumentBuilder(
         this.addAllSymbols(symbols)
     }
 
-    fun emitSemanticdbData(symbol: Symbol, descriptor: DeclarationDescriptor, element: PsiElement, role: Role) {
+    fun emitSemanticdbData(
+        symbol: Symbol,
+        descriptor: DeclarationDescriptor,
+        element: PsiElement,
+        role: Role
+    ) {
         symbolOccurrence(symbol, element, role)?.let(occurrences::add)
         if (role == Role.DEFINITION) symbols.add(symbolInformation(symbol, descriptor, element))
     }
 
-    private fun symbolInformation(symbol: Symbol, descriptor: DeclarationDescriptor, element: PsiElement): Semanticdb.SymbolInformation {
+    private fun symbolInformation(
+        symbol: Symbol,
+        descriptor: DeclarationDescriptor,
+        element: PsiElement
+    ): Semanticdb.SymbolInformation {
         return SymbolInformation {
             this.symbol = symbol.toString()
             this.displayName = displayName(element)
-            this.language = when(element.language) {
-                is KotlinLanguage -> Semanticdb.Language.KOTLIN
-                is JavaLanguage -> Semanticdb.Language.JAVA
-                else -> throw IllegalArgumentException("unexpected language ${element.language}")
-            }
+            this.language =
+                when (element.language) {
+                    is KotlinLanguage -> Semanticdb.Language.KOTLIN
+                    is JavaLanguage -> Semanticdb.Language.JAVA
+                    else ->
+                        throw IllegalArgumentException("unexpected language ${element.language}")
+                }
         }
     }
 
-    private fun symbolOccurrence(symbol: Symbol, element: PsiElement, role: Role): Semanticdb.SymbolOccurrence? {
+    private fun symbolOccurrence(
+        symbol: Symbol,
+        element: PsiElement,
+        role: Role
+    ): Semanticdb.SymbolOccurrence? {
         /*val symbol = when(val s = globals[descriptor, locals]) {
             Symbol.NONE -> return null
             else -> s
@@ -82,17 +97,22 @@ class SemanticdbTextDocumentBuilder(
         return relative.toString()
     }
 
-    private fun semanticdbMD5(): String = MessageDigest.getInstance("MD5").digest(file.text.toByteArray(UTF_8)).joinToString("") { "%02X".format(it) }
+    private fun semanticdbMD5(): String =
+        MessageDigest.getInstance("MD5").digest(file.text.toByteArray(UTF_8)).joinToString("") {
+            "%02X".format(it)
+        }
 
     companion object {
-        private fun displayName(element: PsiElement): String = when(element) {
-            is KtPropertyAccessor -> element.namePlaceholder.text
-            is NavigationItem -> when(element.namedUnwrappedElement) {
-                is KtConstructor<*> -> (element.namedUnwrappedElement as KtConstructor<*>).name!!
-                else -> element.name ?: element.text
+        private fun displayName(element: PsiElement): String =
+            when (element) {
+                is KtPropertyAccessor -> element.namePlaceholder.text
+                is NavigationItem ->
+                    when (element.namedUnwrappedElement) {
+                        is KtConstructor<*> ->
+                            (element.namedUnwrappedElement as KtConstructor<*>).name!!
+                        else -> element.name ?: element.text
+                    }
+                else -> element.text
             }
-            else -> element.text
-        }
     }
 }
-

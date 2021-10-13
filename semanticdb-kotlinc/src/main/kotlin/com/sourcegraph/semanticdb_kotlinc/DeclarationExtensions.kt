@@ -8,5 +8,4 @@ import org.jetbrains.kotlin.descriptors.impl.LocalVariableDescriptor
 fun DeclarationDescriptor.isObjectDeclaration(): Boolean =
     this is ClassDescriptor && this.visibility == DescriptorVisibilities.LOCAL
 
-fun DeclarationDescriptor.isLocalVariable(): Boolean =
-    this is LocalVariableDescriptor
+fun DeclarationDescriptor.isLocalVariable(): Boolean = this is LocalVariableDescriptor

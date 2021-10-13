@@ -1,17 +1,12 @@
 package com.sourcegraph.semanticdb_kotlinc
 
 import com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrence.Role
+import java.nio.file.Path
+import kotlin.contracts.ExperimentalContracts
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.psi.*
-import org.jetbrains.kotlin.psi.psiUtil.asAssignment
 import org.jetbrains.kotlin.psi.psiUtil.containingClass
-import org.jetbrains.kotlin.psi.psiUtil.isFunctionalExpression
-import org.jetbrains.kotlin.psi.psiUtil.referenceExpression
-import java.io.FileOutputStream
-import java.io.PrintStream
-import java.nio.file.Path
-import kotlin.contracts.ExperimentalContracts
 
 @ExperimentalContracts
 class SemanticdbVisitor(
@@ -21,22 +16,32 @@ class SemanticdbVisitor(
     private val lineMap: LineMap,
     globals: GlobalSymbolsCache,
     locals: LocalSymbolsCache = LocalSymbolsCache()
-): KtTreeVisitorVoid() {
+) : KtTreeVisitorVoid() {
     private val cache = SymbolsCache(globals, locals)
     private val documentBuilder = SemanticdbTextDocumentBuilder(sourceroot, file, lineMap, cache)
 
-    private data class SymbolDescriptorPair(val symbol: Symbol, val descriptor: DeclarationDescriptor)
+    private data class SymbolDescriptorPair(
+        val symbol: Symbol,
+        val descriptor: DeclarationDescriptor
+    )
 
     fun build(): Semanticdb.TextDocument {
         super.visitKtFile(file)
         return documentBuilder.build()
     }
 
-    private fun Sequence<SymbolDescriptorPair>?.emitAll(element: PsiElement, role: Role): List<Symbol>? = this?.onEach { (symbol, descriptor) ->
-        documentBuilder.emitSemanticdbData(symbol, descriptor, element, role)
-    }?.map { it.symbol }?.toList()
+    private fun Sequence<SymbolDescriptorPair>?.emitAll(
+        element: PsiElement,
+        role: Role
+    ): List<Symbol>? =
+        this?.onEach { (symbol, descriptor) ->
+                documentBuilder.emitSemanticdbData(symbol, descriptor, element, role)
+            }
+            ?.map { it.symbol }
+            ?.toList()
 
-    private fun Sequence<Symbol>.with(descriptor: DeclarationDescriptor) = this.map { SymbolDescriptorPair(it, descriptor) }
+    private fun Sequence<Symbol>.with(descriptor: DeclarationDescriptor) =
+        this.map { SymbolDescriptorPair(it, descriptor) }
 
     override fun visitKtElement(element: KtElement) {
         try {
@@ -44,7 +49,13 @@ class SemanticdbVisitor(
         } catch (e: VisitorException) {
             throw e
         } catch (e: Exception) {
-            throw VisitorException("exception throw when visiting ${element::class} in ${file.virtualFilePath}: (${lineMap.lineNumber(element)}, ${lineMap.startCharacter(element)})", e)
+            throw VisitorException(
+                "exception throw when visiting ${element::class} in ${file.virtualFilePath}: (${
+                    lineMap.lineNumber(
+                        element
+                    )
+                }, ${lineMap.startCharacter(element)})",
+                e)
         }
     }
 
@@ -69,7 +80,8 @@ class SemanticdbVisitor(
 
     override fun visitPrimaryConstructor(constructor: KtPrimaryConstructor) {
         val desc = resolver.fromDeclaration(constructor).single()
-        // if the constructor is not denoted by the 'constructor' keyword, we want to link it to the class ident
+        // if the constructor is not denoted by the 'constructor' keyword, we want to link it to the
+        // class ident
         if (!constructor.hasConstructorKeyword()) {
             cache[desc].with(desc).emitAll(constructor.containingClass()!!, Role.DEFINITION)
         } else {
@@ -97,9 +109,10 @@ class SemanticdbVisitor(
     }
 
     override fun visitParameter(parameter: KtParameter) {
-        resolver.fromDeclaration(parameter).flatMap { desc ->
-            cache[desc].with(desc)
-        }.emitAll(parameter, Role.DEFINITION)
+        resolver
+            .fromDeclaration(parameter)
+            .flatMap { desc -> cache[desc].with(desc) }
+            .emitAll(parameter, Role.DEFINITION)
         super.visitParameter(parameter)
     }
 
@@ -122,13 +135,15 @@ class SemanticdbVisitor(
     }
 
     override fun visitSimpleNameExpression(expression: KtSimpleNameExpression) {
-        val desc = resolver.fromReference(expression) ?: run {
-            super.visitSimpleNameExpression(expression)
-            return
-        }
+        val desc =
+            resolver.fromReference(expression)
+                ?: run {
+                    super.visitSimpleNameExpression(expression)
+                    return
+                }
         cache[desc].with(desc).emitAll(expression, Role.REFERENCE)
         super.visitSimpleNameExpression(expression)
     }
 }
 
-class VisitorException(msg: String, throwable: Throwable): Exception(msg, throwable)
+class VisitorException(msg: String, throwable: Throwable) : Exception(msg, throwable)

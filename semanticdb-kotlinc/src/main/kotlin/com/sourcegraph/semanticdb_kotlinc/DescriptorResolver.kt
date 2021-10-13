@@ -12,17 +12,18 @@ class DescriptorResolver(/* leave public for debugging */ val bindingTrace: Bind
     fun fromDeclaration(declaration: KtDeclaration): Sequence<DeclarationDescriptor> = sequence {
         val descriptor = bindingTrace[BindingContext.DECLARATION_TO_DESCRIPTOR, declaration]
         if (descriptor is ValueParameterDescriptor) {
-            bindingTrace[BindingContext.VALUE_PARAMETER_AS_PROPERTY, descriptor]?.let {
-                yield(it)
-            }
+            bindingTrace[BindingContext.VALUE_PARAMETER_AS_PROPERTY, descriptor]?.let { yield(it) }
         }
         descriptor?.let { yield(it) }
     }
 
-    fun syntheticConstructor(klass: KtClass): ConstructorDescriptor? = bindingTrace[BindingContext.CONSTRUCTOR, klass]
+    fun syntheticConstructor(klass: KtClass): ConstructorDescriptor? =
+        bindingTrace[BindingContext.CONSTRUCTOR, klass]
 
-    fun fromReference(reference: KtReferenceExpression): DeclarationDescriptor? = bindingTrace[BindingContext.REFERENCE_TARGET, reference]
+    fun fromReference(reference: KtReferenceExpression): DeclarationDescriptor? =
+        bindingTrace[BindingContext.REFERENCE_TARGET, reference]
 
-    fun fromTypeReference(reference: KtTypeReference): KotlinType = bindingTrace[BindingContext.TYPE, reference]
-        ?: bindingTrace[BindingContext.ABBREVIATED_TYPE, reference]!!
+    fun fromTypeReference(reference: KtTypeReference): KotlinType =
+        bindingTrace[BindingContext.TYPE, reference]
+            ?: bindingTrace[BindingContext.ABBREVIATED_TYPE, reference]!!
 }

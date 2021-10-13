@@ -1,19 +1,22 @@
 package com.sourcegraph.semanticdb_kotlinc
 
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
+import kotlin.contracts.ExperimentalContracts
 import org.jetbrains.kotlin.analyzer.AnalysisResult
 import org.jetbrains.kotlin.com.intellij.openapi.project.Project
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingTrace
 import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
-import java.lang.IllegalStateException
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
-import kotlin.contracts.ExperimentalContracts
 
 @ExperimentalContracts
-class Analyzer(val sourceroot: Path, val targetroot: Path, val callback: (Semanticdb.TextDocument) -> Unit): AnalysisHandlerExtension {
+class Analyzer(
+    val sourceroot: Path,
+    val targetroot: Path,
+    val callback: (Semanticdb.TextDocument) -> Unit
+) : AnalysisHandlerExtension {
     private val globals = GlobalSymbolsCache()
 
     override fun analysisCompleted(
@@ -41,12 +44,17 @@ class Analyzer(val sourceroot: Path, val targetroot: Path, val callback: (Semant
             val relative = sourceroot.relativize(normalizedPath)
             val filename = relative.fileName.toString() + ".semanticdb"
             val semanticdbOutPath =
-                targetroot.resolve("META-INF").resolve("semanticdb").resolve(relative).resolveSibling(filename)
+                targetroot
+                    .resolve("META-INF")
+                    .resolve("semanticdb")
+                    .resolve(relative)
+                    .resolveSibling(filename)
 
             Files.createDirectories(semanticdbOutPath.parent)
             return semanticdbOutPath
         }
-        System.err.println("given file is not under the sourceroot.\n\tSourceroot: $sourceroot\n\tFile path: ${file.virtualFilePath}\n\tNormalized file path: $normalizedPath")
+        System.err.println(
+            "given file is not under the sourceroot.\n\tSourceroot: $sourceroot\n\tFile path: ${file.virtualFilePath}\n\tNormalized file path: $normalizedPath")
         return null
     }
 }
