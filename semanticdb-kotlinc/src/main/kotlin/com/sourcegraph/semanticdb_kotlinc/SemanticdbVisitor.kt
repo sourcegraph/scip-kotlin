@@ -62,7 +62,6 @@ class SemanticdbVisitor(
         } else {
             cache[desc].with(desc).emitAll(constructor.getConstructorKeyword()!!, Role.DEFINITION)
         }
-        println("PRIMARY CONSTRUCTOR ${constructor.identifyingElement?.parent ?: constructor.containingClass()} ${desc.name} $symbols")
         super.visitPrimaryConstructor(constructor)
     }
 
@@ -88,7 +87,6 @@ class SemanticdbVisitor(
         val symbols = resolver.fromDeclaration(parameter).flatMap { desc ->
             cache[desc].with(desc)
         }.emitAll(parameter, Role.DEFINITION)
-        println("NAMED PARAM $parameter $symbols")
         super.visitParameter(parameter)
     }
 
@@ -112,7 +110,6 @@ class SemanticdbVisitor(
 
     override fun visitSimpleNameExpression(expression: KtSimpleNameExpression) {
         val desc = resolver.fromReference(expression) ?: run {
-            println("NULL DESCRIPTOR FROM NAME EXPRESSION $expression ${expression.javaClass}")
             super.visitSimpleNameExpression(expression)
             return
         }
