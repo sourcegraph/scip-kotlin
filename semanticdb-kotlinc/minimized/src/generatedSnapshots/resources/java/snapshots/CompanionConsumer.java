@@ -8,5 +8,8 @@ public class CompanionConsumer {
 //      ^^^^^^^^^^^^^^ reference snapshots/CompanionOwner#
 //                     ^^^^^^^^^ reference snapshots/CompanionOwner#Companion.
 //                               ^^^^^^ reference snapshots/CompanionOwner#Companion#create().
+        new CompanionOwner().create();
+//          ^^^^^^^^^^^^^^ reference snapshots/CompanionOwner#`<init>`().
+//                           ^^^^^^ reference snapshots/CompanionOwner#create().
     }
 }

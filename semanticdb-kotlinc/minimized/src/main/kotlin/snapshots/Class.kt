@@ -1,6 +1,6 @@
 package snapshots
 
-class Class constructor(private var banana: Int, apple: String): Throwable(banana.toString()) {
+class Class constructor(private var banana: Int, apple: String): Throwable(banana.toString() + apple) {
     init {
         println("")
     }
@@ -16,5 +16,6 @@ class Class constructor(private var banana: Int, apple: String): Throwable(banan
     fun run() {
         println(Class::class)
         println("I eat $banana for lunch")
+        banana = 42
     }
 }

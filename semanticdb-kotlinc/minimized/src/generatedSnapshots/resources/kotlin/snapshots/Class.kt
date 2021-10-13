@@ -1,7 +1,7 @@
 package snapshots
 //      ^^^^^^^^^ reference snapshots/
 
-class Class constructor(private var banana: Int, apple: String): Throwable(banana.toString()) {
+class Class constructor(private var banana: Int, apple: String): Throwable(banana.toString() + apple) {
 //    ^^^^^ definition snapshots/Class# Class
 //          ^^^^^^^^^^^ definition snapshots/Class#`<init>`(). Class
 //                                  ^^^^^^ definition snapshots/Class#banana. banana
@@ -14,6 +14,8 @@ class Class constructor(private var banana: Int, apple: String): Throwable(banan
 //                                                               ^^^^^^^^^ reference kotlin/Throwable#`<init>`().
 //                                                                         ^^^^^^ reference snapshots/Class#`<init>`().(banana)
 //                                                                                ^^^^^^^^ reference kotlin/Int#toString().
+//                                                                                           ^ reference kotlin/String#plus().
+//                                                                                             ^^^^^ reference snapshots/Class#`<init>`().(apple)
     init {
         println("")
 //      ^^^^^^^ reference kotlin/io/ConsoleKt#println(+1).
@@ -46,5 +48,9 @@ class Class constructor(private var banana: Int, apple: String): Throwable(banan
 //                      ^^^^^^ reference snapshots/Class#banana.
 //                      ^^^^^^ reference snapshots/Class#getBanana().
 //                      ^^^^^^ reference snapshots/Class#setBanana().
+        banana = 42
+//      ^^^^^^ reference snapshots/Class#banana.
+//      ^^^^^^ reference snapshots/Class#getBanana().
+//      ^^^^^^ reference snapshots/Class#setBanana().
     }
 }

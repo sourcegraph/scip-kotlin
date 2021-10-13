@@ -4,7 +4,12 @@ import com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrence.Role
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.psi.*
+import org.jetbrains.kotlin.psi.psiUtil.asAssignment
 import org.jetbrains.kotlin.psi.psiUtil.containingClass
+import org.jetbrains.kotlin.psi.psiUtil.isFunctionalExpression
+import org.jetbrains.kotlin.psi.psiUtil.referenceExpression
+import java.io.FileOutputStream
+import java.io.PrintStream
 import java.nio.file.Path
 import kotlin.contracts.ExperimentalContracts
 
@@ -43,12 +48,20 @@ class SemanticdbVisitor(
         }
     }
 
+    override fun visitObjectDeclaration(declaration: KtObjectDeclaration) {
+        if (declaration.name != null) {
+            val desc = resolver.fromDeclaration(declaration).single()
+            cache[desc].with(desc).emitAll(declaration, Role.DEFINITION)
+        }
+        super.visitObjectDeclaration(declaration)
+    }
+
     override fun visitClass(klass: KtClass) {
         val desc = resolver.fromDeclaration(klass).single()
-        var symbols = cache[desc].with(desc).emitAll(klass, Role.DEFINITION)
+        cache[desc].with(desc).emitAll(klass, Role.DEFINITION)
         if (!klass.hasExplicitPrimaryConstructor()) {
             resolver.syntheticConstructor(klass)?.apply {
-                symbols = cache[this].with(this).emitAll(klass, Role.DEFINITION)
+                cache[this].with(this).emitAll(klass, Role.DEFINITION)
             }
         }
         super.visitClass(klass)
@@ -57,7 +70,7 @@ class SemanticdbVisitor(
     override fun visitPrimaryConstructor(constructor: KtPrimaryConstructor) {
         val desc = resolver.fromDeclaration(constructor).single()
         // if the constructor is not denoted by the 'constructor' keyword, we want to link it to the class ident
-        val symbols = if (!constructor.hasConstructorKeyword()) {
+        if (!constructor.hasConstructorKeyword()) {
             cache[desc].with(desc).emitAll(constructor.containingClass()!!, Role.DEFINITION)
         } else {
             cache[desc].with(desc).emitAll(constructor.getConstructorKeyword()!!, Role.DEFINITION)
@@ -67,24 +80,24 @@ class SemanticdbVisitor(
 
     override fun visitSecondaryConstructor(constructor: KtSecondaryConstructor) {
         val desc = resolver.fromDeclaration(constructor).single()
-        val symbols = cache[desc].with(desc).emitAll(constructor.getConstructorKeyword(), Role.DEFINITION)
+        cache[desc].with(desc).emitAll(constructor.getConstructorKeyword(), Role.DEFINITION)
         super.visitSecondaryConstructor(constructor)
     }
 
     override fun visitNamedFunction(function: KtNamedFunction) {
         val desc = resolver.fromDeclaration(function).single()
-        val symbols = cache[desc].with(desc).emitAll(function, Role.DEFINITION)
+        cache[desc].with(desc).emitAll(function, Role.DEFINITION)
         super.visitNamedFunction(function)
     }
 
     override fun visitProperty(property: KtProperty) {
         val desc = resolver.fromDeclaration(property).single()
-        val symbols = cache[desc].with(desc).emitAll(property, Role.DEFINITION)
+        cache[desc].with(desc).emitAll(property, Role.DEFINITION)
         super.visitProperty(property)
     }
 
     override fun visitParameter(parameter: KtParameter) {
-        val symbols = resolver.fromDeclaration(parameter).flatMap { desc ->
+        resolver.fromDeclaration(parameter).flatMap { desc ->
             cache[desc].with(desc)
         }.emitAll(parameter, Role.DEFINITION)
         super.visitParameter(parameter)
@@ -92,19 +105,19 @@ class SemanticdbVisitor(
 
     override fun visitTypeParameter(parameter: KtTypeParameter) {
         val desc = resolver.fromDeclaration(parameter).single()
-        val symbols = cache[desc].with(desc).emitAll(parameter, Role.DEFINITION)
+        cache[desc].with(desc).emitAll(parameter, Role.DEFINITION)
         super.visitTypeParameter(parameter)
     }
 
     override fun visitTypeAlias(typeAlias: KtTypeAlias) {
         val desc = resolver.fromDeclaration(typeAlias).single()
-        val symbols = cache[desc].with(desc).emitAll(typeAlias, Role.DEFINITION)
+        cache[desc].with(desc).emitAll(typeAlias, Role.DEFINITION)
         super.visitTypeAlias(typeAlias)
     }
 
     override fun visitPropertyAccessor(accessor: KtPropertyAccessor) {
         val desc = resolver.fromDeclaration(accessor).single()
-        val symbols = cache[desc].with(desc).emitAll(accessor, Role.DEFINITION)
+        cache[desc].with(desc).emitAll(accessor, Role.DEFINITION)
         super.visitPropertyAccessor(accessor)
     }
 
@@ -113,7 +126,7 @@ class SemanticdbVisitor(
             super.visitSimpleNameExpression(expression)
             return
         }
-        val symbols = cache[desc].with(desc).emitAll(expression, Role.REFERENCE)
+        cache[desc].with(desc).emitAll(expression, Role.REFERENCE)
         super.visitSimpleNameExpression(expression)
     }
 }
