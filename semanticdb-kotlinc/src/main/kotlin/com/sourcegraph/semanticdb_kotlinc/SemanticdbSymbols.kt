@@ -7,11 +7,12 @@ value class Symbol(private val symbol: String) {
         val ROOT_PACKAGE = Symbol("_root_/")
         val EMPTY_PACKAGE = Symbol("_empty_/")
 
-        fun createGlobal(owner: Symbol, desc: SemanticdbSymbolDescriptor): Symbol = when {
-            desc == SemanticdbSymbolDescriptor.NONE -> NONE
-            owner != ROOT_PACKAGE -> Symbol(owner.symbol + desc.encode().symbol)
-            else -> desc.encode()
-        }
+        fun createGlobal(owner: Symbol, desc: SemanticdbSymbolDescriptor): Symbol =
+            when {
+                desc == SemanticdbSymbolDescriptor.NONE -> NONE
+                owner != ROOT_PACKAGE -> Symbol(owner.symbol + desc.encode().symbol)
+                else -> desc.encode()
+            }
 
         fun createLocal(i: Int) = Symbol("local$i")
     }
@@ -25,7 +26,11 @@ value class Symbol(private val symbol: String) {
 
 fun String.symbol(): Symbol = Symbol(this)
 
-data class SemanticdbSymbolDescriptor(val kind: Kind, val name: String, val disambiguator: String = "()") {
+data class SemanticdbSymbolDescriptor(
+    val kind: Kind,
+    val name: String,
+    val disambiguator: String = "()"
+) {
     companion object {
         val NONE = SemanticdbSymbolDescriptor(Kind.NONE, "")
 
@@ -43,16 +48,24 @@ data class SemanticdbSymbolDescriptor(val kind: Kind, val name: String, val disa
     }
 
     enum class Kind {
-        NONE, TERM, METHOD, TYPE, PACKAGE, PARAMETER, TYPE_PARAMETER
+        NONE,
+        TERM,
+        METHOD,
+        TYPE,
+        PACKAGE,
+        PARAMETER,
+        TYPE_PARAMETER
     }
 
-    fun encode() = Symbol(when(kind) {
-        Kind.NONE -> ""
-        Kind.TERM -> "${encodeName(name)}."
-        Kind.METHOD -> "${encodeName(name)}${disambiguator}."
-        Kind.TYPE -> "${encodeName(name)}#"
-        Kind.PACKAGE -> "${encodeName(name)}/"
-        Kind.PARAMETER -> "(${encodeName(name)})"
-        Kind.TYPE_PARAMETER -> "[${encodeName(name)}]"
-    })
+    fun encode() =
+        Symbol(
+            when (kind) {
+                Kind.NONE -> ""
+                Kind.TERM -> "${encodeName(name)}."
+                Kind.METHOD -> "${encodeName(name)}${disambiguator}."
+                Kind.TYPE -> "${encodeName(name)}#"
+                Kind.PACKAGE -> "${encodeName(name)}/"
+                Kind.PARAMETER -> "(${encodeName(name)})"
+                Kind.TYPE_PARAMETER -> "[${encodeName(name)}]"
+            })
 }

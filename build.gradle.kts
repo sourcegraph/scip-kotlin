@@ -7,11 +7,22 @@ plugins {
     id("com.github.johnrengelman.shadow") version "6.1.0"
     id("com.palantir.git-version") version "0.12.3"
     id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
+    id("com.diffplug.spotless") version "5.17.0"
 }
+
 
 val versionDetails: Closure<VersionDetails> by extra
 
 allprojects {
+    if (name !in setOf("minimized", "semanticdb-kotlin")) {
+        apply(plugin = "com.diffplug.spotless")
+        spotless {
+            kotlin {
+                ktfmt().dropboxStyle()
+            }
+        }
+    }
+
     group = "com.sourcegraph"
     version = (project.properties["version"] as String).let {
         if (it != "unspecified" && !it.startsWith("refs"))
@@ -23,6 +34,7 @@ allprojects {
         val lastNum = tag.split(".").last().toInt() + 1
         "${tag.split(".").subList(0, 2).joinToString(".")}.$lastNum-SNAPSHOT"
     }
+
 }
 
 repositories {

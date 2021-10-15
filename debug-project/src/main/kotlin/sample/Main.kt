@@ -10,16 +10,15 @@ class Main<T> {
         return null
     }
 
-    fun method(burger: String) {
-    }
+    fun method(burger: String) {}
 
-    val helloWorld = object {
-        val hello = "Hello"
-        val world = "World"
+    val helloWorld =
+        object {
+            val hello = "Hello"
+            val world = "World"
 
-        override fun toString() = "$hello $world"
-    }
-
+            override fun toString() = "$hello $world"
+        }
 }
 
 val bananas = 1

@@ -11,11 +11,11 @@ import io.kotest.assertions.assertSoftly
 import io.kotest.assertions.withClue
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
-import org.junit.jupiter.api.io.TempDir
 import java.io.File
 import java.nio.file.Path
 import kotlin.contracts.ExperimentalContracts
 import kotlin.test.Test
+import org.junit.jupiter.api.io.TempDir
 
 @ExperimentalContracts
 class AnalyzerTest {
@@ -23,7 +23,9 @@ class AnalyzerTest {
     fun `basic test`(@TempDir path: Path) {
         val buildPath = File(path.resolve("build").toString()).apply { mkdir() }
 
-        val source = SourceFile.testKt("""
+        val source =
+            SourceFile.testKt(
+                """
             package sample
             class Banana {
                 fun foo() { }
@@ -31,39 +33,71 @@ class AnalyzerTest {
 
         lateinit var document: TextDocument
 
-        val result = KotlinCompilation().apply {
-            sources = listOf(source)
-            compilerPlugins = listOf(AnalyzerRegistrar { document = it })
-            verbose = false
-            pluginOptions = listOf(
-                PluginOption("semanticdb-kotlinc", "sourceroot", path.toString()),
-                PluginOption("semanticdb-kotlinc", "targetroot", buildPath.toString())
-            )
-            commandLineProcessors = listOf(AnalyzerCommandLineProcessor())
-            workingDir = path.toFile()
-        }.compile()
+        val result =
+            KotlinCompilation()
+                .apply {
+                    sources = listOf(source)
+                    compilerPlugins = listOf(AnalyzerRegistrar { document = it })
+                    verbose = false
+                    pluginOptions =
+                        listOf(
+                            PluginOption("semanticdb-kotlinc", "sourceroot", path.toString()),
+                            PluginOption("semanticdb-kotlinc", "targetroot", buildPath.toString()))
+                    commandLineProcessors = listOf(AnalyzerCommandLineProcessor())
+                    workingDir = path.toFile()
+                }
+                .compile()
 
         result.exitCode shouldBe KotlinCompilation.ExitCode.OK
-        val occurrences = arrayOf(
-            SymbolOccurrence { role = Role.REFERENCE; symbol = "sample/"; range { startLine = 0; startCharacter = 8; endLine = 0; endCharacter = 14 } },
-            SymbolOccurrence { role = Role.DEFINITION; symbol = "sample/Banana#"; range { startLine = 1; startCharacter = 6; endLine = 1; endCharacter = 12 } },
-            SymbolOccurrence { role = Role.DEFINITION; symbol = "sample/Banana#foo()."; range { startLine = 2; startCharacter = 8; endLine = 2; endCharacter = 11 } }
-        )
+        val occurrences =
+            arrayOf(
+                SymbolOccurrence {
+                    role = Role.REFERENCE
+                    symbol = "sample/"
+                    range {
+                        startLine = 0
+                        startCharacter = 8
+                        endLine = 0
+                        endCharacter = 14
+                    }
+                },
+                SymbolOccurrence {
+                    role = Role.DEFINITION
+                    symbol = "sample/Banana#"
+                    range {
+                        startLine = 1
+                        startCharacter = 6
+                        endLine = 1
+                        endCharacter = 12
+                    }
+                },
+                SymbolOccurrence {
+                    role = Role.DEFINITION
+                    symbol = "sample/Banana#foo()."
+                    range {
+                        startLine = 2
+                        startCharacter = 8
+                        endLine = 2
+                        endCharacter = 11
+                    }
+                })
         assertSoftly(document.occurrencesList) {
-            withClue(this) {
-                occurrences.forEach(::shouldContain)
-            }
+            withClue(this) { occurrences.forEach(::shouldContain) }
         }
 
-        val symbols = arrayOf(
-            SymbolInformation { symbol = "sample/Banana#"; language = KOTLIN; displayName = "Banana" },
-            SymbolInformation { symbol = "sample/Banana#foo()."; language = KOTLIN; displayName = "foo" }
-        )
-        assertSoftly(document.symbolsList) {
-            withClue(this) {
-                symbols.forEach(::shouldContain)
-            }
-        }
+        val symbols =
+            arrayOf(
+                SymbolInformation {
+                    symbol = "sample/Banana#"
+                    language = KOTLIN
+                    displayName = "Banana"
+                },
+                SymbolInformation {
+                    symbol = "sample/Banana#foo()."
+                    language = KOTLIN
+                    displayName = "foo"
+                })
+        assertSoftly(document.symbolsList) { withClue(this) { symbols.forEach(::shouldContain) } }
     }
 
     @Test
@@ -71,7 +105,9 @@ class AnalyzerTest {
     fun `learn x in y test`(@TempDir path: Path) {
         val buildPath = File(path.resolve("build").toString()).apply { mkdir() }
 
-        val source = SourceFile.testKt("""
+        val source =
+            SourceFile.testKt(
+                """
             @file:Suppress("UNUSED_VARIABLE", "UNUSED_PARAMETER", "NAME_SHADOWING", "ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE", "UNUSED_VALUE")
             package sample
 
@@ -483,17 +519,20 @@ class AnalyzerTest {
             }
         """)
 
-        val result = KotlinCompilation().apply {
-            sources = listOf(source)
-            compilerPlugins = listOf(AnalyzerRegistrar())
-            verbose = false
-            pluginOptions = listOf(
-                PluginOption("semanticdb-kotlinc", "sourceroot", path.toString()),
-                PluginOption("semanticdb-kotlinc", "targetroot", buildPath.toString())
-            )
-            commandLineProcessors = listOf(AnalyzerCommandLineProcessor())
-            workingDir = path.toFile()
-        }.compile()
+        val result =
+            KotlinCompilation()
+                .apply {
+                    sources = listOf(source)
+                    compilerPlugins = listOf(AnalyzerRegistrar())
+                    verbose = false
+                    pluginOptions =
+                        listOf(
+                            PluginOption("semanticdb-kotlinc", "sourceroot", path.toString()),
+                            PluginOption("semanticdb-kotlinc", "targetroot", buildPath.toString()))
+                    commandLineProcessors = listOf(AnalyzerCommandLineProcessor())
+                    workingDir = path.toFile()
+                }
+                .compile()
 
         result.exitCode shouldBe KotlinCompilation.ExitCode.OK
     }
