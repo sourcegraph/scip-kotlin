@@ -58,7 +58,8 @@ class SemanticdbFile(
             sourceDir.toFile().walkTopDown().mapNotNull {
                 if (it.isDirectory) return@mapNotNull null
                 SemanticdbFile(
-                    sourceDir, sourceroot, it.toPath().relativeTo(sourceroot), targetroot)
+                    sourceDir, sourceroot, it.toPath().relativeTo(sourceroot), targetroot
+                )
             }
     }
 

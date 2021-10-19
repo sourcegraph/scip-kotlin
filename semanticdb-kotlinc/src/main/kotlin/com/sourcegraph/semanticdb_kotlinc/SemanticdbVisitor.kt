@@ -1,12 +1,12 @@
 package com.sourcegraph.semanticdb_kotlinc
 
 import com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrence.Role
-import java.nio.file.Path
-import kotlin.contracts.ExperimentalContracts
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.containingClass
+import java.nio.file.Path
+import kotlin.contracts.ExperimentalContracts
 
 @ExperimentalContracts
 class SemanticdbVisitor(
@@ -35,8 +35,8 @@ class SemanticdbVisitor(
         role: Role
     ): List<Symbol>? =
         this?.onEach { (symbol, descriptor) ->
-                documentBuilder.emitSemanticdbData(symbol, descriptor, element, role)
-            }
+            documentBuilder.emitSemanticdbData(symbol, descriptor, element, role)
+        }
             ?.map { it.symbol }
             ?.toList()
 
@@ -51,11 +51,12 @@ class SemanticdbVisitor(
         } catch (e: Exception) {
             throw VisitorException(
                 "exception throw when visiting ${element::class} in ${file.virtualFilePath}: (${
-                    lineMap.lineNumber(
-                        element
-                    )
+                lineMap.lineNumber(
+                    element
+                )
                 }, ${lineMap.startCharacter(element)})",
-                e)
+                e
+            )
         }
     }
 

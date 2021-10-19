@@ -1,11 +1,6 @@
 package com.sourcegraph.semanticdb_kotlinc
 
 import com.sourcegraph.semanticdb_kotlinc.SemanticdbSymbolDescriptor.Kind
-import java.lang.System.err
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.contract
 import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.impl.AnonymousFunctionDescriptor
@@ -26,6 +21,11 @@ import org.jetbrains.kotlin.resolve.source.getPsi
 import org.jetbrains.kotlin.serialization.deserialization.descriptors.DescriptorWithContainerSource
 import org.jetbrains.kotlin.types.TypeUtils
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.capitalizeAsciiOnly
+import java.lang.System.err
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 
 @ExperimentalContracts
 class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
@@ -90,20 +90,29 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
             owner.isLocal() ||
             ownerDesc.isLocalVariable() ||
             ownerDesc is AnonymousFunctionDescriptor ||
-            descriptor.isLocalVariable())
+            descriptor.isLocalVariable()
+        )
             return locals + descriptor
 
         // if is a top-level function or variable, Kotlin creates a wrapping class
-        if (((descriptor is FunctionDescriptor &&
-            descriptor !is FunctionInterfaceConstructorDescriptor) ||
-            descriptor is VariableDescriptor) && ownerDesc is PackageFragmentDescriptor) {
+        if ((
+            (
+                descriptor is FunctionDescriptor &&
+                    descriptor !is FunctionInterfaceConstructorDescriptor
+                ) ||
+                descriptor is VariableDescriptor
+            ) && ownerDesc is PackageFragmentDescriptor
+        ) {
             owner =
                 Symbol.createGlobal(
                     owner,
                     SemanticdbSymbolDescriptor(
                         Kind.TYPE,
                         sourceFileToClassSymbol(
-                            descriptor.toSourceElement.containingFile, descriptor)))
+                            descriptor.toSourceElement.containingFile, descriptor
+                        )
+                    )
+                )
         }
 
         val semanticdbDescriptor = semanticdbDescriptor(descriptor)
@@ -168,14 +177,17 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
             is PropertySetterDescriptor ->
                 SemanticdbSymbolDescriptor(
                     Kind.METHOD,
-                    "set" + desc.correspondingProperty.name.toString().capitalizeAsciiOnly())
+                    "set" + desc.correspondingProperty.name.toString().capitalizeAsciiOnly()
+                )
             is PropertyGetterDescriptor ->
                 SemanticdbSymbolDescriptor(
                     Kind.METHOD,
-                    "get" + desc.correspondingProperty.name.toString().capitalizeAsciiOnly())
+                    "get" + desc.correspondingProperty.name.toString().capitalizeAsciiOnly()
+                )
             is FunctionDescriptor ->
                 SemanticdbSymbolDescriptor(
-                    Kind.METHOD, desc.name.toString(), methodDisambiguator(desc))
+                    Kind.METHOD, desc.name.toString(), methodDisambiguator(desc)
+                )
             is TypeParameterDescriptor ->
                 SemanticdbSymbolDescriptor(Kind.TYPE_PARAMETER, desc.name.toString())
             is ValueParameterDescriptor ->
@@ -199,7 +211,8 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
 
         methods.sortWith { m1, m2 ->
             compareValues(
-                m1.dispatchReceiverParameter == null, m2.dispatchReceiverParameter == null)
+                m1.dispatchReceiverParameter == null, m2.dispatchReceiverParameter == null
+            )
         }
 
         val originalDesc =
@@ -283,7 +296,8 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
             }
             else ->
                 throw IllegalStateException(
-                    "unexpected owner decl type '${ownerDecl.javaClass}':\n\t\tMethod: ${desc}\n\t\tParent: $ownerDecl")
+                    "unexpected owner decl type '${ownerDecl.javaClass}':\n\t\tMethod: ${desc}\n\t\tParent: $ownerDecl"
+                )
         }
 
     override fun iterator(): Iterator<Symbol> = globals.values.iterator()

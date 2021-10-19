@@ -1,12 +1,6 @@
 package com.sourcegraph.semanticdb_kotlinc
 
 import com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrence.Role
-import java.lang.IllegalArgumentException
-import java.nio.file.Path
-import java.nio.file.Paths
-import java.security.MessageDigest
-import kotlin.contracts.ExperimentalContracts
-import kotlin.text.Charsets.UTF_8
 import org.jetbrains.kotlin.asJava.namedUnwrappedElement
 import org.jetbrains.kotlin.com.intellij.lang.java.JavaLanguage
 import org.jetbrains.kotlin.com.intellij.navigation.NavigationItem
@@ -16,6 +10,12 @@ import org.jetbrains.kotlin.idea.KotlinLanguage
 import org.jetbrains.kotlin.psi.KtConstructor
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtPropertyAccessor
+import java.lang.IllegalArgumentException
+import java.nio.file.Path
+import java.nio.file.Paths
+import java.security.MessageDigest
+import kotlin.contracts.ExperimentalContracts
+import kotlin.text.Charsets.UTF_8
 
 @ExperimentalContracts
 class SemanticdbTextDocumentBuilder(
@@ -26,6 +26,7 @@ class SemanticdbTextDocumentBuilder(
 ) {
     private val occurrences = mutableListOf<Semanticdb.SymbolOccurrence>()
     private val symbols = mutableListOf<Semanticdb.SymbolInformation>()
+    private val sigBuilder = SemanticdbSignatureBuilder(cache)
 
     fun build() = TextDocument {
         this.text = file.text
@@ -55,6 +56,7 @@ class SemanticdbTextDocumentBuilder(
         return SymbolInformation {
             this.symbol = symbol.toString()
             this.displayName = displayName(element)
+            this.signature = sigBuilder.build(descriptor)
             this.language =
                 when (element.language) {
                     is KotlinLanguage -> Semanticdb.Language.KOTLIN
@@ -70,11 +72,6 @@ class SemanticdbTextDocumentBuilder(
         element: PsiElement,
         role: Role
     ): Semanticdb.SymbolOccurrence? {
-        /*val symbol = when(val s = globals[descriptor, locals]) {
-            Symbol.NONE -> return null
-            else -> s
-        }.symbol*/
-
         return SymbolOccurrence {
             this.symbol = symbol.toString()
             this.role = role

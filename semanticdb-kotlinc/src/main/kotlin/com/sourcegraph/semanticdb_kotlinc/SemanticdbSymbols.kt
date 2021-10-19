@@ -62,10 +62,11 @@ data class SemanticdbSymbolDescriptor(
             when (kind) {
                 Kind.NONE -> ""
                 Kind.TERM -> "${encodeName(name)}."
-                Kind.METHOD -> "${encodeName(name)}${disambiguator}."
+                Kind.METHOD -> "${encodeName(name)}$disambiguator."
                 Kind.TYPE -> "${encodeName(name)}#"
                 Kind.PACKAGE -> "${encodeName(name)}/"
                 Kind.PARAMETER -> "(${encodeName(name)})"
                 Kind.TYPE_PARAMETER -> "[${encodeName(name)}]"
-            })
+            }
+        )
 }

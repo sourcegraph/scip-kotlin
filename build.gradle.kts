@@ -10,7 +10,6 @@ plugins {
     id("com.diffplug.spotless") version "5.17.0"
 }
 
-
 val versionDetails: Closure<VersionDetails> by extra
 
 allprojects {
@@ -18,7 +17,7 @@ allprojects {
         apply(plugin = "com.diffplug.spotless")
         spotless {
             kotlin {
-                ktfmt().dropboxStyle()
+                ktlint().userData(mapOf("disabled_rules" to "no-wildcard-imports"))
             }
         }
     }
@@ -34,7 +33,6 @@ allprojects {
         val lastNum = tag.split(".").last().toInt() + 1
         "${tag.split(".").subList(0, 2).joinToString(".")}.$lastNum-SNAPSHOT"
     }
-
 }
 
 repositories {

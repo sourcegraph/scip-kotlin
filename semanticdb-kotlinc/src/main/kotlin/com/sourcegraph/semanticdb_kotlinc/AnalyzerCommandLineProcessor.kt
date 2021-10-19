@@ -1,12 +1,12 @@
 package com.sourcegraph.semanticdb_kotlinc
 
-import java.nio.file.Path
-import java.nio.file.Paths
 import org.jetbrains.kotlin.compiler.plugin.AbstractCliOption
 import org.jetbrains.kotlin.compiler.plugin.CliOption
 import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
+import java.nio.file.Path
+import java.nio.file.Paths
 
 const val VAL_SOURCES = "sourceroot"
 val KEY_SOURCES = CompilerConfigurationKey<Path>(VAL_SOURCES)
@@ -22,12 +22,15 @@ class AnalyzerCommandLineProcessor : CommandLineProcessor {
                 VAL_SOURCES,
                 "<path>",
                 "the absolute path to the root of the Kotlin sources",
-                required = true),
+                required = true
+            ),
             CliOption(
                 VAL_TARGET,
                 "<path>",
                 "the absolute path to the directory where to generate SemanticDB files.",
-                required = true))
+                required = true
+            )
+        )
 
     override fun processOption(
         option: AbstractCliOption,

@@ -11,11 +11,11 @@ import io.kotest.assertions.assertSoftly
 import io.kotest.assertions.withClue
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
+import org.junit.jupiter.api.io.TempDir
 import java.io.File
 import java.nio.file.Path
 import kotlin.contracts.ExperimentalContracts
 import kotlin.test.Test
-import org.junit.jupiter.api.io.TempDir
 
 @ExperimentalContracts
 class AnalyzerTest {
@@ -29,7 +29,8 @@ class AnalyzerTest {
             package sample
             class Banana {
                 fun foo() { }
-            }""")
+            }"""
+            )
 
         lateinit var document: TextDocument
 
@@ -42,7 +43,8 @@ class AnalyzerTest {
                     pluginOptions =
                         listOf(
                             PluginOption("semanticdb-kotlinc", "sourceroot", path.toString()),
-                            PluginOption("semanticdb-kotlinc", "targetroot", buildPath.toString()))
+                            PluginOption("semanticdb-kotlinc", "targetroot", buildPath.toString())
+                        )
                     commandLineProcessors = listOf(AnalyzerCommandLineProcessor())
                     workingDir = path.toFile()
                 }
@@ -80,7 +82,8 @@ class AnalyzerTest {
                         endLine = 2
                         endCharacter = 11
                     }
-                })
+                }
+            )
         assertSoftly(document.occurrencesList) {
             withClue(this) { occurrences.forEach(::shouldContain) }
         }
@@ -96,7 +99,8 @@ class AnalyzerTest {
                     symbol = "sample/Banana#foo()."
                     language = KOTLIN
                     displayName = "foo"
-                })
+                }
+            )
         assertSoftly(document.symbolsList) { withClue(this) { symbols.forEach(::shouldContain) } }
     }
 
@@ -517,7 +521,8 @@ class AnalyzerTest {
                 counter1() // => The value of the counter is 36
                 println(-counter2) // => Counter(value=-5)
             }
-        """)
+        """
+            )
 
         val result =
             KotlinCompilation()
@@ -528,7 +533,8 @@ class AnalyzerTest {
                     pluginOptions =
                         listOf(
                             PluginOption("semanticdb-kotlinc", "sourceroot", path.toString()),
-                            PluginOption("semanticdb-kotlinc", "targetroot", buildPath.toString()))
+                            PluginOption("semanticdb-kotlinc", "targetroot", buildPath.toString())
+                        )
                     commandLineProcessors = listOf(AnalyzerCommandLineProcessor())
                     workingDir = path.toFile()
                 }
