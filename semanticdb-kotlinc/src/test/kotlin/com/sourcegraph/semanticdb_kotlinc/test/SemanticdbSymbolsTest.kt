@@ -17,30 +17,31 @@ class SemanticdbSymbolsTest {
                     "Basic two methods",
                     SourceFile.testKt(
                         """
-                class Test {
-                    fun sample() {}
-                    fun sample(x: Int) {}
-                }
-            """),
+                        |class Test {
+                        |    fun sample() {}
+                        |    fun sample(x: Int) {}
+                        |}
+                        |""".trimMargin()),
                     symbolsCacheData =
                         SymbolCacheData(
                             listOf("Test#sample().".symbol(), "Test#sample(+1).".symbol()),
                         )),
                 ExpectedSymbols(
                     "Inline class constructor",
-                    SourceFile.testKt("""
-                class Test(val x: Int)
-            """),
+                    SourceFile.testKt(
+                        """
+                        |class Test(val x: Int)
+                        |""".trimMargin()),
                     symbolsCacheData = SymbolCacheData(listOf("Test#`<init>`().(x)".symbol()))),
                 ExpectedSymbols(
                     "Inline + secondary class constructors",
                     SourceFile.testKt(
                         """
-                class Test(val x: Int) {
-                    constructor(y: Long): this(y.toInt())
-                    constructor(z: String): this(z.toInt())
-                }
-            """),
+                        |class Test(val x: Int) {
+                        |    constructor(y: Long): this(y.toInt())
+                        |    constructor(z: String): this(z.toInt())
+                        |}
+                        |""".trimMargin()),
                     symbolsCacheData =
                         SymbolCacheData(
                             listOf(
@@ -51,12 +52,12 @@ class SemanticdbSymbolsTest {
                     "Disambiguator number is not affected by different named methods",
                     SourceFile.testKt(
                         """
-                class Test {
-                    fun sample() {}
-                    fun test() {}
-                    fun test(x: Int) {}
-                }
-            """),
+                        |class Test {
+                        |    fun sample() {}
+                        |    fun test() {}
+                        |    fun test(x: Int) {}
+                        |}
+                        |""".trimMargin()),
                     symbolsCacheData =
                         SymbolCacheData(
                             listOf("Test#test().".symbol(), "Test#test(+1).".symbol()))),
@@ -64,9 +65,9 @@ class SemanticdbSymbolsTest {
                     "Top level overloaded functions",
                     SourceFile.testKt(
                         """
-                fun test() {}
-                fun test(x: Int) {}
-            """),
+                        |fun test() {}
+                        |fun test(x: Int) {}
+                        |""".trimMargin()),
                     symbolsCacheData =
                         SymbolCacheData(
                             listOf("TestKt#test().".symbol(), "TestKt#test(+1).(x)".symbol()))),
@@ -74,15 +75,15 @@ class SemanticdbSymbolsTest {
                     "Annotations incl annotation type alias",
                     SourceFile.testKt(
                         """
-                import kotlin.contracts.ExperimentalContracts
-                import kotlin.test.Test
-
-                @ExperimentalContracts   
-                class Banaan {
-                    @Test
-                    fun test() {}                   
-               } 
-            """),
+                        |import kotlin.contracts.ExperimentalContracts
+                        |import kotlin.test.Test
+                        |
+                        |@ExperimentalContracts   
+                        |class Banaan {
+                        |    @Test
+                        |    fun test() {}                   
+                        |} 
+                        |""".trimMargin()),
                     symbolsCacheData =
                         SymbolCacheData(
                             listOf(
@@ -109,26 +110,27 @@ class SemanticdbSymbolsTest {
                     "single component package name",
                     SourceFile.testKt(
                         """
-                package main
-                
-                class Test
-            """),
+                        |package main
+                        |
+                        |class Test
+                        |""".trimMargin()),
                     symbolsCacheData = SymbolCacheData(listOf("main/Test#".symbol()), 0)),
                 ExpectedSymbols(
                     "multi component package name",
                     SourceFile.testKt(
                         """
-                package test.sample.main
-                
-                class Test
-            """),
+                        |package test.sample.main
+                        |
+                        |class Test
+                        |""".trimMargin()),
                     symbolsCacheData =
                         SymbolCacheData(listOf("test/sample/main/Test#".symbol()), 0)),
                 ExpectedSymbols(
                     "no package name",
-                    SourceFile.testKt("""
-                class Test
-            """),
+                    SourceFile.testKt(
+                        """
+                        |class Test
+                        |""".trimMargin()),
                     symbolsCacheData = SymbolCacheData(listOf("Test#".symbol()), 0)))
             .mapCheckExpectedSymbols()
 
@@ -139,11 +141,11 @@ class SemanticdbSymbolsTest {
                     "simple variables",
                     SourceFile.testKt(
                         """
-                    fun test() {
-                        val x = "hello"
-                        println(x)
-                    }
-                """),
+                        |fun test() {
+                        |    val x = "hello"
+                        |    println(x)
+                        |}
+                        |""".trimMargin()),
                     symbolsCacheData = SymbolCacheData(localsCount = 1)))
             .mapCheckExpectedSymbols()
 
@@ -154,11 +156,11 @@ class SemanticdbSymbolsTest {
                     "types",
                     SourceFile.testKt(
                         """
-                var x: Int = 1
-                lateinit var y: Unit
-                lateinit var z: Any
-                lateinit var w: Nothing
-            """),
+                        |var x: Int = 1
+                        |lateinit var y: Unit
+                        |lateinit var z: Any
+                        |lateinit var w: Nothing
+                        |""".trimMargin()),
                     symbolsCacheData =
                         SymbolCacheData(
                             listOf(
@@ -170,11 +172,11 @@ class SemanticdbSymbolsTest {
                     "functions",
                     SourceFile.testKt(
                         """
-                val x = mapOf<Void, Void>()
-                fun main() {
-                    println()
-                }
-            """),
+                        |val x = mapOf<Void, Void>()
+                        |fun main() {
+                        |    println()
+                        |}
+                        |""".trimMargin()),
                     symbolsCacheData =
                         SymbolCacheData(
                             listOf(
@@ -189,12 +191,12 @@ class SemanticdbSymbolsTest {
                     "dot qualified expression",
                     SourceFile.testKt(
                         """
-                import java.lang.System
-
-                fun main() {
-                    System.err
-                }
-            """),
+                        |import java.lang.System
+                        |
+                        |fun main() {
+                        |    System.err
+                        |}
+                        |""".trimMargin()),
                     symbolsCacheData = SymbolCacheData(listOf("java/lang/System#err.".symbol()))))
             .mapCheckExpectedSymbols()
 
@@ -203,9 +205,10 @@ class SemanticdbSymbolsTest {
         listOf(
                 ExpectedSymbols(
                     "top level properties - implicit",
-                    SourceFile.testKt("""
-                var x: Int = 5
-            """),
+                    SourceFile.testKt(
+                        """
+                        |var x: Int = 5
+                        |""".trimMargin()),
                     semanticdb =
                         SemanticdbData(
                             expectedOccurrences =
@@ -245,9 +248,9 @@ class SemanticdbSymbolsTest {
                     "top level properties - explicit getter",
                     SourceFile.testKt(
                         """
-                var x: Int = 5
-                    get() = field + 10
-            """),
+                        |var x: Int = 5
+                        |    get() = field + 10
+                        |""".trimMargin()),
                     semanticdb =
                         SemanticdbData(
                             expectedOccurrences =
@@ -287,9 +290,9 @@ class SemanticdbSymbolsTest {
                     "top level properties - explicit setter",
                     SourceFile.testKt(
                         """
-                var x: Int = 5
-                    set(value) { field = value + 5 }
-            """),
+                        |var x: Int = 5
+                        |    set(value) { field = value + 5 }
+                        |""".trimMargin()),
                     semanticdb =
                         SemanticdbData(
                             expectedOccurrences =
@@ -329,10 +332,10 @@ class SemanticdbSymbolsTest {
                     "top level properties - explicit getter & setter",
                     SourceFile.testKt(
                         """
-                var x: Int = 5
-                    get() = field + 10
-                    set(value) { field = value + 10 }
-            """),
+                        |var x: Int = 5
+                        |    get() = field + 10
+                        |    set(value) { field = value + 10 }
+                        |""".trimMargin()),
                     semanticdb =
                         SemanticdbData(
                             expectedOccurrences =
@@ -372,12 +375,12 @@ class SemanticdbSymbolsTest {
                     "class constructor properties",
                     SourceFile.testKt(
                         """
-                class Test(var sample: Int, text: String): Throwable(sample.toString()) {
-                    fun test() {
-                        println(sample)
-                    }
-                }        
-            """),
+                        |class Test(var sample: Int, text: String): Throwable(sample.toString()) {
+                        |    fun test() {
+                        |        println(sample)
+                        |    }
+                        |}        
+                        |""".trimMargin()),
                     semanticdb =
                         SemanticdbData(
                             expectedOccurrences =
@@ -460,9 +463,10 @@ class SemanticdbSymbolsTest {
         listOf(
                 ExpectedSymbols(
                     "implicit primary constructor",
-                    SourceFile.testKt("""
-                class Banana
-            """),
+                    SourceFile.testKt(
+                        """
+                        |class Banana
+                        |""".trimMargin()),
                     semanticdb =
                         SemanticdbData(
                             expectedOccurrences =
@@ -490,9 +494,10 @@ class SemanticdbSymbolsTest {
                                 ))),
                 ExpectedSymbols(
                     "explicit primary constructor without keyword",
-                    SourceFile.testKt("""
-               class Banana(size: Int)
-            """),
+                    SourceFile.testKt(
+                        """
+                        |class Banana(size: Int)
+                        |""".trimMargin()),
                     semanticdb =
                         SemanticdbData(
                             expectedOccurrences =
@@ -522,8 +527,8 @@ class SemanticdbSymbolsTest {
                     "explicit primary constructor with keyword",
                     SourceFile.testKt(
                         """
-               class Banana constructor(size: Int) 
-            """),
+                        |class Banana constructor(size: Int) 
+                        |""".trimMargin()),
                     semanticdb =
                         SemanticdbData(
                             expectedOccurrences =
@@ -558,8 +563,8 @@ class SemanticdbSymbolsTest {
                     "basic java.lang.Runnable",
                     SourceFile.testKt(
                         """
-                val x = Runnable { }.run()
-            """),
+                        |val x = Runnable { }.run()
+                        |""".trimMargin()),
                     semanticdb =
                         SemanticdbData(
                             expectedOccurrences =
