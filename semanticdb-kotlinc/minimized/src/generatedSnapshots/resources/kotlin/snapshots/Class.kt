@@ -2,14 +2,14 @@ package snapshots
 //      ^^^^^^^^^ reference snapshots/
 
 class Class constructor(private var banana: Int, apple: String) :
-//    ^^^^^ definition snapshots/Class# Class
-//          ^^^^^^^^^^^ definition snapshots/Class#`<init>`(). Class
-//                                  ^^^^^^ definition snapshots/Class#banana. banana
-//                                  ^^^^^^ definition snapshots/Class#getBanana(). banana
-//                                  ^^^^^^ definition snapshots/Class#setBanana(). banana
-//                                  ^^^^^^ definition snapshots/Class#`<init>`().(banana) banana
+//    ^^^^^ definition snapshots/Class# class Class : kotlin.Throwable
+//          ^^^^^^^^^^^ definition snapshots/Class#`<init>`(). constructor Class(banana: kotlin.Int, apple: kotlin.String)
+//                                  ^^^^^^ definition snapshots/Class#banana. var banana: kotlin.Int
+//                                  ^^^^^^ definition snapshots/Class#getBanana(). var banana: kotlin.Int
+//                                  ^^^^^^ definition snapshots/Class#setBanana(). var banana: kotlin.Int
+//                                  ^^^^^^ definition snapshots/Class#`<init>`().(banana) value-parameter banana: kotlin.Int
 //                                          ^^^ reference kotlin/Int#
-//                                               ^^^^^ definition snapshots/Class#`<init>`().(apple) apple
+//                                               ^^^^^ definition snapshots/Class#`<init>`().(apple) value-parameter apple: kotlin.String
 //                                                      ^^^^^^ reference kotlin/String#
     Throwable(banana.toString() + apple) {
 //  ^^^^^^^^^ reference kotlin/Throwable#`<init>`().
@@ -23,25 +23,25 @@ class Class constructor(private var banana: Int, apple: String) :
   }
 
   val asdf =
-//    ^^^^ definition snapshots/Class#asdf. asdf
-//    ^^^^ definition snapshots/Class#getAsdf(). asdf
+//    ^^^^ definition snapshots/Class#asdf. val asdf: kotlin.Any
+//    ^^^^ definition snapshots/Class#getAsdf(). val asdf: kotlin.Any
       object {
         fun doStuff() = Unit
-//          ^^^^^^^ definition local0 doStuff
+//          ^^^^^^^ definition local0 fun doStuff(): kotlin.Unit
 //                      ^^^^ reference kotlin/Unit#
       }
 
   constructor() : this(1, "")
-//^^^^^^^^^^^ definition snapshots/Class#`<init>`(+1). Class
+//^^^^^^^^^^^ definition snapshots/Class#`<init>`(+1). constructor Class()
 
   constructor(banana: Int) : this(banana, "")
-//^^^^^^^^^^^ definition snapshots/Class#`<init>`(+2). Class
-//            ^^^^^^ definition snapshots/Class#`<init>`(+2).(banana) banana
+//^^^^^^^^^^^ definition snapshots/Class#`<init>`(+2). constructor Class(banana: kotlin.Int)
+//            ^^^^^^ definition snapshots/Class#`<init>`(+2).(banana) value-parameter banana: kotlin.Int
 //                    ^^^ reference kotlin/Int#
 //                                ^^^^^^ reference snapshots/Class#`<init>`(+2).(banana)
 
   fun run() {
-//    ^^^ definition snapshots/Class#run(). run
+//    ^^^ definition snapshots/Class#run(). fun run(): kotlin.Unit
     println(Class::class)
 //  ^^^^^^^ reference kotlin/io/ConsoleKt#println(+1).
 //          ^^^^^ reference snapshots/Class#

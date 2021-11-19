@@ -623,7 +623,6 @@ sample/TestKt#docstrings().(msg)
 value-parameter msg: kotlin.String
 ```
 """.trim()
-        println(obtainedSymbols)
         assertEquals(expectedSymbols, obtainedSymbols)
     }
 }
