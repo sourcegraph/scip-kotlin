@@ -2,20 +2,24 @@ package com.sourcegraph.semanticdb_kotlinc
 
 import com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrence.Role
 import java.lang.IllegalArgumentException
+import java.lang.StringBuilder
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.security.MessageDigest
 import kotlin.contracts.ExperimentalContracts
 import kotlin.text.Charsets.UTF_8
 import org.jetbrains.kotlin.asJava.namedUnwrappedElement
+import org.jetbrains.kotlin.backend.common.serialization.metadata.findKDocString
 import org.jetbrains.kotlin.com.intellij.lang.java.JavaLanguage
 import org.jetbrains.kotlin.com.intellij.navigation.NavigationItem
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
+import org.jetbrains.kotlin.descriptors.DeclarationDescriptorWithSource
 import org.jetbrains.kotlin.idea.KotlinLanguage
 import org.jetbrains.kotlin.psi.KtConstructor
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtPropertyAccessor
+import org.jetbrains.kotlin.renderer.DescriptorRenderer
 
 @ExperimentalContracts
 class SemanticdbTextDocumentBuilder(
@@ -55,6 +59,7 @@ class SemanticdbTextDocumentBuilder(
         return SymbolInformation {
             this.symbol = symbol.toString()
             this.displayName = displayName(element)
+            this.documentation = semanticdbDocumentation(descriptor)
             this.language =
                 when (element.language) {
                     is KotlinLanguage -> Semanticdb.Language.KOTLIN
@@ -101,6 +106,48 @@ class SemanticdbTextDocumentBuilder(
         MessageDigest.getInstance("MD5").digest(file.text.toByteArray(UTF_8)).joinToString("") {
             "%02X".format(it)
         }
+
+    private fun semanticdbDocumentation(
+        descriptor: DeclarationDescriptor
+    ): Semanticdb.Documentation = Documentation {
+        format = Semanticdb.Documentation.Format.MARKDOWN
+        val signature = DescriptorRenderer.COMPACT.render(descriptor)
+        val kdoc =
+            when (descriptor) {
+                is DeclarationDescriptorWithSource -> descriptor.findKDocString() ?: ""
+                else -> ""
+            }
+        message = "```kt\n$signature\n```${stripKDocAsterisks(kdoc)}"
+    }
+
+    // Returns the kdoc string with all leading and trailing "/*" tokens removed. Naive
+    // implementation that can
+    // be replaced with a utility method from the compiler in the future, if one exists.
+    private fun stripKDocAsterisks(kdoc: String): String {
+        if (kdoc.isEmpty()) return kdoc
+        val out = StringBuilder().append("\n\n").append("----").append("\n")
+        kdoc.lineSequence().forEach { line ->
+            var start = 0
+            while (start < line.length && Character.isWhitespace(line[start])) {
+                start++
+            }
+            if (start < line.length && line[start] == '/') {
+                start++
+            }
+            while (start < line.length && line[start] == '*') {
+                start++
+            }
+            while (start < line.length && Character.isWhitespace(line[start])) {
+                start++
+            }
+            var end = if (line.endsWith("*/")) line.length - 3 else line.length - 1
+            while (end > start && Character.isWhitespace(line[end])) {
+                end--
+            }
+            out.append("\n").append(line, start, end)
+        }
+        return out.toString()
+    }
 
     companion object {
         private fun displayName(element: PsiElement): String =

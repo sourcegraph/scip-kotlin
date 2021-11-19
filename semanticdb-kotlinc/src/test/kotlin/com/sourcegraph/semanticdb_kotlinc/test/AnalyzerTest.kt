@@ -11,26 +11,21 @@ import io.kotest.assertions.assertSoftly
 import io.kotest.assertions.withClue
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import java.io.File
 import java.nio.file.Path
 import kotlin.contracts.ExperimentalContracts
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.io.TempDir
 
 @ExperimentalContracts
 class AnalyzerTest {
-    @Test
-    fun `basic test`(@TempDir path: Path) {
+
+    fun compileSemanticdb(path: Path, @Language("kotlin") code: String): TextDocument {
         val buildPath = File(path.resolve("build").toString()).apply { mkdir() }
-
-        val source =
-            SourceFile.testKt(
-                """
-            package sample
-            class Banana {
-                fun foo() { }
-            }""")
-
+        val source = SourceFile.testKt(code)
         lateinit var document: TextDocument
 
         val result =
@@ -49,6 +44,21 @@ class AnalyzerTest {
                 .compile()
 
         result.exitCode shouldBe KotlinCompilation.ExitCode.OK
+        document shouldNotBe null
+        return document
+    }
+
+    @Test
+    fun `basic test`(@TempDir path: Path) {
+        val document =
+            compileSemanticdb(
+                path,
+                """
+            package sample
+            class Banana {
+                fun foo() { }
+            }""")
+
         val occurrences =
             arrayOf(
                 SymbolOccurrence {
@@ -91,11 +101,21 @@ class AnalyzerTest {
                     symbol = "sample/Banana#"
                     language = KOTLIN
                     displayName = "Banana"
+                    documentation =
+                        Documentation {
+                            format = Semanticdb.Documentation.Format.MARKDOWN
+                            message = "```kt\nclass Banana\n```"
+                        }
                 },
                 SymbolInformation {
                     symbol = "sample/Banana#foo()."
                     language = KOTLIN
                     displayName = "foo"
+                    documentation =
+                        Documentation {
+                            format = Semanticdb.Documentation.Format.MARKDOWN
+                            message = "```kt\nfun foo(): kotlin.Unit\n```"
+                        }
                 })
         assertSoftly(document.symbolsList) { withClue(this) { symbols.forEach(::shouldContain) } }
     }
@@ -535,5 +555,75 @@ class AnalyzerTest {
                 .compile()
 
         result.exitCode shouldBe KotlinCompilation.ExitCode.OK
+    }
+
+    @Test
+    fun documentation(@TempDir path: Path) {
+        val document =
+            compileSemanticdb(
+                path,
+                """
+               package sample
+               import java.io.Serializable
+               abstract class DocstringSuperclass
+
+               /** Example class docstring. */
+               class Docstrings: DocstringSuperclass(), Serializable
+               
+               /** Example method docstring. */
+               inline fun docstrings(msg: String): Int { return msg.length }
+        """.trimIndent())
+        val obtainedSymbols =
+            document
+                .symbolsList
+                .map { "----------\n${it.symbol}\n${it.documentation.message}" }
+                .joinToString("\n")
+        val expectedSymbols =
+            """
+----------
+sample/DocstringSuperclass#
+```kt
+class DocstringSuperclass
+```
+----------
+sample/DocstringSuperclass#`<init>`().
+```kt
+constructor DocstringSuperclass()
+```
+----------
+sample/Docstrings#
+```kt
+class Docstrings : sample.DocstringSuperclass, java.io.Serializable
+```
+
+----
+
+Example class docstring
+----------
+sample/Docstrings#`<init>`().
+```kt
+constructor Docstrings()
+```
+
+----
+
+Example class docstring
+----------
+sample/TestKt#docstrings().
+```kt
+inline fun docstrings(msg: kotlin.String): kotlin.Int
+```
+
+----
+
+Example method docstring
+----------
+sample/TestKt#docstrings().(msg)
+```kt
+value-parameter msg: kotlin.String
+```
+""".trim()
+        println(obtainedSymbols)
+        assertEquals(expectedSymbols, obtainedSymbols)
     }
 }
