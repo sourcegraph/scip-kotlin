@@ -111,7 +111,13 @@ class SemanticdbTextDocumentBuilder(
         descriptor: DeclarationDescriptor
     ): Semanticdb.Documentation = Documentation {
         format = Semanticdb.Documentation.Format.MARKDOWN
-        val signature = DescriptorRenderer.COMPACT.render(descriptor)
+        val signature =
+            DescriptorRenderer.COMPACT_WITH_MODIFIERS
+                .withOptions {
+                    withSourceFileForTopLevel = true
+                    unitReturnType = false
+                }
+                .render(descriptor)
         val kdoc =
             when (descriptor) {
                 is DeclarationDescriptorWithSource -> descriptor.findKDocString() ?: ""
@@ -141,6 +147,7 @@ class SemanticdbTextDocumentBuilder(
                 start++
             }
             var end = if (line.endsWith("*/")) line.length - 3 else line.length - 1
+            end = maxOf(start, end)
             while (end > start && Character.isWhitespace(line[end])) {
                 end--
             }

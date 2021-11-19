@@ -8,6 +8,7 @@ import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.PluginOption
 import com.tschuchort.compiletesting.SourceFile
 import io.kotest.assertions.assertSoftly
+import io.kotest.assertions.fail
 import io.kotest.assertions.withClue
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
@@ -567,62 +568,24 @@ class AnalyzerTest {
                import java.io.Serializable
                abstract class DocstringSuperclass
 
-               /** Example class docstring. */
+               /** Example class docstring */
                class Docstrings: DocstringSuperclass(), Serializable
                
-               /** Example method docstring. */
+               /** 
+                 * Example method docstring
+                 *
+                 **/
                inline fun docstrings(msg: String): Int { return msg.length }
         """.trimIndent())
-        val obtainedSymbols =
-            document
-                .symbolsList
-                .map { "----------\n${it.symbol}\n${it.documentation.message}" }
-                .joinToString("\n")
-        val expectedSymbols =
-            """
-----------
-sample/DocstringSuperclass#
-```kt
-class DocstringSuperclass
-```
-----------
-sample/DocstringSuperclass#`<init>`().
-```kt
-constructor DocstringSuperclass()
-```
-----------
-sample/Docstrings#
-```kt
-class Docstrings : sample.DocstringSuperclass, java.io.Serializable
-```
+        document.assertDocumentation("sample/Docstrings#", "Example class docstring")
+        document.assertDocumentation("sample/TestKt#docstrings().", "Example method docstring")
+    }
 
-----
-
-Example class docstring
-----------
-sample/Docstrings#`<init>`().
-```kt
-constructor Docstrings()
-```
-
-----
-
-Example class docstring
-----------
-sample/TestKt#docstrings().
-```kt
-inline fun docstrings(msg: kotlin.String): kotlin.Int
-```
-
-----
-
-Example method docstring
-----------
-sample/TestKt#docstrings().(msg)
-```kt
-value-parameter msg: kotlin.String
-```
-""".trim()
-        assertEquals(expectedSymbols, obtainedSymbols)
+    private fun TextDocument.assertDocumentation(symbol: String, expectedDocumentation: String) {
+        val markdown =
+            this.symbolsList.find { it.symbol == symbol }?.documentation?.message
+                ?: fail("no documentation for symbol $symbol")
+        val obtainedDocumentation = markdown.split("----").last().trim()
+        assertEquals(expectedDocumentation, obtainedDocumentation)
     }
 }
