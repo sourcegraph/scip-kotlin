@@ -105,7 +105,7 @@ class AnalyzerTest {
                     documentation =
                         Documentation {
                             format = Semanticdb.Documentation.Format.MARKDOWN
-                            message = "```kt\nclass Banana\n```"
+                            message = "```kt\npublic final class Banana\n```"
                         }
                 },
                 SymbolInformation {
@@ -115,7 +115,7 @@ class AnalyzerTest {
                     documentation =
                         Documentation {
                             format = Semanticdb.Documentation.Format.MARKDOWN
-                            message = "```kt\nfun foo(): kotlin.Unit\n```"
+                            message = "```kt\npublic final fun foo()\n```"
                         }
                 })
         assertSoftly(document.symbolsList) { withClue(this) { symbols.forEach(::shouldContain) } }

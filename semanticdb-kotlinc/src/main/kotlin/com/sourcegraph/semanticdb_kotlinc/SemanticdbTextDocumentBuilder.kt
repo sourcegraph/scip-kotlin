@@ -134,7 +134,7 @@ class SemanticdbTextDocumentBuilder(
         val out = StringBuilder().append("\n\n").append("----").append("\n")
         kdoc.lineSequence().forEach { line ->
             var start = 0
-            while (start < line.length && Character.isWhitespace(line[start])) {
+            while (start < line.length && line[start].isWhitespace()) {
                 start++
             }
             if (start < line.length && line[start] == '/') {
@@ -143,13 +143,19 @@ class SemanticdbTextDocumentBuilder(
             while (start < line.length && line[start] == '*') {
                 start++
             }
-            while (start < line.length && Character.isWhitespace(line[start])) {
-                start++
-            }
-            var end = if (line.endsWith("*/")) line.length - 3 else line.length - 1
-            end = maxOf(start, end)
-            while (end > start && Character.isWhitespace(line[end])) {
+            var end = line.length - 1
+            if (end > start && line[end] == '/') {
                 end--
+            }
+            while (end > start && line[end] == '*') {
+                end--
+            }
+            while (end > start && line[end].isWhitespace()) {
+                end--
+            }
+            start = minOf(start, line.length - 1)
+            if (end > start) {
+                end++
             }
             out.append("\n").append(line, start, end)
         }
