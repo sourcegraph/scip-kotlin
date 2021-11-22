@@ -23,7 +23,7 @@ buildscript {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation("com.google.protobuf:protobuf-java:3.17.3")
-    compileOnly("com.sourcegraph", "semanticdb-javac", "0.6.8")
+    compileOnly("com.sourcegraph", "semanticdb-javac", "0.6.12")
 }
 
 
