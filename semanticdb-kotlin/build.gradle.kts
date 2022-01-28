@@ -58,7 +58,7 @@ krotoPlus {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.15.7"
+        artifact = "com.google.protobuf:protoc:3.19.4"
     }
 
     generatedFilesBaseDir = kotlin.sourceSets.main.get().kotlin.srcDirs.first().path.split(":")[0].removeSuffix("main/kotlin")
