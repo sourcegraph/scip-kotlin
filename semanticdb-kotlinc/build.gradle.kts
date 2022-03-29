@@ -46,7 +46,7 @@ dependencies {
     testImplementation(kotlin("reflect"))
     testImplementation(kotlin("script-runtime", "1.5.0"))
 
-    snapshotsImplementation("com.sourcegraph", "lsif-java_2.13", "0.6.12")
+    snapshotsImplementation("com.sourcegraph", "lsif-java_2.13", "0.7.8")
 }
 
 tasks.withType<KotlinCompile> {
