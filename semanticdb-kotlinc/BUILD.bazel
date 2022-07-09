@@ -1,0 +1,38 @@
+load("@io_bazel_rules_kotlin//kotlin:jvm.bzl", "kt_jvm_library")
+load("@io_bazel_rules_kotlin//kotlin:core.bzl", "kt_compiler_plugin")
+
+package(
+    default_visibility = ["//visibility:public"],
+)
+
+kt_compiler_plugin(
+    name = "kotlin_semanticdb_plugin",
+    compile_phase = True,
+    id = "semanticdb-kotlinc",
+    options = {
+        "targetroot": "$(execpath :dummy-for-execpath)",
+        "buildtool": "bazel"
+    },
+    stubs_phase = False,
+    target_embedded_compiler = True,
+    deps = [
+        ":kotlin_semanticdb",
+        ":dummy-for-execpath",
+    ],
+)
+
+java_library(name = "dummy-for-execpath", visibility=["//visibility:private"])
+
+kt_jvm_library(
+    name = "kotlin_semanticdb",
+    srcs = glob(["src/main/kotlin/**/*.kt"]),
+    resources = [
+        "src/main/resources/META-INF/services/org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor",
+        "src/main/resources/META-INF/services/org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar",
+    ],
+    deps = [
+        "//semanticdb-kotlin",
+        "//semanticdb-kotlin:semanticdb_java_proto",
+        "@maven//:org_jetbrains_kotlin_kotlin_compiler_embeddable",
+    ],
+)

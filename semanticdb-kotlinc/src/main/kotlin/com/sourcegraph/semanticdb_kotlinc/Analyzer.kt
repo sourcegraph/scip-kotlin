@@ -13,7 +13,7 @@ import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
 
 @ExperimentalContracts
 class Analyzer(
-    val sourceroot: Path,
+    val sourceroot: Path? = null,
     val targetroot: Path,
     val callback: (Semanticdb.TextDocument) -> Unit
 ) : AnalysisHandlerExtension {
@@ -28,8 +28,9 @@ class Analyzer(
         val resolver = DescriptorResolver(bindingTrace).also { globals.resolver = it }
         for (file in files) {
             val lineMap = LineMap(project, file)
-            val document = SemanticdbVisitor(sourceroot, resolver, file, lineMap, globals).build()
-            semanticdbOutPathForFile(file)?.apply {
+            val sourceRootPath = sourceroot ?: inferBazelSourceRoot(file)
+            val document = SemanticdbVisitor(sourceRootPath, resolver, file, lineMap, globals).build()
+            semanticdbOutPathForFile(file, sourceRootPath)?.apply {
                 Files.write(this, TextDocuments { addDocuments(document) }.toByteArray())
             }
             callback(document)
@@ -38,10 +39,15 @@ class Analyzer(
         return super.analysisCompleted(project, module, bindingTrace, files)
     }
 
-    private fun semanticdbOutPathForFile(file: KtFile): Path? {
+    private fun inferBazelSourceRoot(file: KtFile): Path {
+        val pathElements = file.virtualFilePath.split("/")
+        return Paths.get(pathElements.take(pathElements.indexOf("execroot") + 2).joinToString("/"))
+    }
+
+    private fun semanticdbOutPathForFile(file: KtFile, sourceRootPath: Path): Path? {
         val normalizedPath = Paths.get(file.virtualFilePath).normalize()
-        if (normalizedPath.startsWith(sourceroot)) {
-            val relative = sourceroot.relativize(normalizedPath)
+        if (normalizedPath.startsWith(sourceRootPath)) {
+            val relative = sourceRootPath.relativize(normalizedPath)
             val filename = relative.fileName.toString() + ".semanticdb"
             val semanticdbOutPath =
                 targetroot
