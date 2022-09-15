@@ -14,13 +14,17 @@ class AnalyzerRegistrar(private val callback: (Semanticdb.TextDocument) -> Unit 
         project: MockProject,
         configuration: CompilerConfiguration
     ) {
-        AnalysisHandlerExtension.registerExtension(
-            project,
+        val targetRoot = configuration[KEY_TARGET]
+            ?: throw IllegalArgumentException("configuration key $KEY_TARGET missing")
+        val analyzer = if (configuration[KEY_BUILD_TOOL] ?: "" == "bazel") {
+            Analyzer(targetroot = targetRoot.parent, callback = callback)
+        } else {
             Analyzer(
-                sourceroot = configuration[KEY_SOURCES]
-                        ?: throw IllegalArgumentException("configuration key $KEY_SOURCES missing"),
-                targetroot = configuration[KEY_TARGET]
-                        ?: throw IllegalArgumentException("configuration key $KEY_TARGET missing"),
-                callback = callback))
+                    sourceroot = configuration[KEY_SOURCES]
+                            ?: throw IllegalArgumentException("configuration key $KEY_SOURCES missing"),
+                    targetroot = targetRoot,
+                    callback = callback)
+        }
+        AnalysisHandlerExtension.registerExtension(project, analyzer)
     }
 }
