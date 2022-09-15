@@ -1,8 +1,14 @@
 load("@io_bazel_rules_kotlin//kotlin:jvm.bzl", "kt_jvm_library")
+load("//semanticdb-kotlinc:generated_sources_collector.bzl", "generated_sources_collector")
 
 
 kt_jvm_library(
     name = "bazel-example",
     srcs = glob(["src/main/kotlin/sample/*.kt"]),
     plugins = ["//semanticdb-kotlinc:kotlin_semanticdb_plugin"],
+)
+
+generated_sources_collector(
+    name = "bazel-example-sources-test",
+    deps = [":bazel-example"]
 )

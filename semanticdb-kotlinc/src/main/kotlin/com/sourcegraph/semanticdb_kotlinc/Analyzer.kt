@@ -46,19 +46,20 @@ class Analyzer(
 
     private fun semanticdbOutPathForFile(file: KtFile, sourceRootPath: Path): Path? {
         val normalizedPath = Paths.get(file.virtualFilePath).normalize()
-        if (normalizedPath.startsWith(sourceRootPath)) {
-            val relative = sourceRootPath.relativize(normalizedPath)
-            val filename = relative.fileName.toString() + ".semanticdb"
-            val semanticdbOutPath =
-                targetroot
-                    .resolve("META-INF")
-                    .resolve("semanticdb")
-                    .resolve(relative)
-                    .resolveSibling(filename)
+        val idx = file.virtualFilePath.indexOf("execroot")
 
-            Files.createDirectories(semanticdbOutPath.parent)
-            return semanticdbOutPath
-        }
+
+        val relative = file.virtualFilePath.subSequence(file.virtualFilePath.indexOf("/", idx+11) + 1, file.virtualFilePath.length).toString()
+        val filename = "$relative.semanticdb"
+        val semanticdbOutPath =
+            targetroot
+                .resolve("META-INF")
+                .resolve("semanticdb")
+                .resolve(filename)
+
+        System.out.println("Output path: $semanticdbOutPath")
+        Files.createDirectories(semanticdbOutPath.parent)
+        return semanticdbOutPath
         System.err.println(
             "given file is not under the sourceroot.\n\tSourceroot: $sourceroot\n\tFile path: ${file.virtualFilePath}\n\tNormalized file path: $normalizedPath")
         return null

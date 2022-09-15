@@ -10,8 +10,9 @@ kt_compiler_plugin(
     compile_phase = True,
     id = "semanticdb-kotlinc",
     options = {
-        "targetroot": "$(execpath :dummy-for-execpath)",
-        "buildtool": "bazel"
+        "sourceroot": "/private/var/tmp/_bazel_jkvarnefalk/e42f945a330c6dc7b10d832d5e8c7e1e/execroot/spotify/",
+        #"sourceroot": "$(PROJECT_ID)",
+        "targetroot": "/Users/jkvarnefalk/dev/sp/client/client"
     },
     stubs_phase = False,
     target_embedded_compiler = True,
@@ -20,6 +21,7 @@ kt_compiler_plugin(
         ":dummy-for-execpath",
     ],
 )
+
 
 java_library(name = "dummy-for-execpath", visibility=["//visibility:private"])
 

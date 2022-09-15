@@ -68,17 +68,21 @@ class SemanticdbVisitor(
     }
 
     override fun visitClass(klass: KtClass) {
-        val desc = resolver.fromDeclaration(klass).single()
-        cache[desc].with(desc).emitAll(klass, Role.DEFINITION)
-        if (!klass.hasExplicitPrimaryConstructor()) {
+        val decls = resolver.fromDeclaration(klass)
+
+        if (decls.none() || !klass.hasExplicitPrimaryConstructor()) {
             resolver.syntheticConstructor(klass)?.apply {
                 cache[this].with(this).emitAll(klass, Role.DEFINITION)
             }
+        } else {
+            val desc = resolver.fromDeclaration(klass).single()
+            cache[desc].with(desc).emitAll(klass, Role.DEFINITION)
         }
         super.visitClass(klass)
     }
 
     override fun visitPrimaryConstructor(constructor: KtPrimaryConstructor) {
+        //throw IllegalArgumentException(constructor.getDebugText())
         val desc = resolver.fromDeclaration(constructor).single()
         // if the constructor is not denoted by the 'constructor' keyword, we want to link it to the
         // class ident

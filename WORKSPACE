@@ -37,7 +37,6 @@ rules_proto_toolchains()
 ###########
 # KOTLIN #
 ##########
-"""
 rules_kotlin_version = "1.6.0"
 
 rules_kotlin_sha = "a57591404423a52bd6b18ebba7979e8cd2243534736c5c94d35c89718ea38f94"
@@ -56,23 +55,7 @@ load("@io_bazel_rules_kotlin//kotlin:core.bzl", "kt_register_toolchains")
 
 kt_register_toolchains()
 
-load("@io_bazel_rules_kotlin//kotlin:core.bzl", "define_kt_toolchain")
-"""
 
-
-# Use local check-out of repo rules (or a commit-archive from github via http_archive or git_repository)
-local_repository(
-    name = "io_bazel_rules_kotlin",
-    path = "../rules_kotlin/tmp",
-)
-
-load("@io_bazel_rules_kotlin//kotlin:repositories.bzl", "kotlin_repositories", "versions")
-
-kotlin_repositories()
-
-load("@io_bazel_rules_kotlin//kotlin:core.bzl", "kt_register_toolchains")
-
-kt_register_toolchains()
 ##############
 # JVM External
 ##############
@@ -108,9 +91,4 @@ maven_install(
     repositories = [
         "https://repo1.maven.org/maven2",
     ],
-)
-
-local_repository(
-    name = "scip_java",
-    path = "../scip-java",
 )

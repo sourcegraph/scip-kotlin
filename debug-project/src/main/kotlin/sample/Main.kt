@@ -3,6 +3,9 @@ package sample
 class Main<T> {
     private val test: String = ""
 
+    /**
+     * Some comment
+     */
     fun method(something: Any): Array<T?>? {
         var i = 1
         val j = 2
