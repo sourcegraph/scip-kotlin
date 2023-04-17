@@ -1,6 +1,8 @@
 package com.sourcegraph.semanticdb_kotlinc.test
 
 import com.sourcegraph.semanticdb_kotlinc.*
+import com.sourcegraph.semanticdb_kotlinc.Semanticdb.Documentation.Format
+import com.sourcegraph.semanticdb_kotlinc.Semanticdb.Language
 import com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrence.Role
 import com.sourcegraph.semanticdb_kotlinc.test.ExpectedSymbols.SemanticdbData
 import com.sourcegraph.semanticdb_kotlinc.test.ExpectedSymbols.SymbolCacheData
@@ -590,4 +592,44 @@ class SemanticdbSymbolsTest {
                                         }
                                     }))))
             .mapCheckExpectedSymbols()
+
+    @TestFactory
+    fun kdoc() =
+        listOf(
+            ExpectedSymbols(
+                "empty kdoc line",
+                SourceFile.testKt(
+                    """
+                    |/**
+                    |
+                    |hello world
+                    |* test content
+                    |*/
+                    |val x = ""
+                    |""".trimMargin()),
+                semanticdb = SemanticdbData(
+                    expectedSymbols =
+                        listOf(
+                            SymbolInformation {
+                                symbol = "TestKt#x."
+                                displayName = "x"
+                                language = Language.KOTLIN
+                                documentation {
+                                    message = "```kt\npublic val x: kotlin.String\n```\n\n----\n\n\nhello world\n test content\n"
+                                    format = Format.MARKDOWN
+                                }
+                            },
+                            SymbolInformation {
+                                symbol = "TestKt#getX()."
+                                displayName = "x"
+                                language = Language.KOTLIN
+                                documentation {
+                                    message = "```kt\npublic val x: kotlin.String\n```\n\n----\n\n\nhello world\n test content\n"
+                                    format = Format.MARKDOWN
+                                }
+                            }
+                        )
+                )
+            )
+        ).mapCheckExpectedSymbols()
 }
