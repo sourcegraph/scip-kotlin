@@ -122,6 +122,27 @@ class AnalyzerTest {
     }
 
     @Test
+    fun `exception test`(@TempDir path: Path) {
+        val buildPath = File(path.resolve("build").toString()).apply { mkdir() }
+        val result =
+            KotlinCompilation()
+                .apply {
+                    sources = listOf(SourceFile.testKt(""))
+                    compilerPlugins = listOf(AnalyzerRegistrar { throw Exception("sample text") })
+                    verbose = false
+                    pluginOptions =
+                        listOf(
+                            PluginOption("semanticdb-kotlinc", "sourceroot", path.toString()),
+                            PluginOption("semanticdb-kotlinc", "targetroot", buildPath.toString()))
+                    commandLineProcessors = listOf(AnalyzerCommandLineProcessor())
+                    workingDir = path.toFile()
+                }
+                .compile()
+
+        result.exitCode shouldBe KotlinCompilation.ExitCode.OK
+    }
+
+    @Test
     // shamelessly stolen code snippet from https://learnxinyminutes.com/docs/kotlin/
     fun `learn x in y test`(@TempDir path: Path) {
         val buildPath = File(path.resolve("build").toString()).apply { mkdir() }
