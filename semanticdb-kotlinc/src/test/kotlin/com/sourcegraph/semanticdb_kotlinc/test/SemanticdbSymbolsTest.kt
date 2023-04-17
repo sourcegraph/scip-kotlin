@@ -601,6 +601,7 @@ class SemanticdbSymbolsTest {
                 SourceFile.testKt(
                     """
                     |/**
+                    |
                     |hello world
                     |* test content
                     |*/
