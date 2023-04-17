@@ -133,6 +133,7 @@ class SemanticdbTextDocumentBuilder(
         if (kdoc.isEmpty()) return kdoc
         val out = StringBuilder().append("\n\n").append("----").append("\n")
         kdoc.lineSequence().forEach { line ->
+            if (line.isEmpty()) return ""
             var start = 0
             while (start < line.length && line[start].isWhitespace()) {
                 start++
