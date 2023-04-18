@@ -10,6 +10,8 @@ import org.jetbrains.kotlin.analyzer.AnalysisResult
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+import org.jetbrains.kotlin.cli.common.messages.MessageRenderer
+import org.jetbrains.kotlin.cli.common.messages.PrintingMessageCollector
 import org.jetbrains.kotlin.com.intellij.openapi.project.Project
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
@@ -29,7 +31,7 @@ class Analyzer(
 
     private val messageCollector =
         CompilerConfiguration()
-            .get(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE)
+            .get(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, PrintingMessageCollector(System.err, MessageRenderer.PLAIN_FULL_PATHS, false))
 
     override fun analysisCompleted(
         project: Project,
@@ -93,6 +95,7 @@ class Analyzer(
                         }
                     },
                     false)
+            writer.println("Exception in semanticdb-kotlin compiler plugin:")
             e.printStackTrace(writer)
             writer.println(
                 "Please report a bug to https://github.com/sourcegraph/lsif-kotlin with the stack trace above.")
