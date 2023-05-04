@@ -19,11 +19,12 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import org.intellij.lang.annotations.Language
+import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.jupiter.api.io.TempDir
 
+@OptIn(ExperimentalCompilerApi::class)
 @ExperimentalContracts
 class AnalyzerTest {
-
     fun compileSemanticdb(path: Path, @Language("kotlin") code: String): TextDocument {
         val buildPath = File(path.resolve("build").toString()).apply { mkdir() }
         val source = SourceFile.testKt(code)
@@ -33,7 +34,7 @@ class AnalyzerTest {
             KotlinCompilation()
                 .apply {
                     sources = listOf(source)
-                    compilerPlugins = listOf(AnalyzerRegistrar { document = it })
+                    componentRegistrars = listOf(AnalyzerRegistrar { document = it })
                     verbose = false
                     pluginOptions =
                         listOf(
@@ -128,7 +129,7 @@ class AnalyzerTest {
             KotlinCompilation()
                 .apply {
                     sources = listOf(SourceFile.testKt(""))
-                    compilerPlugins = listOf(AnalyzerRegistrar { throw Exception("sample text") })
+                    componentRegistrars = listOf(AnalyzerRegistrar { throw Exception("sample text") })
                     verbose = false
                     pluginOptions =
                         listOf(
@@ -565,7 +566,7 @@ class AnalyzerTest {
             KotlinCompilation()
                 .apply {
                     sources = listOf(source)
-                    compilerPlugins = listOf(AnalyzerRegistrar())
+                    componentRegistrars = listOf(AnalyzerRegistrar())
                     verbose = false
                     pluginOptions =
                         listOf(
