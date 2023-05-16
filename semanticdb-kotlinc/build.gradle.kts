@@ -1,6 +1,5 @@
 import java.net.URI
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.publish.maven.MavenPublication
 
@@ -50,30 +49,23 @@ dependencies {
 }
 
 tasks.withType<KotlinCompile> {
-    dependsOn(projects.semanticdbKotlin.dependencyProject.tasks.build.get().path)
+    dependsOn(":${projects.semanticdbKotlin.name}:build")
     kotlinOptions {
         freeCompilerArgs = freeCompilerArgs + listOf("-Xinline-classes")
     }
 }
 
 val semanticdbJar: Configuration by configurations.creating {
-    afterEvaluate {
-        isCanBeConsumed = true
-        isCanBeResolved = false
-        outgoing.artifact(tasks.shadowJar.get().outputs.files.first())
-    }
+    isCanBeConsumed = true
+    isCanBeResolved = false
 }
 
 artifacts {
-    afterEvaluate {
-        add("semanticdbJar", tasks.shadowJar.get().outputs.files.first()) {
-            builtBy(tasks.shadowJar)
-        }
-    }
+    add(semanticdbJar.name, tasks.shadowJar)
 }
 
 tasks.jar {
-    archiveClassifier.set("-slim")
+    archiveClassifier.set("slim")
     manifest {
         attributes["Specification-Title"] = project.name
         attributes["Specification-Version"] = project.version
