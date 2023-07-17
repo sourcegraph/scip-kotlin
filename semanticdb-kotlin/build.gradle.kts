@@ -3,7 +3,6 @@ import com.google.protobuf.gradle.*
 plugins {
     kotlin("jvm")
     id("com.google.protobuf") version "0.8.17"
-    id("com.github.marcoferrer.kroto-plus") version "0.6.1"
 }
 
 repositories {
@@ -23,7 +22,7 @@ buildscript {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation("com.google.protobuf:protobuf-java:3.17.3")
-    compileOnly("com.sourcegraph", "semanticdb-javac", "0.6.12")
+    compileOnly("com.sourcegraph", "semanticdb-javac", "0.8.23")
 }
 
 
@@ -45,41 +44,16 @@ afterEvaluate {
     }
 }
 
-krotoPlus {
-    config {
-        create("main") {
-            builder.protoBuilders {
-                useDslMarkers = true
-                unwrapBuilders = true
-            }
-        }
-    }
-}
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.15.7"
+        artifact = "com.google.protobuf:protoc:3.17.3"
     }
 
     generatedFilesBaseDir = kotlin.sourceSets.main.get().kotlin.srcDirs.first().path.split(":")[0].removeSuffix("main/kotlin")
 
     plugins {
-        id("kroto") {
-            artifact = "com.github.marcoferrer.krotoplus:protoc-gen-kroto-plus:0.6.1"
-        }
+        kotlin { }
     }
 
-    generateProtoTasks {
-        val krotoConfig = file("${projectDir}/krotoconfig.json")
-        all().forEach { task ->
-            task.inputs.files(krotoConfig)
-
-            task.plugins {
-                id("kroto") {
-                    outputSubDir = "java"
-                    option("ConfigPath=${krotoConfig}")
-                }
-            }
-        }
-    }
 }
