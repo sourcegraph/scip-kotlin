@@ -578,7 +578,6 @@ public final class Semanticdb {
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        com.sourcegraph.semanticdb_kotlinc.SemanticdbDslBuilder,
         // @@protoc_insertion_point(builder_implements:com.sourcegraph.semanticdb_kotlinc.TextDocuments)
         com.sourcegraph.semanticdb_kotlinc.Semanticdb.TextDocumentsOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -1757,7 +1756,6 @@ public final class Semanticdb {
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        com.sourcegraph.semanticdb_kotlinc.SemanticdbDslBuilder,
         // @@protoc_insertion_point(builder_implements:com.sourcegraph.semanticdb_kotlinc.TextDocument)
         com.sourcegraph.semanticdb_kotlinc.Semanticdb.TextDocumentOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -3243,7 +3241,6 @@ public final class Semanticdb {
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        com.sourcegraph.semanticdb_kotlinc.SemanticdbDslBuilder,
         // @@protoc_insertion_point(builder_implements:com.sourcegraph.semanticdb_kotlinc.Range)
         com.sourcegraph.semanticdb_kotlinc.Semanticdb.RangeOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -4166,7 +4163,6 @@ public final class Semanticdb {
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        com.sourcegraph.semanticdb_kotlinc.SemanticdbDslBuilder,
         // @@protoc_insertion_point(builder_implements:com.sourcegraph.semanticdb_kotlinc.Signature)
         com.sourcegraph.semanticdb_kotlinc.Semanticdb.SignatureOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -5447,7 +5443,6 @@ public final class Semanticdb {
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        com.sourcegraph.semanticdb_kotlinc.SemanticdbDslBuilder,
         // @@protoc_insertion_point(builder_implements:com.sourcegraph.semanticdb_kotlinc.ClassSignature)
         com.sourcegraph.semanticdb_kotlinc.Semanticdb.ClassSignatureOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -6647,7 +6642,6 @@ public final class Semanticdb {
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        com.sourcegraph.semanticdb_kotlinc.SemanticdbDslBuilder,
         // @@protoc_insertion_point(builder_implements:com.sourcegraph.semanticdb_kotlinc.MethodSignature)
         com.sourcegraph.semanticdb_kotlinc.Semanticdb.MethodSignatureOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -7826,7 +7820,6 @@ public final class Semanticdb {
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        com.sourcegraph.semanticdb_kotlinc.SemanticdbDslBuilder,
         // @@protoc_insertion_point(builder_implements:com.sourcegraph.semanticdb_kotlinc.TypeSignature)
         com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeSignatureOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -8714,7 +8707,6 @@ public final class Semanticdb {
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        com.sourcegraph.semanticdb_kotlinc.SemanticdbDslBuilder,
         // @@protoc_insertion_point(builder_implements:com.sourcegraph.semanticdb_kotlinc.ValueSignature)
         com.sourcegraph.semanticdb_kotlinc.Semanticdb.ValueSignatureOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -10161,7 +10153,6 @@ public final class Semanticdb {
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        com.sourcegraph.semanticdb_kotlinc.SemanticdbDslBuilder,
         // @@protoc_insertion_point(builder_implements:com.sourcegraph.semanticdb_kotlinc.SymbolInformation)
         com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformationOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -11787,7 +11778,6 @@ public final class Semanticdb {
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        com.sourcegraph.semanticdb_kotlinc.SemanticdbDslBuilder,
         // @@protoc_insertion_point(builder_implements:com.sourcegraph.semanticdb_kotlinc.Access)
         com.sourcegraph.semanticdb_kotlinc.Semanticdb.AccessOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -12837,7 +12827,6 @@ public final class Semanticdb {
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        com.sourcegraph.semanticdb_kotlinc.SemanticdbDslBuilder,
         // @@protoc_insertion_point(builder_implements:com.sourcegraph.semanticdb_kotlinc.PrivateAccess)
         com.sourcegraph.semanticdb_kotlinc.Semanticdb.PrivateAccessOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -13323,7 +13312,6 @@ public final class Semanticdb {
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        com.sourcegraph.semanticdb_kotlinc.SemanticdbDslBuilder,
         // @@protoc_insertion_point(builder_implements:com.sourcegraph.semanticdb_kotlinc.PrivateWithinAccess)
         com.sourcegraph.semanticdb_kotlinc.Semanticdb.PrivateWithinAccessOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -13825,7 +13813,6 @@ public final class Semanticdb {
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        com.sourcegraph.semanticdb_kotlinc.SemanticdbDslBuilder,
         // @@protoc_insertion_point(builder_implements:com.sourcegraph.semanticdb_kotlinc.ProtectedAccess)
         com.sourcegraph.semanticdb_kotlinc.Semanticdb.ProtectedAccessOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -14244,7 +14231,6 @@ public final class Semanticdb {
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        com.sourcegraph.semanticdb_kotlinc.SemanticdbDslBuilder,
         // @@protoc_insertion_point(builder_implements:com.sourcegraph.semanticdb_kotlinc.PublicAccess)
         com.sourcegraph.semanticdb_kotlinc.Semanticdb.PublicAccessOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -14912,7 +14898,6 @@ public final class Semanticdb {
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        com.sourcegraph.semanticdb_kotlinc.SemanticdbDslBuilder,
         // @@protoc_insertion_point(builder_implements:com.sourcegraph.semanticdb_kotlinc.Documentation)
         com.sourcegraph.semanticdb_kotlinc.Semanticdb.DocumentationOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -15775,7 +15760,6 @@ public final class Semanticdb {
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        com.sourcegraph.semanticdb_kotlinc.SemanticdbDslBuilder,
         // @@protoc_insertion_point(builder_implements:com.sourcegraph.semanticdb_kotlinc.SymbolOccurrence)
         com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrenceOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -16651,7 +16635,6 @@ public final class Semanticdb {
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        com.sourcegraph.semanticdb_kotlinc.SemanticdbDslBuilder,
         // @@protoc_insertion_point(builder_implements:com.sourcegraph.semanticdb_kotlinc.Scope)
         com.sourcegraph.semanticdb_kotlinc.Semanticdb.ScopeOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -17760,7 +17743,6 @@ public final class Semanticdb {
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        com.sourcegraph.semanticdb_kotlinc.SemanticdbDslBuilder,
         // @@protoc_insertion_point(builder_implements:com.sourcegraph.semanticdb_kotlinc.Type)
         com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -18816,7 +18798,6 @@ public final class Semanticdb {
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        com.sourcegraph.semanticdb_kotlinc.SemanticdbDslBuilder,
         // @@protoc_insertion_point(builder_implements:com.sourcegraph.semanticdb_kotlinc.TypeRef)
         com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeRefOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -19693,7 +19674,6 @@ public final class Semanticdb {
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        com.sourcegraph.semanticdb_kotlinc.SemanticdbDslBuilder,
         // @@protoc_insertion_point(builder_implements:com.sourcegraph.semanticdb_kotlinc.IntersectionType)
         com.sourcegraph.semanticdb_kotlinc.Semanticdb.IntersectionTypeOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
@@ -20536,7 +20516,6 @@ public final class Semanticdb {
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        com.sourcegraph.semanticdb_kotlinc.SemanticdbDslBuilder,
         // @@protoc_insertion_point(builder_implements:com.sourcegraph.semanticdb_kotlinc.ExistentialType)
         com.sourcegraph.semanticdb_kotlinc.Semanticdb.ExistentialTypeOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
