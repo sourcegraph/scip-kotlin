@@ -1,6 +1,7 @@
 import com.palantir.gradle.gitversion.VersionDetails
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import groovy.lang.Closure
+import org.gradle.jvm.toolchain.internal.CurrentJvmToolchainSpec
 
 plugins {
     kotlin("jvm") version "1.5.30"
@@ -69,7 +70,7 @@ allprojects {
 
         kotlin {
             jvmToolchain {
-                languageVersion.set(JavaLanguageVersion.of(8))
+                (this as JavaToolchainSpec).languageVersion.set(JavaLanguageVersion.of(8))
             }
         }
 
