@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptorWithSource
+import org.jetbrains.kotlin.descriptors.SimpleFunctionDescriptor
 import org.jetbrains.kotlin.idea.KotlinLanguage
 import org.jetbrains.kotlin.ir.backend.js.lower.serialization.ir.JsManglerDesc.fqnString
 import org.jetbrains.kotlin.psi.KtConstructor
@@ -66,10 +67,14 @@ class SemanticdbTextDocumentBuilder(
                         .getAllSuperClassifiers()
                         // first is the class itself
                         .drop(1)
-                        .filter { it.fqnString == "kotlin.Any" || it.fqnString == "java.lang.Object" }
+                        .filter {
+                            it.fqnString != "kotlin.Any" && it.fqnString != "java.lang.Object"
+                        }
                         .flatMap { cache[it] }
                         .map { it.toString() }
                         .asIterable()
+                is SimpleFunctionDescriptor ->
+                    descriptor.overriddenDescriptors.flatMap { cache[it] }.map { it.toString() }
                 else -> emptyList<String>().asIterable()
             }
         return SymbolInformation {
