@@ -13,13 +13,16 @@ import org.jetbrains.kotlin.backend.common.serialization.metadata.findKDocString
 import org.jetbrains.kotlin.com.intellij.lang.java.JavaLanguage
 import org.jetbrains.kotlin.com.intellij.navigation.NavigationItem
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
+import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptorWithSource
 import org.jetbrains.kotlin.idea.KotlinLanguage
+import org.jetbrains.kotlin.ir.backend.js.lower.serialization.ir.JsManglerDesc.fqnString
 import org.jetbrains.kotlin.psi.KtConstructor
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtPropertyAccessor
 import org.jetbrains.kotlin.renderer.DescriptorRenderer
+import org.jetbrains.kotlin.resolve.descriptorUtil.getAllSuperClassifiers
 
 @ExperimentalContracts
 class SemanticdbTextDocumentBuilder(
@@ -56,10 +59,24 @@ class SemanticdbTextDocumentBuilder(
         descriptor: DeclarationDescriptor,
         element: PsiElement
     ): Semanticdb.SymbolInformation {
+        val supers =
+            when (descriptor) {
+                is ClassDescriptor ->
+                    descriptor
+                        .getAllSuperClassifiers()
+                        // first is the class itself
+                        .drop(1)
+                        .filter { it.fqnString == "kotlin.Any" || it.fqnString == "java.lang.Object" }
+                        .flatMap { cache[it] }
+                        .map { it.toString() }
+                        .asIterable()
+                else -> emptyList<String>().asIterable()
+            }
         return SymbolInformation {
             this.symbol = symbol.toString()
             this.displayName = displayName(element)
             this.documentation = semanticdbDocumentation(descriptor)
+            this.addAllOverriddenSymbols(supers)
             this.language =
                 when (element.language) {
                     is KotlinLanguage -> Semanticdb.Language.KOTLIN
