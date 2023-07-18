@@ -9,7 +9,6 @@ import kotlin.contracts.ExperimentalContracts
 import org.jetbrains.kotlin.analyzer.AnalysisResult
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
-import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.cli.common.messages.MessageRenderer
 import org.jetbrains.kotlin.cli.common.messages.PrintingMessageCollector
 import org.jetbrains.kotlin.com.intellij.openapi.project.Project
@@ -18,8 +17,6 @@ import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingTrace
 import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
-import org.jetbrains.kotlin.utils.rethrow
-import java.io.StringWriter
 
 @ExperimentalContracts
 class Analyzer(
@@ -31,7 +28,9 @@ class Analyzer(
 
     private val messageCollector =
         CompilerConfiguration()
-            .get(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, PrintingMessageCollector(System.err, MessageRenderer.PLAIN_FULL_PATHS, false))
+            .get(
+                CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY,
+                PrintingMessageCollector(System.err, MessageRenderer.PLAIN_FULL_PATHS, false))
 
     override fun analysisCompleted(
         project: Project,
@@ -83,22 +82,22 @@ class Analyzer(
 
     private fun handleException(e: Exception) {
         val writer =
-                PrintWriter(
-                    object : Writer() {
-                        val buf = StringBuffer()
-                        override fun close() =
-                            messageCollector.report(
-                                CompilerMessageSeverity.EXCEPTION, buf.toString())
-                        override fun flush() = Unit
-                        override fun write(data: CharArray, offset: Int, len: Int) {
-                            buf.append(data, offset, len)
-                        }
-                    },
-                    false)
-            writer.println("Exception in semanticdb-kotlin compiler plugin:")
-            e.printStackTrace(writer)
-            writer.println(
-                "Please report a bug to https://github.com/sourcegraph/lsif-kotlin with the stack trace above.")
-            writer.close()
+            PrintWriter(
+                object : Writer() {
+                    val buf = StringBuffer()
+                    override fun close() =
+                        messageCollector.report(CompilerMessageSeverity.EXCEPTION, buf.toString())
+
+                    override fun flush() = Unit
+                    override fun write(data: CharArray, offset: Int, len: Int) {
+                        buf.append(data, offset, len)
+                    }
+                },
+                false)
+        writer.println("Exception in semanticdb-kotlin compiler plugin:")
+        e.printStackTrace(writer)
+        writer.println(
+            "Please report a bug to https://github.com/sourcegraph/lsif-kotlin with the stack trace above.")
+        writer.close()
     }
 }
