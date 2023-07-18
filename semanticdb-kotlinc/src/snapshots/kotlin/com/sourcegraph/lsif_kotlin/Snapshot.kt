@@ -10,6 +10,7 @@ fun main() {
 
     ScipJava.main(arrayOf(
         "index-semanticdb",
+        "--no-emit-inverse-relationships",
         "--cwd",
         sourceroot.toString(),
         "--output",

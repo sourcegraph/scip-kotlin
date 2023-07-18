@@ -4,12 +4,14 @@ package snapshots
 class Overrides : AutoCloseable {
 //    ^^^^^^^^^ definition semanticdb maven . . snapshots/Overrides#
 //              documentation ```kt\npublic final class Overrides : java.lang.AutoCloseable\n```
+//              relationship is_reference is_implementation semanticdb maven jdk 8 java/lang/AutoCloseable#
 //    ^^^^^^^^^ definition semanticdb maven . . snapshots/Overrides#`<init>`().
 //              documentation ```kt\npublic constructor Overrides()\n```
 //                ^^^^^^^^^^^^^ reference semanticdb maven jdk 8 java/lang/AutoCloseable#
     override fun close() {
 //               ^^^^^ definition semanticdb maven . . snapshots/Overrides#close().
 //                     documentation ```kt\npublic open fun close()\n```
+//                     relationship is_reference is_implementation semanticdb maven jdk 8 java/lang/AutoCloseable#close().
         TODO("Not yet implemented")
 //      ^^^^ reference semanticdb maven . . kotlin/StandardKt#TODO(+1).
     }
@@ -32,6 +34,7 @@ interface Animal {
 open class Bird : Animal {
 //         ^^^^ definition semanticdb maven . . snapshots/Bird#
 //              documentation ```kt\npublic open class Bird : snapshots.Animal\n```
+//              relationship is_reference is_implementation semanticdb maven . . snapshots/Animal#
 //         ^^^^ definition semanticdb maven . . snapshots/Bird#`<init>`().
 //              documentation ```kt\npublic constructor Bird()\n```
 //                ^^^^^^ reference semanticdb maven . . snapshots/Animal#
@@ -46,6 +49,7 @@ open class Bird : Animal {
     override fun sound(): String {
 //               ^^^^^ definition semanticdb maven . . snapshots/Bird#sound().
 //                     documentation ```kt\npublic open fun sound(): kotlin.String\n```
+//                     relationship is_reference is_implementation semanticdb maven . . snapshots/Animal#sound().
 //                        ^^^^^^ reference semanticdb maven . . kotlin/String#
         return "tweet"
     }
@@ -53,6 +57,8 @@ open class Bird : Animal {
 class Seagull : Bird() {
 //    ^^^^^^^ definition semanticdb maven . . snapshots/Seagull#
 //            documentation ```kt\npublic final class Seagull : snapshots.Bird\n```
+//            relationship is_reference is_implementation semanticdb maven . . snapshots/Animal#
+//            relationship is_reference is_implementation semanticdb maven . . snapshots/Bird#
 //    ^^^^^^^ definition semanticdb maven . . snapshots/Seagull#`<init>`().
 //            documentation ```kt\npublic constructor Seagull()\n```
 //              ^^^^ reference semanticdb maven . . snapshots/Bird#`<init>`().
@@ -66,6 +72,8 @@ class Seagull : Bird() {
     override fun sound(): String {
 //               ^^^^^ definition semanticdb maven . . snapshots/Seagull#sound().
 //                     documentation ```kt\npublic open fun sound(): kotlin.String\n```
+//                     relationship is_reference is_implementation semanticdb maven . . snapshots/Animal#sound().
+//                     relationship is_reference is_implementation semanticdb maven . . snapshots/Bird#sound().
 //                        ^^^^^^ reference semanticdb maven . . kotlin/String#
         return "squawk"
     }

@@ -13,10 +13,7 @@ import org.jetbrains.kotlin.backend.common.serialization.metadata.findKDocString
 import org.jetbrains.kotlin.com.intellij.lang.java.JavaLanguage
 import org.jetbrains.kotlin.com.intellij.navigation.NavigationItem
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
-import org.jetbrains.kotlin.descriptors.ClassDescriptor
-import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
-import org.jetbrains.kotlin.descriptors.DeclarationDescriptorWithSource
-import org.jetbrains.kotlin.descriptors.SimpleFunctionDescriptor
+import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.idea.KotlinLanguage
 import org.jetbrains.kotlin.ir.backend.js.lower.serialization.ir.JsManglerDesc.fqnString
 import org.jetbrains.kotlin.psi.KtConstructor
@@ -55,6 +52,27 @@ class SemanticdbTextDocumentBuilder(
         if (role == Role.DEFINITION) symbols.add(symbolInformation(symbol, descriptor, element))
     }
 
+    private val isIgnoredSuperClass = setOf("kotlin.Any", "java.lang.Object", "java.io.Serializable")
+
+    private fun functionDescriptorOverrides(descriptor: FunctionDescriptor): Iterable<String> {
+        val result = mutableListOf<String>()
+        val isVisited = mutableSetOf<FunctionDescriptor>()
+        val queue = ArrayDeque<FunctionDescriptor>()
+        queue.add(descriptor)
+        while (!queue.isEmpty()) {
+            val current = queue.removeFirst()
+            if (current in isVisited) {
+                continue
+            }
+
+            isVisited.add(current)
+            val directOverrides = current.overriddenDescriptors.flatMap { cache[it] }.map { it.toString() }
+            result.addAll(directOverrides)
+            queue.addAll(current.overriddenDescriptors)
+        }
+        return result
+    }
+
     private fun symbolInformation(
         symbol: Symbol,
         descriptor: DeclarationDescriptor,
@@ -68,20 +86,20 @@ class SemanticdbTextDocumentBuilder(
                         // first is the class itself
                         .drop(1)
                         .filter {
-                            it.fqnString != "kotlin.Any" && it.fqnString != "java.lang.Object"
+                            it.fqnString !in isIgnoredSuperClass
                         }
                         .flatMap { cache[it] }
                         .map { it.toString() }
                         .asIterable()
                 is SimpleFunctionDescriptor ->
-                    descriptor.overriddenDescriptors.flatMap { cache[it] }.map { it.toString() }
+                    functionDescriptorOverrides(descriptor)
                 else -> emptyList<String>().asIterable()
             }
         return SymbolInformation {
             this.symbol = symbol.toString()
             this.displayName = displayName(element)
             this.documentation = semanticdbDocumentation(descriptor)
-//            this.addAllOverriddenSymbols(supers)
+            this.addAllOverriddenSymbols(supers)
             this.language =
                 when (element.language) {
                     is KotlinLanguage -> Semanticdb.Language.KOTLIN

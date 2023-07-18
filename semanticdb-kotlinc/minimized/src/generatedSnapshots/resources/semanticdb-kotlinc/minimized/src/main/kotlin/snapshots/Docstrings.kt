@@ -15,6 +15,7 @@ abstract class DocstringSuperclass
 class Docstrings :  DocstringSuperclass(), Serializable {
 //    ^^^^^^^^^^ definition semanticdb maven . . snapshots/Docstrings#
 //               documentation ```kt\npublic final class Docstrings : snapshots.DocstringSuperclass, java.io.Serializable\n```\n\n----\n\n Example class docstring.
+//               relationship is_reference is_implementation semanticdb maven . . snapshots/DocstringSuperclass#
 //    ^^^^^^^^^^ definition semanticdb maven . . snapshots/Docstrings#`<init>`().
 //               documentation ```kt\npublic constructor Docstrings()\n```\n\n----\n\n Example class docstring.
 //                  ^^^^^^^^^^^^^^^^^^^ reference semanticdb maven . . snapshots/DocstringSuperclass#`<init>`().

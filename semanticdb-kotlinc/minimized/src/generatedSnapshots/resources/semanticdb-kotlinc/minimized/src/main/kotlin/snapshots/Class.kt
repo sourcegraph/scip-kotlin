@@ -4,6 +4,7 @@ package snapshots
 class Class constructor(private var banana: Int, apple: String) :
 //    ^^^^^ definition semanticdb maven . . snapshots/Class#
 //          documentation ```kt\npublic final class Class : kotlin.Throwable\n```
+//          relationship is_reference is_implementation semanticdb maven . . kotlin/Throwable#
 //          ^^^^^^^^^^^ definition semanticdb maven . . snapshots/Class#`<init>`().
 //                      documentation ```kt\npublic constructor Class(banana: kotlin.Int, apple: kotlin.String)\n```
 //                                  ^^^^^^ definition semanticdb maven . . snapshots/Class#`<init>`().(banana)
