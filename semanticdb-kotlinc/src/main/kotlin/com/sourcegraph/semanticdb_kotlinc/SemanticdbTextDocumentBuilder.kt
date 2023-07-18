@@ -81,7 +81,7 @@ class SemanticdbTextDocumentBuilder(
             this.symbol = symbol.toString()
             this.displayName = displayName(element)
             this.documentation = semanticdbDocumentation(descriptor)
-            this.addAllOverriddenSymbols(supers)
+//            this.addAllOverriddenSymbols(supers)
             this.language =
                 when (element.language) {
                     is KotlinLanguage -> Semanticdb.Language.KOTLIN
