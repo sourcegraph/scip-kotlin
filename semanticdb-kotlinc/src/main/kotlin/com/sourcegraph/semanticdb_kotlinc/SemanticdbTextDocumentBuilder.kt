@@ -86,7 +86,7 @@ class SemanticdbTextDocumentBuilder(
                         // first is the class itself
                         .drop(1)
                         .filter {
-                            it.fqnString !in isIgnoredSuperClass
+                            it.fqnString(false) !in isIgnoredSuperClass
                         }
                         .flatMap { cache[it] }
                         .map { it.toString() }

@@ -44,7 +44,7 @@ open class Bird : Animal {
 //                               ^^^ reference semanticdb maven . . kotlin/Int#
         get() = 42
 //      ^^^ definition semanticdb maven . . snapshots/Bird#getFavoriteNumber().
-//          documentation ```kt\npublic open fun <get-favoriteNumber>(): kotlin.Int\n```
+//          documentation ```kt\npublic open fun `<get-favoriteNumber>`(): kotlin.Int\n```
 
     override fun sound(): String {
 //               ^^^^^ definition semanticdb maven . . snapshots/Bird#sound().
@@ -68,7 +68,7 @@ class Seagull : Bird() {
 //                               ^^^ reference semanticdb maven . . kotlin/Int#
         get() = 1337
 //      ^^^ definition semanticdb maven . . snapshots/Seagull#getFavoriteNumber().
-//          documentation ```kt\npublic open fun <get-favoriteNumber>(): kotlin.Int\n```
+//          documentation ```kt\npublic open fun `<get-favoriteNumber>`(): kotlin.Int\n```
     override fun sound(): String {
 //               ^^^^^ definition semanticdb maven . . snapshots/Seagull#sound().
 //                     documentation ```kt\npublic open fun sound(): kotlin.String\n```
