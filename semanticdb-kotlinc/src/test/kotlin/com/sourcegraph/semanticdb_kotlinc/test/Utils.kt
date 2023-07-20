@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.analyzer.AnalysisResult
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.com.intellij.openapi.project.Project
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
+import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.psi.KtFile
@@ -96,6 +97,7 @@ fun checkContainsExpectedSemanticdb(
     assertSoftly(document.symbolsList) { expectedSymbols?.let { this.shouldContainInOrder(it) } }
 }
 
+@OptIn(ExperimentalCompilerApi::class)
 @ExperimentalContracts
 private fun configureTestCompiler(
     source: SourceFile,
@@ -111,10 +113,11 @@ private fun configureTestCompiler(
         }
 
     val analyzer = semanticdbVisitorAnalyzer(globals, locals, compilation.workingDir.toPath(), hook)
-    compilation.apply { compilerPlugins = listOf(analyzer) }
+    compilation.apply { componentRegistrars = listOf(analyzer) }
     return compilation
 }
 
+@OptIn(ExperimentalCompilerApi::class)
 @ExperimentalContracts
 fun semanticdbVisitorAnalyzer(
     globals: GlobalSymbolsCache,

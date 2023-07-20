@@ -5,6 +5,7 @@ import java.nio.file.Paths
 import org.jetbrains.kotlin.compiler.plugin.AbstractCliOption
 import org.jetbrains.kotlin.compiler.plugin.CliOption
 import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor
+import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
 
@@ -14,6 +15,7 @@ val KEY_SOURCES = CompilerConfigurationKey<Path>(VAL_SOURCES)
 const val VAL_TARGET = "targetroot"
 val KEY_TARGET = CompilerConfigurationKey<Path>(VAL_TARGET)
 
+@OptIn(ExperimentalCompilerApi::class)
 class AnalyzerCommandLineProcessor : CommandLineProcessor {
     override val pluginId: String = "semanticdb-kotlinc"
     override val pluginOptions: Collection<AbstractCliOption> =
