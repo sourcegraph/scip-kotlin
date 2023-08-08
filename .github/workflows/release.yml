@@ -7,14 +7,15 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Get tag
         id: tag
-        run: echo "::set-output name=version::${GITHUB_REF/refs\/tags\/v/}"
-      - uses: actions/setup-java@v2
+        run: echo "version=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_OUTPUT
+      - uses: actions/setup-java@v3
         with: 
           java-version: '8'
           distribution: 'adopt'
+          cache: 'gradle'
       - name: Publish ${{ github.ref }}
         run: ./gradlew -Pversion=${{ steps.tag.outputs.version }} publish
         env:
