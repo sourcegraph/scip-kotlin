@@ -44,6 +44,7 @@ data class ExpectedSymbols(
 fun SourceFile.Companion.testKt(@Language("kotlin") contents: String): SourceFile =
     kotlin("Test.kt", contents)
 
+@ExperimentalCompilerApi
 @ExperimentalContracts
 fun List<ExpectedSymbols>.mapCheckExpectedSymbols(): List<DynamicTest> =
     this.flatMap { (testName, source, symbolsData, semanticdbData) ->

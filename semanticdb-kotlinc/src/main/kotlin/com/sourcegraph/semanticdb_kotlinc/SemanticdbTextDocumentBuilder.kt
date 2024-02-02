@@ -15,11 +15,11 @@ import org.jetbrains.kotlin.com.intellij.navigation.NavigationItem
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.idea.KotlinLanguage
-import org.jetbrains.kotlin.ir.backend.js.lower.serialization.ir.JsManglerDesc.fqnString
 import org.jetbrains.kotlin.psi.KtConstructor
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtPropertyAccessor
 import org.jetbrains.kotlin.renderer.DescriptorRenderer
+import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
 import org.jetbrains.kotlin.resolve.descriptorUtil.getAllSuperClassifiers
 
 @ExperimentalContracts
@@ -86,7 +86,7 @@ class SemanticdbTextDocumentBuilder(
                         // first is the class itself
                         .drop(1)
                         .filter {
-                            it.fqnString(false) !in isIgnoredSuperClass
+                            it.fqNameSafe.toString() !in isIgnoredSuperClass
                         }
                         .flatMap { cache[it] }
                         .map { it.toString() }
