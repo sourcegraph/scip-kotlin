@@ -31,7 +31,8 @@ For example, you can use
 
 ```sh
 curl -fLo coursier https://github.com/coursier/launchers/raw/master/coursier && chmod +x ./coursier
-export SEMANTICDB_KOTLIN_JAR=$(./coursier fetch com.sourcegraph:semanticdb-kotlinc:VERSION)
+export SEMANTICDB_KOTLIN_VERSION="latest.release" # or replace with a particular version
+export SEMANTICDB_KOTLIN_JAR=$(./coursier fetch com.sourcegraph:semanticdb-kotlinc:$SEMANTICDB_KOTLIN_VERSION)
 ```
 
 Once you have the jar file, you need to determine two compiler options:
