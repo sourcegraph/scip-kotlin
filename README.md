@@ -5,12 +5,24 @@ This codebase implements a Kotlin compiler plugin that can be used together with
 [scip-java](https://sourcegraph.github.io/scip-java) to emit
 [SCIP](https://github.com/sourcegraph/scip) indexes for Kotlin projects.
 
+
 ## Getting started
 
 This project must be used together with scip-java. Visit
 [scip-java](https://sourcegraph.github.io/scip-java/) for instructions on how to
 index Kotlin projects with scip-java. Note that scip-java indexes Kotlin sources
 even if you have no Java code.
+
+## Kotlin version compatibility
+
+Any given release of scip-kotlin only supports one major version of Kotlin.
+Use the table below to find the version of scip-kotlin that matches the Kotlin
+version you are using in your project.
+
+| Kotlin version | scip-kotlin version |
+|----------------|---------------------|
+| 1.8.x          | 0.3.2               |
+| 1.9.x          | 0.4.0               |
 
 ## SemanticDB support
 

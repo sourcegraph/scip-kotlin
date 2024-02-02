@@ -35,7 +35,13 @@ dependencies {
     testImplementation(kotlin("compiler-embeddable"))
     testImplementation(kotlin("test"))
     testImplementation("io.kotest", "kotest-assertions-core", "4.6.3")
-    testImplementation("com.github.tschuchortdev", "kotlin-compile-testing", "1.5.0")
+
+    // Unable to use com.github.tschuchortdev:kotlin-compile-testing until 1.9.x support is fixed
+    //   https://github.com/tschuchortdev/kotlin-compile-testing/issues/390
+    // Until then, we use the fork from https://github.com/ZacSweers/kotlin-compile-testing instead.
+    // testImplementation("com.github.tschuchortdev", "kotlin-compile-testing", "1.5.0")
+    testImplementation("dev.zacsweers.kctfork", "core", "0.4.0")
+
     testImplementation("org.junit.jupiter", "junit-jupiter-params", "5.8.1")
     testImplementation("org.jetbrains.kotlin", "kotlin-stdlib-jdk8", "1.5.0") {
         version {
