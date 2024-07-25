@@ -8,12 +8,12 @@ import java.lang.RuntimeException
 
 object ObjectKt {
 //     ^^^^^^^^ definition semanticdb maven . . snapshots/ObjectKt#
-//              documentation ```kt\npublic object ObjectKt\n```
+//              documentation ```kotlin\npublic object ObjectKt\n```
   fun fail(message: String?): Nothing {
 //    ^^^^ definition semanticdb maven . . snapshots/ObjectKt#fail().
-//         documentation ```kt\npublic final fun fail(message: kotlin.String?): kotlin.Nothing\n```
+//         documentation ```kotlin\npublic final fun fail(message: kotlin.String?): kotlin.Nothing\n```
 //         ^^^^^^^ definition semanticdb maven . . snapshots/ObjectKt#fail().(message)
-//                 documentation ```kt\nvalue-parameter message: kotlin.String?\n```
+//                 documentation ```kotlin\nvalue-parameter message: kotlin.String?\n```
 //                  ^^^^^^ reference semanticdb maven . . kotlin/String#
 //                            ^^^^^^^ reference semanticdb maven . . kotlin/Nothing#
     throw RuntimeException(message)
