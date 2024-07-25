@@ -619,7 +619,7 @@ class SemanticdbSymbolsTest {
                                         language = Language.KOTLIN
                                         documentation {
                                             message =
-                                                "```kt\npublic val x: kotlin.String\n```\n\n----\n\n\nhello world\n test content\n"
+                                                "```kotlin\npublic val x: kotlin.String\n```\n\n----\n\n\nhello world\n test content\n"
                                             format = Format.MARKDOWN
                                         }
                                     },
@@ -629,7 +629,7 @@ class SemanticdbSymbolsTest {
                                         language = Language.KOTLIN
                                         documentation {
                                             message =
-                                                "```kt\npublic val x: kotlin.String\n```\n\n----\n\n\nhello world\n test content\n"
+                                                "```kotlin\npublic val x: kotlin.String\n```\n\n----\n\n\nhello world\n test content\n"
                                             format = Format.MARKDOWN
                                         }
                                     }))))

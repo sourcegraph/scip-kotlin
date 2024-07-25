@@ -163,7 +163,7 @@ class SemanticdbTextDocumentBuilder(
                 is DeclarationDescriptorWithSource -> descriptor.findKDocString() ?: ""
                 else -> ""
             }
-        message = "```kt\n$signature\n```${stripKDocAsterisks(kdoc)}"
+        message = "```kotlin\n$signature\n```${stripKDocAsterisks(kdoc)}"
     }
 
     // Returns the kdoc string with all leading and trailing "/*" tokens removed. Naive
