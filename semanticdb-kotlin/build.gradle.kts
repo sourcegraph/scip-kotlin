@@ -15,13 +15,13 @@ buildscript {
     }
 
     dependencies {
-        classpath("com.google.protobuf:protobuf-java:3.17.3")
+        classpath("com.google.protobuf:protobuf-java:3.25.5")
     }
 }
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation("com.google.protobuf:protobuf-java:3.17.3")
+    implementation("com.google.protobuf:protobuf-java:3.25.5")
     compileOnly("com.sourcegraph", "semanticdb-javac", "0.8.23")
 }
 
