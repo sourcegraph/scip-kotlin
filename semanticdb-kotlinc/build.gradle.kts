@@ -40,7 +40,7 @@ dependencies {
     //   https://github.com/tschuchortdev/kotlin-compile-testing/issues/390
     // Until then, we use the fork from https://github.com/ZacSweers/kotlin-compile-testing instead.
     // testImplementation("com.github.tschuchortdev", "kotlin-compile-testing", "1.5.0")
-    testImplementation("dev.zacsweers.kctfork", "core", "0.4.0")
+    testImplementation("dev.zacsweers.kctfork", "core", "0.5.1")
 
     testImplementation("org.junit.jupiter", "junit-jupiter-params", "5.8.1")
     testImplementation("org.jetbrains.kotlin", "kotlin-stdlib-jdk8", "1.5.0") {
@@ -169,6 +169,7 @@ tasks.test {
         exceptionFormat = TestExceptionFormat.FULL
         events("passed", "failed")
     }
+    maxHeapSize = "2g"
 }
 
 subprojects {
@@ -210,7 +211,7 @@ subprojects {
                     "-P",
                     "plugin:semanticdb-kotlinc:sourceroot=${sourceroot}",
                     "-P",
-                    "plugin:semanticdb-kotlinc:targetroot=${targetroot}"
+                    "plugin:semanticdb-kotlinc:targetroot=${targetroot}",
                 )
             }
         }

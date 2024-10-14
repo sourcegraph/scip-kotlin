@@ -1,38 +1,34 @@
 package com.sourcegraph.semanticdb_kotlinc
 
+import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.com.intellij.navigation.NavigationItem
-import org.jetbrains.kotlin.com.intellij.openapi.editor.Document
-import org.jetbrains.kotlin.com.intellij.openapi.project.Project
-import org.jetbrains.kotlin.com.intellij.psi.PsiDocumentManager
-import org.jetbrains.kotlin.com.intellij.psi.PsiElement
-import org.jetbrains.kotlin.diagnostics.PsiDiagnosticUtils
-import org.jetbrains.kotlin.diagnostics.PsiDiagnosticUtils.LineAndColumn
-import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.fir.declarations.FirFile
 import org.jetbrains.kotlin.psi.KtPropertyAccessor
+import org.jetbrains.kotlin.text
 
 /** Maps between an element and its identifier positions */
-class LineMap(project: Project, file: KtFile) {
-    private val document: Document = PsiDocumentManager.getInstance(project).getDocument(file)!!
-
-    private fun offsetToLineAndCol(offset: Int): LineAndColumn =
-        PsiDiagnosticUtils.offsetToLineAndColumn(document, offset)
+class LineMap(private val file: FirFile) {
+    private fun offsetToLineAndCol(offset: Int): Pair<Int, Int>? =
+        file.sourceFileLinesMapping?.getLineAndColumnByOffset(offset)
 
     /** Returns the non-0-based start character */
-    fun startCharacter(element: PsiElement): Int = offsetToLineAndCol(element.textOffset).column
+    fun startCharacter(element: KtSourceElement): Int =
+        offsetToLineAndCol(element.startOffset)?.second ?: 0
 
     /** Returns the non-0-based end character */
-    fun endCharacter(element: PsiElement): Int =
+    fun endCharacter(element: KtSourceElement): Int =
         startCharacter(element) + nameForOffset(element).length
 
     /** Returns the non-0-based line number */
-    fun lineNumber(element: PsiElement): Int = document.getLineNumber(element.textOffset) + 1
+    fun lineNumber(element: KtSourceElement): Int =
+        file.sourceFileLinesMapping?.getLineByOffset(element.startOffset)?.let { it + 1 } ?: 0
 
     companion object {
-        fun nameForOffset(element: PsiElement): String =
+        fun nameForOffset(element: KtSourceElement): String =
             when (element) {
                 is KtPropertyAccessor -> element.namePlaceholder.text
-                is NavigationItem -> element.name ?: element.text
-                else -> element.text
+                is NavigationItem -> element.name ?: element.text?.toString() ?: ""
+                else -> element.text?.toString() ?: ""
             }
     }
 }
