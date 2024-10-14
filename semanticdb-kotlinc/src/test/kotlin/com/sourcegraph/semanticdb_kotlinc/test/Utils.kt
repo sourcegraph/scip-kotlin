@@ -1,6 +1,7 @@
 package com.sourcegraph.semanticdb_kotlinc.test
 
 import com.sourcegraph.semanticdb_kotlinc.*
+import com.sourcegraph.semanticdb_kotlinc.AnalyzerCheckers.Companion.visitors
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
 import io.kotest.assertions.assertSoftly
@@ -8,17 +9,22 @@ import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.matchers.collections.shouldContainInOrder
 import io.kotest.matchers.shouldBe
 import java.nio.file.Path
+import java.nio.file.Paths
 import kotlin.contracts.ExperimentalContracts
 import org.intellij.lang.annotations.Language
-import org.jetbrains.kotlin.analyzer.AnalysisResult
-import org.jetbrains.kotlin.com.intellij.openapi.project.Project
+import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.config.CompilerConfiguration
-import org.jetbrains.kotlin.descriptors.ModuleDescriptor
-import org.jetbrains.kotlin.psi.KtFile
-import org.jetbrains.kotlin.resolve.BindingTrace
-import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
+import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
+import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
+import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
+import org.jetbrains.kotlin.fir.analysis.checkers.declaration.DeclarationCheckers
+import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFileChecker
+import org.jetbrains.kotlin.fir.declarations.FirFile
+import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrar
+import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrarAdapter
 import org.junit.jupiter.api.Assumptions.assumeFalse
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.DynamicTest.dynamicTest
@@ -117,6 +123,71 @@ private fun configureTestCompiler(
     return compilation
 }
 
+@OptIn(ExperimentalContracts::class)
+private class TestAnalyzerDeclarationCheckers(
+    globals: GlobalSymbolsCache,
+    locals: LocalSymbolsCache,
+    sourceRoot: Path,
+    callback: (Semanticdb.TextDocument) -> Unit
+) : AnalyzerCheckers.AnalyzerDeclarationCheckers(sourceRoot, callback) {
+    override val fileCheckers: Set<FirFileChecker> =
+        setOf(
+            object : FirFileChecker(MppCheckerKind.Common) {
+                override fun check(
+                    declaration: FirFile,
+                    context: CheckerContext,
+                    reporter: DiagnosticReporter
+                ) {
+                    val ktFile = declaration.sourceFile ?: return
+                    val lineMap = LineMap(declaration)
+                    val visitor = SemanticdbVisitor(sourceRoot, ktFile, lineMap, globals, locals)
+                    visitors[ktFile] = visitor
+                }
+            },
+            AnalyzerCheckers.SemanticImportsChecker())
+}
+
+private class TestAnalyzerCheckers(session: FirSession) : AnalyzerCheckers(session) {
+    @OptIn(ExperimentalContracts::class)
+    override val declarationCheckers: DeclarationCheckers
+        get() =
+            TestAnalyzerDeclarationCheckers(
+                session.testAnalyzerParamsProvider.globals,
+                session.testAnalyzerParamsProvider.locals,
+                session.testAnalyzerParamsProvider.sourceroot,
+                session.testAnalyzerParamsProvider.callback)
+}
+
+@OptIn(ExperimentalContracts::class)
+class TestAnalyzerParamsProvider(
+    session: FirSession,
+    globals: GlobalSymbolsCache,
+    locals: LocalSymbolsCache,
+    sourceroot: Path,
+    targetroot: Path,
+    callback: (Semanticdb.TextDocument) -> Unit
+) : AnalyzerParamsProvider(session, sourceroot, targetroot, callback) {
+    companion object {
+        fun getFactory(
+            globals: GlobalSymbolsCache,
+            locals: LocalSymbolsCache,
+            sourceroot: Path,
+            targetroot: Path,
+            callback: (Semanticdb.TextDocument) -> Unit
+        ): Factory {
+            return Factory {
+                TestAnalyzerParamsProvider(it, globals, locals, sourceroot, targetroot, callback)
+            }
+        }
+    }
+
+    val globals: GlobalSymbolsCache = globals
+    val locals: LocalSymbolsCache = locals
+}
+
+val FirSession.testAnalyzerParamsProvider: TestAnalyzerParamsProvider by FirSession
+    .sessionComponentAccessor()
+
 @OptIn(ExperimentalCompilerApi::class)
 @ExperimentalContracts
 fun semanticdbVisitorAnalyzer(
@@ -127,27 +198,20 @@ fun semanticdbVisitorAnalyzer(
 ): CompilerPluginRegistrar {
     return object : CompilerPluginRegistrar() {
         override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
-            AnalysisHandlerExtension.registerExtension(
-                object : AnalysisHandlerExtension {
-                    override fun analysisCompleted(
-                        project: Project,
-                        module: ModuleDescriptor,
-                        bindingTrace: BindingTrace,
-                        files: Collection<KtFile>
-                    ): AnalysisResult? {
-                        val resolver =
-                            DescriptorResolver(bindingTrace).also { globals.resolver = it }
-                        val lineMap = LineMap(project, files.first())
-                        hook(
-                            SemanticdbVisitor(
-                                    sourceroot, resolver, files.first(), lineMap, globals, locals)
-                                .build())
-                        return super.analysisCompleted(project, module, bindingTrace, files)
+            FirExtensionRegistrarAdapter.registerExtension(
+                object : FirExtensionRegistrar() {
+                    override fun ExtensionRegistrarContext.configurePlugin() {
+                        +TestAnalyzerParamsProvider.getFactory(
+                            globals, locals, sourceroot, Paths.get(""), hook)
+                        +::TestAnalyzerCheckers
                     }
                 })
+            IrGenerationExtension.registerExtension(
+                PostAnalysisExtension(
+                    sourceRoot = sourceroot, targetRoot = Paths.get(""), callback = hook))
         }
 
         override val supportsK2: Boolean
-            get() = false
+            get() = true
     }
 }
