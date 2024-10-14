@@ -1,19 +1,19 @@
 package com.sourcegraph.semanticdb_kotlinc
 
-import org.jetbrains.kotlin.KtSourceFile
-import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
-import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
-import org.jetbrains.kotlin.fir.FirSession
-import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.contracts.ExperimentalContracts
+import org.jetbrains.kotlin.KtSourceFile
+import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
+import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
+import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 
 class PostAnalysisExtension(
     private val sourceRoot: Path,
     private val targetRoot: Path,
-    private val callback: (Semanticdb.TextDocument) -> Unit): IrGenerationExtension {
+    private val callback: (Semanticdb.TextDocument) -> Unit
+) : IrGenerationExtension {
     @OptIn(ExperimentalContracts::class)
     override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
         println("Ernald - generate - count:${AnalyzerCheckers.visitors.size}")
@@ -30,20 +30,21 @@ class PostAnalysisExtension(
             callback(document)
             println("Ernald - callback6")
         }
-//        AnalyzerCheckers.visitors.forEach { (ktSourceFile, visitor) ->  {
-//                println("Ernald - callback1")
-//                val document = visitor.build()
-//                println("Ernald - callback2")
-//                semanticdbOutPathForFile(ktSourceFile)?.apply {
-//                    println("Ernald - callback3")
-//                    Files.write(this, TextDocuments { addDocuments(document) }.toByteArray())
-//                    println("Ernald - callback4")
-//                }
-//                println("Ernald - callback5")
-//                callback(document)
-//                println("Ernald - callback6")
-//            }
-//        }
+        //        AnalyzerCheckers.visitors.forEach { (ktSourceFile, visitor) ->  {
+        //                println("Ernald - callback1")
+        //                val document = visitor.build()
+        //                println("Ernald - callback2")
+        //                semanticdbOutPathForFile(ktSourceFile)?.apply {
+        //                    println("Ernald - callback3")
+        //                    Files.write(this, TextDocuments { addDocuments(document)
+        // }.toByteArray())
+        //                    println("Ernald - callback4")
+        //                }
+        //                println("Ernald - callback5")
+        //                callback(document)
+        //                println("Ernald - callback6")
+        //            }
+        //        }
     }
 
     private fun semanticdbOutPathForFile(file: KtSourceFile): Path? {

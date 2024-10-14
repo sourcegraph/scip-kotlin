@@ -22,13 +22,11 @@ import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles
 import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
 import org.jetbrains.kotlin.com.intellij.openapi.Disposable
-import org.jetbrains.kotlin.com.intellij.openapi.util.Disposer
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.JVMConfigurationKeys
 import org.jetbrains.kotlin.config.LanguageVersionSettingsImpl
 import org.jetbrains.kotlin.config.languageVersionSettings
-import org.jetbrains.kotlin.psi.KtPsiFactory
 import org.junit.jupiter.api.io.TempDir
 
 @OptIn(ExperimentalCompilerApi::class)
@@ -52,7 +50,8 @@ class AnalyzerTest {
         val result =
             KotlinCompilation()
                 .apply {
-//                    sources = listOf(SourceFile.kotlin(source.name, source.text))
+                    //                    sources = listOf(SourceFile.kotlin(source.name,
+                    // source.text))
                     sources = listOf(source)
                     compilerPluginRegistrars = listOf(AnalyzerRegistrar { document = it })
                     verbose = true
@@ -116,7 +115,8 @@ class AnalyzerTest {
                     documentation =
                         Documentation {
                             format = Semanticdb.Documentation.Format.MARKDOWN
-                            message = "```\npublic constructor(): R|sample/Banana| {\n    super<R|kotlin/Any|>()\n}\n\n```\n"
+                            message =
+                                "```\npublic constructor(): R|sample/Banana| {\n    super<R|kotlin/Any|>()\n}\n\n```\n"
                         }
                 },
                 SymbolInformation {

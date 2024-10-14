@@ -1,18 +1,16 @@
 package com.sourcegraph.semanticdb_kotlinc
 
 import com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrence.Role
-import org.jetbrains.kotlin.KtLightSourceElement
-import org.jetbrains.kotlin.KtNodeTypes
-import org.jetbrains.kotlin.KtSourceElement
-import org.jetbrains.kotlin.KtSourceFile
-import org.jetbrains.kotlin.com.intellij.lang.LighterASTNode
 import java.lang.IllegalArgumentException
 import java.lang.StringBuilder
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.security.MessageDigest
 import kotlin.contracts.ExperimentalContracts
-import kotlin.text.Charsets.UTF_8
+import org.jetbrains.kotlin.KtLightSourceElement
+import org.jetbrains.kotlin.KtSourceElement
+import org.jetbrains.kotlin.KtSourceFile
+import org.jetbrains.kotlin.com.intellij.lang.LighterASTNode
 import org.jetbrains.kotlin.com.intellij.lang.java.JavaLanguage
 import org.jetbrains.kotlin.com.intellij.navigation.NavigationItem
 import org.jetbrains.kotlin.com.intellij.openapi.util.Ref
@@ -25,7 +23,6 @@ import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.declarations.utils.isOverride
 import org.jetbrains.kotlin.fir.psi
 import org.jetbrains.kotlin.fir.render
-import org.jetbrains.kotlin.fir.renderWithType
 import org.jetbrains.kotlin.fir.resolve.toSymbol
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
@@ -38,10 +35,6 @@ import org.jetbrains.kotlin.fir.types.coneTypeSafe
 import org.jetbrains.kotlin.idea.KotlinLanguage
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi
-import org.jetbrains.kotlin.psi.KtConstructor
-import org.jetbrains.kotlin.psi.KtDeclaration
-import org.jetbrains.kotlin.psi.KtFile
-import org.jetbrains.kotlin.psi.KtPrimaryConstructor
 import org.jetbrains.kotlin.psi.KtPropertyAccessor
 import org.jetbrains.kotlin.text
 
@@ -73,13 +66,14 @@ class SemanticdbTextDocumentBuilder(
         element: KtSourceElement,
         role: Role
     ) {
-    symbolOccurrence(symbol, element, role)?.let {
-            if(!occurrences.contains(it)) {
+        symbolOccurrence(symbol, element, role)?.let {
+            if (!occurrences.contains(it)) {
                 occurrences.add(it)
             }
         }
         val symbolInformation = symbolInformation(firBasedSymbol, symbol, element)
-        if (role == Role.DEFINITION && !symbols.contains(symbolInformation)) symbols.add(symbolInformation)
+        if (role == Role.DEFINITION && !symbols.contains(symbolInformation))
+            symbols.add(symbolInformation)
     }
 
     private val isIgnoredSuperClass =
@@ -170,8 +164,7 @@ class SemanticdbTextDocumentBuilder(
                 when (element.psi?.language ?: KotlinLanguage.INSTANCE) {
                     is KotlinLanguage -> Semanticdb.Language.KOTLIN
                     is JavaLanguage -> Semanticdb.Language.JAVA
-                    else ->
-                        throw IllegalArgumentException("unexpected language")
+                    else -> throw IllegalArgumentException("unexpected language")
                 }
         }
     }
@@ -209,27 +202,35 @@ class SemanticdbTextDocumentBuilder(
     }
 
     private fun semanticdbMD5(): String =
-        MessageDigest.getInstance("MD5").digest(file.getContentsAsStream().readBytes()).joinToString("") {
-            "%02X".format(it)
-        }
+        MessageDigest.getInstance("MD5")
+            .digest(file.getContentsAsStream().readBytes())
+            .joinToString("") { "%02X".format(it) }
 
-    private fun semanticdbDocumentation(element: FirElement, source: KtSourceElement): Semanticdb.Documentation =
-        Documentation {
+    private fun semanticdbDocumentation(
+        element: FirElement,
+        source: KtSourceElement
+    ): Semanticdb.Documentation = Documentation {
         format = Semanticdb.Documentation.Format.MARKDOWN
         val renderOutput = element.render()
         val kdoc = getKDocFromKtLightSourceElement(source as? KtLightSourceElement) ?: ""
         message = "```\n$renderOutput\n```\n${stripKDocAsterisks(kdoc)}"
     }
 
-    private fun getKDocFromKtLightSourceElement(lightSourceElement: KtLightSourceElement?): String? {
+    private fun getKDocFromKtLightSourceElement(
+        lightSourceElement: KtLightSourceElement?
+    ): String? {
         if (lightSourceElement == null) return null
         val tree = lightSourceElement.treeStructure // FlyweightCapableTreeStructure<LighterASTNode>
-        val node = lightSourceElement.lighterASTNode // LighterASTNode, the root of the element's structure
+        val node =
+            lightSourceElement.lighterASTNode // LighterASTNode, the root of the element's structure
         return findKDoc(tree, node)
     }
 
     // Helper function to find the KDoc node in the AST
-    private fun findKDoc(tree: FlyweightCapableTreeStructure<LighterASTNode>, node: LighterASTNode): String? {
+    private fun findKDoc(
+        tree: FlyweightCapableTreeStructure<LighterASTNode>,
+        node: LighterASTNode
+    ): String? {
         // Recursively traverse the light tree to find a DOC_COMMENT node
         val kidsRef = Ref<Array<LighterASTNode?>>()
         tree.getChildren(node, kidsRef)

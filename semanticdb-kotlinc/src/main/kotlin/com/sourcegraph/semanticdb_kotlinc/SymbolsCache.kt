@@ -9,12 +9,10 @@ import kotlin.contracts.contract
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.isLocalMember
 import org.jetbrains.kotlin.fir.analysis.checkers.getContainingClassSymbol
-import org.jetbrains.kotlin.fir.analysis.checkers.getContainingSymbol
 import org.jetbrains.kotlin.fir.declarations.FirDeclaration
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
-import org.jetbrains.kotlin.fir.declarations.utils.isSynthetic
 import org.jetbrains.kotlin.fir.declarations.utils.nameOrSpecialName
 import org.jetbrains.kotlin.fir.resolve.providers.firProvider
 import org.jetbrains.kotlin.fir.resolve.providers.getContainingFile
@@ -72,7 +70,7 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
         if (symbol is FirPropertySymbol) {
             if (symbol.fir.getter?.origin is FirDeclarationOrigin.Synthetic)
                 emitSymbols(symbol.fir.getter!!.symbol, locals)
-            if (symbol.fir.getter?.origin is FirDeclarationOrigin.Synthetic)
+            if (symbol.fir.setter?.origin is FirDeclarationOrigin.Synthetic)
                 emitSymbols(symbol.fir.setter!!.symbol, locals)
         }
     }
@@ -134,7 +132,14 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
     @OptIn(SymbolInternals::class)
     private fun getParentSymbol(symbol: FirBasedSymbol<*>): FirBasedSymbol<*>? {
         val session = symbol.fir.moduleData.session
-        return symbol.getContainingClassSymbol(session)?: (symbol as? FirBasedSymbol<*>)?.let { session.firProvider.getContainingFile(it)?.symbol }
+        return symbol.getContainingClassSymbol(session)
+            ?: (symbol as? FirBasedSymbol<*>)?.let {
+                try {
+                    session.firProvider.getContainingFile(it)?.symbol
+                } catch (ex: IllegalStateException) {
+                    null
+                }
+            }
     }
 
     /**

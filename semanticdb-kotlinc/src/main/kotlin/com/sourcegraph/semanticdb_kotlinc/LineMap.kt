@@ -2,7 +2,6 @@ package com.sourcegraph.semanticdb_kotlinc
 
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.com.intellij.navigation.NavigationItem
-import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.fir.declarations.FirFile
 import org.jetbrains.kotlin.psi.KtPropertyAccessor
 import org.jetbrains.kotlin.text

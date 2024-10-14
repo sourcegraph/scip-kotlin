@@ -1,8 +1,10 @@
 package com.sourcegraph.semanticdb_kotlinc
 
-import org.jetbrains.kotlin.KtSourceFile
+import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.Paths
 import kotlin.contracts.ExperimentalContracts
+import org.jetbrains.kotlin.KtSourceFile
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.fir.FirSession
@@ -35,8 +37,6 @@ import org.jetbrains.kotlin.fir.references.FirResolvedNamedReference
 import org.jetbrains.kotlin.psi.KtDeclaration
 import org.jetbrains.kotlin.resolve.checkers.DeclarationChecker
 import org.jetbrains.kotlin.resolve.checkers.DeclarationCheckerContext
-import java.nio.file.Files
-import java.nio.file.Paths
 
 class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtension(session) {
     companion object {
@@ -122,7 +122,9 @@ class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtension(ses
                 val relative = sourceRoot.relativize(normalizedPath)
                 val filename = relative.fileName.toString() + ".semanticdb"
                 val semanticdbOutPath =
-                    session.diTransformerService.targetroot
+                    session
+                        .diTransformerService
+                        .targetroot
                         .resolve("META-INF")
                         .resolve("semanticdb")
                         .resolve(relative)
@@ -279,7 +281,7 @@ class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtension(ses
     }
 }
 
-//private fun FirElement.findKtFile(): KtSourceFile? = source?.psi?.containingFile as? KtSourceFile
+// private fun FirElement.findKtFile(): KtSourceFile? = source?.psi?.containingFile as? KtSourceFile
 
 /*
    KtObjectDeclaration -> FirRegularClassChecker
