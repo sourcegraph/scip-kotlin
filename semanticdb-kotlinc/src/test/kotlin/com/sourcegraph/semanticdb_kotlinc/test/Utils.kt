@@ -7,19 +7,9 @@ import io.kotest.assertions.assertSoftly
 import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.matchers.collections.shouldContainInOrder
 import io.kotest.matchers.shouldBe
-import java.nio.file.Path
 import kotlin.contracts.ExperimentalContracts
 import org.intellij.lang.annotations.Language
-import org.jetbrains.kotlin.analyzer.AnalysisResult
-import org.jetbrains.kotlin.com.intellij.mock.MockProject
-import org.jetbrains.kotlin.com.intellij.openapi.project.Project
-import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
-import org.jetbrains.kotlin.config.CompilerConfiguration
-import org.jetbrains.kotlin.descriptors.ModuleDescriptor
-import org.jetbrains.kotlin.psi.KtFile
-import org.jetbrains.kotlin.resolve.BindingTrace
-import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
 import org.junit.jupiter.api.Assumptions.assumeFalse
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.DynamicTest.dynamicTest
@@ -113,43 +103,47 @@ private fun configureTestCompiler(
             verbose = false
         }
 
-    val analyzer = semanticdbVisitorAnalyzer(globals, locals, compilation.workingDir.toPath(), hook)
-    compilation.apply { componentRegistrars = listOf(analyzer) }
+    //    val analyzer = semanticdbVisitorAnalyzer(globals, locals, compilation.workingDir.toPath(),
+    // hook)
+    //    compilation.apply { componentRegistrars = listOf(analyzer) }
     return compilation
 }
 
-@OptIn(ExperimentalCompilerApi::class)
-@ExperimentalContracts
-fun semanticdbVisitorAnalyzer(
-    globals: GlobalSymbolsCache,
-    locals: LocalSymbolsCache,
-    sourceroot: Path,
-    hook: (Semanticdb.TextDocument) -> Unit = {}
-): ComponentRegistrar {
-    return object : ComponentRegistrar {
-        override fun registerProjectComponents(
-            project: MockProject,
-            configuration: CompilerConfiguration
-        ) {
-            AnalysisHandlerExtension.registerExtension(
-                project,
-                object : AnalysisHandlerExtension {
-                    override fun analysisCompleted(
-                        project: Project,
-                        module: ModuleDescriptor,
-                        bindingTrace: BindingTrace,
-                        files: Collection<KtFile>
-                    ): AnalysisResult? {
-                        val resolver =
-                            DescriptorResolver(bindingTrace).also { globals.resolver = it }
-                        val lineMap = LineMap(project, files.first())
-                        hook(
-                            SemanticdbVisitor(
-                                    sourceroot, resolver, files.first(), lineMap, globals, locals)
-                                .build())
-                        return super.analysisCompleted(project, module, bindingTrace, files)
-                    }
-                })
-        }
-    }
-}
+// @OptIn(ExperimentalCompilerApi::class)
+// @ExperimentalContracts
+// fun semanticdbVisitorAnalyzer(
+//    globals: GlobalSymbolsCache,
+//    locals: LocalSymbolsCache,
+//    sourceroot: Path,
+//    hook: (Semanticdb.TextDocument) -> Unit = {}
+// ): ComponentRegistrar {
+//    return object : ComponentRegistrar {
+//        override fun registerProjectComponents(
+//            project: MockProject,
+//            configuration: CompilerConfiguration
+//        ) {
+//            AnalysisHandlerExtension.registerExtension(
+//                project,
+//                object : AnalysisHandlerExtension {
+//                    override fun analysisCompleted(
+//                        project: Project,
+//                        module: ModuleDescriptor,
+//                        bindingTrace: BindingTrace,
+//                        files: Collection<KtFile>
+//                    ): AnalysisResult? {
+//                        val resolver =
+//                            DescriptorResolver(bindingTrace).also { globals.resolver = it }
+//                        val lineMap = LineMap(project, files.first())
+//                        hook(
+//                            SemanticdbVisitor(
+//                                    sourceroot, resolver, files.first(), lineMap, globals, locals)
+//                                .build())
+//                        return super.analysisCompleted(project, module, bindingTrace, files)
+//                    }
+//                })
+//        }
+//
+//        override val supportsK2: Boolean
+//            get() = true
+//    }
+// }
