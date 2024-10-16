@@ -84,7 +84,7 @@ class AnalyzerTest {
             arrayOf(
                 SymbolOccurrence {
                     role = Role.DEFINITION
-                    symbol = "Banana#`sample.Banana`#Bananasample.Banana(): sample/Banana."
+                    symbol = "`sample/Banana`#Bananasample.Banana(): sample/Banana."
                     range {
                         startLine = 1
                         startCharacter = 0
@@ -94,7 +94,7 @@ class AnalyzerTest {
                 },
                 SymbolOccurrence {
                     role = Role.DEFINITION
-                    symbol = "Banana#`sample.foo`#foosample.foo(): kotlin/Unit."
+                    symbol = "`sample/Banana`#foosample.foo(): kotlin/Unit."
                     range {
                         startLine = 2
                         startCharacter = 4
@@ -109,9 +109,9 @@ class AnalyzerTest {
         val symbols =
             arrayOf(
                 SymbolInformation {
-                    symbol = "Banana#`sample.Banana`#Bananasample.Banana(): sample/Banana."
+                    symbol = "`sample/Banana`#Bananasample.Banana(): sample/Banana."
                     language = KOTLIN
-                    displayName = "class Banana {\n    fun foo() { }\n}"
+                    displayName = "Banana"
                     documentation =
                         Documentation {
                             format = Semanticdb.Documentation.Format.MARKDOWN
@@ -120,9 +120,9 @@ class AnalyzerTest {
                         }
                 },
                 SymbolInformation {
-                    symbol = "Banana#`sample.foo`#foosample.foo(): kotlin/Unit."
+                    symbol = "`sample/Banana`#foosample.foo(): kotlin/Unit."
                     language = KOTLIN
-                    displayName = "fun foo() { }"
+                    displayName = "foo"
                     documentation =
                         Documentation {
                             format = Semanticdb.Documentation.Format.MARKDOWN
@@ -487,7 +487,7 @@ class AnalyzerTest {
                 C(value = 3)
             }
             fun printProperty() = println(EnumExample1.A.value) // => 1
-            
+
             // Every enum has properties to obtain its name and ordinal(position) in the enum class declaration:
             fun printName() = println(EnumExample1.A.name) // => A
             fun printPosition() = println(EnumExample1.A.ordinal) // => 0
@@ -603,20 +603,20 @@ class AnalyzerTest {
 
                /** Example class docstring */
                class Docstrings: DocstringSuperclass(), Serializable
-               
-               /** 
+
+               /**
                  * Example method docstring
                  *
                  **/
                inline fun docstrings(msg: String): Int { return msg.length }
         """.trimIndent())
-        document.assertDocumentation("Docstrings#`sample.Docstrings`", "Example class docstring")
-        document.assertDocumentation("`sample.docstrings`", "Example method docstring")
+        document.assertDocumentation("`sample/Docstrings`#", "Example class docstring")
+        document.assertDocumentation("`Test.kt.docstrings`#docstringssample.docstrings(kotlin/String): kotlin/Int.", "Example method docstring")
     }
 
     private fun TextDocument.assertDocumentation(symbol: String, expectedDocumentation: String) {
         val markdown =
-            this.symbolsList.find { it.symbol.startsWith(symbol) }?.documentation?.message
+            this.symbolsList.find { it.symbol == symbol }?.documentation?.message
                 ?: fail("no documentation for symbol $symbol")
         val obtainedDocumentation = markdown.split("----").last().trim()
         assertEquals(expectedDocumentation, obtainedDocumentation)

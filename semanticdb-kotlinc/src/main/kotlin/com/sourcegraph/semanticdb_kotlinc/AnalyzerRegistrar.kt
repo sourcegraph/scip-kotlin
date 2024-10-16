@@ -12,17 +12,6 @@ import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrarAdapter
 class AnalyzerRegistrar(private val callback: (Semanticdb.TextDocument) -> Unit = {}) :
     CompilerPluginRegistrar() {
     override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
-        println("Ernald - AnalyzerRegistrar")
-        //        AnalysisHandlerExtension.registerExtension(
-        //            Analyzer(
-        //                sourceroot = configuration[KEY_SOURCES]
-        //                        ?: throw IllegalArgumentException("configuration key $KEY_SOURCES
-        // missing"),
-        //                targetroot = configuration[KEY_TARGET]
-        //                        ?: throw IllegalArgumentException("configuration key $KEY_TARGET
-        // missing"),
-        //                callback = callback))
-
         FirExtensionRegistrarAdapter.registerExtension(
             AnalyzerFirExtensionRegistrar(
                 sourceroot = configuration[KEY_SOURCES]!!,

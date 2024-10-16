@@ -9,7 +9,7 @@ class AnalyzerFirExtensionRegistrar(
     private val callback: (Semanticdb.TextDocument) -> Unit
 ) : FirExtensionRegistrar() {
     override fun ExtensionRegistrarContext.configurePlugin() {
-        +DiTransformerService.getFactory(sourceroot, targetroot, callback)
+        +AnalyzerParamsProvider.getFactory(sourceroot, targetroot, callback)
         +::AnalyzerCheckers
     }
 }

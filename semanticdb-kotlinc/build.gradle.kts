@@ -169,6 +169,7 @@ tasks.test {
         exceptionFormat = TestExceptionFormat.FULL
         events("passed", "failed")
     }
+    maxHeapSize = "2g"
 }
 
 subprojects {
@@ -210,7 +211,7 @@ subprojects {
                     "-P",
                     "plugin:semanticdb-kotlinc:sourceroot=${sourceroot}",
                     "-P",
-                    "plugin:semanticdb-kotlinc:targetroot=${targetroot}"
+                    "plugin:semanticdb-kotlinc:targetroot=${targetroot}",
                 )
             }
         }

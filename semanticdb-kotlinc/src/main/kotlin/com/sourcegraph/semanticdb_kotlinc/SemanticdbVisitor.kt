@@ -8,6 +8,7 @@ import org.jetbrains.kotlin.KtSourceFile
 import org.jetbrains.kotlin.fir.declarations.FirClass
 import org.jetbrains.kotlin.fir.declarations.FirConstructor
 import org.jetbrains.kotlin.fir.declarations.FirFunction
+import org.jetbrains.kotlin.fir.declarations.FirImport
 import org.jetbrains.kotlin.fir.declarations.FirProperty
 import org.jetbrains.kotlin.fir.declarations.FirPropertyAccessor
 import org.jetbrains.kotlin.fir.declarations.FirTypeAlias
@@ -15,6 +16,7 @@ import org.jetbrains.kotlin.fir.declarations.FirTypeParameter
 import org.jetbrains.kotlin.fir.declarations.FirValueParameter
 import org.jetbrains.kotlin.fir.references.FirResolvedNamedReference
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirClassLikeSymbol
 import org.jetbrains.kotlin.psi.*
 
 @ExperimentalContracts
@@ -49,6 +51,10 @@ class SemanticdbVisitor(
 
     private fun Sequence<Symbol>.with(firBasedSymbol: FirBasedSymbol<*>) =
         this.map { SymbolDescriptorPair(firBasedSymbol, it) }
+
+    fun visitImport(firClassSymbol: FirClassLikeSymbol<*>, element: KtSourceElement) {
+        cache[firClassSymbol].with(firClassSymbol).emitAll(element, Role.REFERENCE)
+    }
 
     fun visitClassOrObject(firClass: FirClass, element: KtSourceElement) {
         cache[firClass.symbol].with(firClass.symbol).emitAll(element, Role.DEFINITION)

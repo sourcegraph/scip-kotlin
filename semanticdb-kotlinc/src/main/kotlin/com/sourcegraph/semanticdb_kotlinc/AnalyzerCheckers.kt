@@ -11,78 +11,50 @@ import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.DeclarationCheckers
+import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirAnonymousFunctionChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirConstructorChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFileChecker
-import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFunctionChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirPropertyAccessorChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirPropertyChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirRegularClassChecker
+import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirSimpleFunctionChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirTypeAliasChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirTypeParameterChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirValueParameterChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.ExpressionCheckers
+import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirCallableReferenceAccessChecker
+import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirPropertyAccessExpressionChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirQualifiedAccessExpressionChecker
 import org.jetbrains.kotlin.fir.analysis.extensions.FirAdditionalCheckersExtension
+import org.jetbrains.kotlin.fir.declarations.FirAnonymousFunction
 import org.jetbrains.kotlin.fir.declarations.FirConstructor
 import org.jetbrains.kotlin.fir.declarations.FirFile
-import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.FirProperty
 import org.jetbrains.kotlin.fir.declarations.FirPropertyAccessor
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
+import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.declarations.FirTypeAlias
 import org.jetbrains.kotlin.fir.declarations.FirTypeParameter
 import org.jetbrains.kotlin.fir.declarations.FirValueParameter
+import org.jetbrains.kotlin.fir.expressions.FirCallableReferenceAccess
+import org.jetbrains.kotlin.fir.expressions.FirPropertyAccessExpression
 import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
 import org.jetbrains.kotlin.fir.references.FirResolvedNamedReference
+import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
+import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.psi.KtDeclaration
 import org.jetbrains.kotlin.resolve.checkers.DeclarationChecker
 import org.jetbrains.kotlin.resolve.checkers.DeclarationCheckerContext
 
-class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtension(session) {
+open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtension(session) {
     companion object {
         @OptIn(ExperimentalContracts::class)
         val visitors: MutableMap<KtSourceFile, SemanticdbVisitor> = mutableMapOf()
     }
-
-    //    override val declarationCheckers: DeclarationCheckers
-    //        get() = object : DeclarationCheckers() {
-    //            override val fileCheckers: Set<FirFileChecker> = setOf()
-    //            override val regularClassCheckers: Set<FirRegularClassChecker> = emptySet()
-    //            override val functionCheckers: Set<FirFunctionChecker> = emptySet()
-    //            override val propertyCheckers: Set<FirPropertyChecker> = emptySet()
-    //            override val constructorCheckers: Set<FirConstructorChecker> = emptySet()
-    //            override val typeParameterCheckers: Set<FirTypeParameterChecker> = emptySet()
-    //            override val valueParameterCheckers: Set<FirValueParameterChecker> = emptySet()
-    //            override val typeAliasCheckers: Set<FirTypeAliasChecker> = emptySet()
-    //            override val propertyAccessorCheckers: Set<FirPropertyAccessorChecker> =
-    // emptySet()
-    //
-    //        }
     override val declarationCheckers: DeclarationCheckers
         get() =
-            object : DeclarationCheckers() {
-                override val fileCheckers: Set<FirFileChecker> =
-                    setOf(
-                        SemanticFileChecker(
-                            session.diTransformerService.sourceroot,
-                            session.diTransformerService.callback))
-                override val regularClassCheckers: Set<FirRegularClassChecker> =
-                    setOf(SemanticRegularClassChecker())
-                override val constructorCheckers: Set<FirConstructorChecker> =
-                    setOf(SemanticConstructorChecker())
-                override val functionCheckers: Set<FirFunctionChecker> =
-                    setOf(SemanticFunctionChecker())
-                override val propertyCheckers: Set<FirPropertyChecker> =
-                    setOf(SemanticPropertyChecker())
-                override val valueParameterCheckers: Set<FirValueParameterChecker> =
-                    setOf(SemanticValueParameterChecker())
-                override val typeParameterCheckers: Set<FirTypeParameterChecker> =
-                    setOf(SemanticTypeParameterChecker())
-                override val typeAliasCheckers: Set<FirTypeAliasChecker> =
-                    setOf(SemanticTypeAliasChecker())
-                override val propertyAccessorCheckers: Set<FirPropertyAccessorChecker> =
-                    setOf(SemanticPropertAccessorChecker())
-            }
+            AnalyzerDeclarationCheckers(
+                session.analyzerParamsProvider.sourceroot, session.analyzerParamsProvider.callback)
 
     override val expressionCheckers: ExpressionCheckers
         get() =
@@ -91,6 +63,28 @@ class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtension(ses
                     Set<FirQualifiedAccessExpressionChecker> =
                     setOf(SemanticQualifiedAccessExpressionChecker())
             }
+
+    open class AnalyzerDeclarationCheckers(
+        sourceroot: Path,
+        callback: (Semanticdb.TextDocument) -> Unit
+    ) : DeclarationCheckers() {
+        override val fileCheckers: Set<FirFileChecker> =
+            setOf(SemanticFileChecker(sourceroot, callback), SemanticImportsChecker())
+        override val regularClassCheckers: Set<FirRegularClassChecker> =
+            setOf(SemanticRegularClassChecker())
+        override val constructorCheckers: Set<FirConstructorChecker> =
+            setOf(SemanticConstructorChecker())
+        override val simpleFunctionCheckers: Set<FirSimpleFunctionChecker> = setOf(SemanticSimpleFunctionChecker())
+        override val anonymousFunctionCheckers: Set<FirAnonymousFunctionChecker> = setOf(SemanticAnonymousFunctionChecker())
+        override val propertyCheckers: Set<FirPropertyChecker> = setOf(SemanticPropertyChecker())
+        override val valueParameterCheckers: Set<FirValueParameterChecker> =
+            setOf(SemanticValueParameterChecker())
+        override val typeParameterCheckers: Set<FirTypeParameterChecker> =
+            setOf(SemanticTypeParameterChecker())
+        override val typeAliasCheckers: Set<FirTypeAliasChecker> = setOf(SemanticTypeAliasChecker())
+        override val propertyAccessorCheckers: Set<FirPropertyAccessorChecker> =
+            setOf(SemanticPropertyAccessorChecker())
+    }
 
     private class SemanticFileChecker(
         private val sourceroot: Path,
@@ -106,24 +100,21 @@ class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtension(ses
             context: CheckerContext,
             reporter: DiagnosticReporter
         ) {
-            println("Ernald - FirFile1")
             val ktFile = declaration.sourceFile ?: return
-            val source = declaration.source ?: return
-            println("Ernald - FirFile2")
             val lineMap = LineMap(declaration)
             val visitor = SemanticdbVisitor(sourceroot, ktFile, lineMap, globals)
             visitors[ktFile] = visitor
         }
 
         private fun semanticdbOutPathForFile(session: FirSession, file: KtSourceFile): Path? {
-            val sourceRoot = session.diTransformerService.sourceroot
+            val sourceRoot = session.analyzerParamsProvider.sourceroot
             val normalizedPath = Paths.get(file.path).normalize()
             if (normalizedPath.startsWith(sourceRoot)) {
                 val relative = sourceRoot.relativize(normalizedPath)
                 val filename = relative.fileName.toString() + ".semanticdb"
                 val semanticdbOutPath =
                     session
-                        .diTransformerService
+                        .analyzerParamsProvider
                         .targetroot
                         .resolve("META-INF")
                         .resolve("semanticdb")
@@ -139,6 +130,20 @@ class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtension(ses
         }
     }
 
+    class SemanticImportsChecker : FirFileChecker(MppCheckerKind.Common) {
+        @OptIn(ExperimentalContracts::class)
+        override fun check(declaration: FirFile, context: CheckerContext, reporter: DiagnosticReporter) {
+            val ktFile = declaration.sourceFile ?: return
+            declaration.imports.forEach { import ->
+                val source = import.source ?: return@forEach
+                val visitor = visitors[ktFile]
+                val fqName = import.importedFqName ?: return@forEach
+                val importedClassSymbol = context.session.symbolProvider.getClassLikeSymbolByClassId(ClassId.topLevel(fqName)) ?: return@forEach
+                visitor?.visitImport(importedClassSymbol, source)
+            }
+        }
+    }
+
     private class SemanticRegularClassChecker : FirRegularClassChecker(MppCheckerKind.Common) {
         @OptIn(ExperimentalContracts::class)
         override fun check(
@@ -146,11 +151,8 @@ class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtension(ses
             context: CheckerContext,
             reporter: DiagnosticReporter
         ) {
-            println("Ernald - FirRegularClass1")
             val source = declaration.source ?: return
-            println("Ernald - FirRegularClass2")
             val ktFile = context.containingFile?.sourceFile ?: return
-            println("Ernald - FirRegularClass3")
             val visitor = visitors[ktFile]
             visitor?.visitClassOrObject(declaration, source)
         }
@@ -175,10 +177,24 @@ class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtension(ses
         }
     }
 
-    private class SemanticFunctionChecker : FirFunctionChecker(MppCheckerKind.Common) {
+    private class SemanticSimpleFunctionChecker : FirSimpleFunctionChecker(MppCheckerKind.Common) {
         @OptIn(ExperimentalContracts::class)
         override fun check(
-            declaration: FirFunction,
+            declaration: FirSimpleFunction,
+            context: CheckerContext,
+            reporter: DiagnosticReporter
+        ) {
+            val source = declaration.source ?: return
+            val ktFile = context.containingFile?.sourceFile ?: return
+            val visitor = visitors[ktFile]
+            visitor?.visitNamedFunction(declaration, source)
+        }
+    }
+
+    private class SemanticAnonymousFunctionChecker : FirAnonymousFunctionChecker(MppCheckerKind.Common) {
+        @OptIn(ExperimentalContracts::class)
+        override fun check(
+            declaration: FirAnonymousFunction,
             context: CheckerContext,
             reporter: DiagnosticReporter
         ) {
@@ -245,7 +261,7 @@ class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtension(ses
         }
     }
 
-    private class SemanticPropertAccessorChecker :
+    private class SemanticPropertyAccessorChecker :
         FirPropertyAccessorChecker(MppCheckerKind.Common) {
         @OptIn(ExperimentalContracts::class)
         override fun check(
@@ -280,22 +296,6 @@ class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtension(ses
         }
     }
 }
-
-// private fun FirElement.findKtFile(): KtSourceFile? = source?.psi?.containingFile as? KtSourceFile
-
-/*
-   KtObjectDeclaration -> FirRegularClassChecker
-   KTClass -> FirRegularClassChecker
-   KtPrimaryConstructor -> FirConstructorChecker
-   KtSecondaryConstructor -> FirConstructorChecker
-   KtNamedFunction -> FirFunctionChecker
-   KtProperty -> FirPropertyChecker
-   KtParameter -> FirValueParameterChecker
-   KtTypeParameter -> FirTypeParameterChecker
-   KtTypeAlias -> FirTypeAliasChecker
-   KtPropertyAccessor -> FirPropertyAccessorChecker
-   KtSimpleNameExpression -> TBD (using FirQualifiedAccessExpression)
-*/
 
 class AnalyzerDeclarationChecker : DeclarationChecker {
     override fun check(

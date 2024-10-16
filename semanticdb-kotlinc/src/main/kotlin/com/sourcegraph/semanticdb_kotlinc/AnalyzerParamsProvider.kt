@@ -4,7 +4,7 @@ import java.nio.file.Path
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent
 
-class DiTransformerService(
+open class AnalyzerParamsProvider(
     session: FirSession,
     sourceroot: Path,
     targetroot: Path,
@@ -16,7 +16,7 @@ class DiTransformerService(
             targetroot: Path,
             callback: (Semanticdb.TextDocument) -> Unit
         ): Factory {
-            return Factory { DiTransformerService(it, sourceroot, targetroot, callback) }
+            return Factory { AnalyzerParamsProvider(it, sourceroot, targetroot, callback) }
         }
     }
 
@@ -25,4 +25,4 @@ class DiTransformerService(
     val callback: (Semanticdb.TextDocument) -> Unit = callback
 }
 
-val FirSession.diTransformerService: DiTransformerService by FirSession.sessionComponentAccessor()
+val FirSession.analyzerParamsProvider: AnalyzerParamsProvider by FirSession.sessionComponentAccessor()

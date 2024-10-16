@@ -28,6 +28,9 @@ import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirPropertyAccessorSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
 import org.jetbrains.kotlin.fir.types.ConeClassLikeType
 import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.fir.types.coneTypeOrNull
@@ -157,7 +160,7 @@ class SemanticdbTextDocumentBuilder(
             }
         return SymbolInformation {
             this.symbol = symbol.toString()
-            this.displayName = displayName(element)
+            this.displayName = displayName(firBasedSymbol)
             this.documentation = semanticdbDocumentation(firBasedSymbol.fir, element)
             this.addAllOverriddenSymbols(supers)
             this.language =
@@ -275,11 +278,15 @@ class SemanticdbTextDocumentBuilder(
     }
 
     companion object {
-        private fun displayName(element: KtSourceElement): String =
-            when (element) {
-                is KtPropertyAccessor -> element.namePlaceholder.text
-                is NavigationItem -> element.name ?: element.text?.toString() ?: ""
-                else -> element.text?.toString() ?: ""
+        @OptIn(SymbolInternals::class)
+        private fun displayName(firBasedSymbol: FirBasedSymbol<*>): String =
+            when (firBasedSymbol) {
+                is FirClassSymbol -> firBasedSymbol.classId.asSingleFqName().asString()
+                is FirPropertyAccessorSymbol -> firBasedSymbol.fir.propertySymbol.name.asString()
+                is FirFunctionSymbol -> firBasedSymbol.callableId.callableName.asString()
+                is FirPropertySymbol -> firBasedSymbol.callableId.callableName.asString()
+                is FirVariableSymbol -> firBasedSymbol.name.asString()
+                else -> firBasedSymbol.toString()
             }
     }
 }

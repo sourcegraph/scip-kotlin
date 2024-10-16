@@ -9,6 +9,7 @@ import kotlin.contracts.contract
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.isLocalMember
 import org.jetbrains.kotlin.fir.analysis.checkers.getContainingClassSymbol
+import org.jetbrains.kotlin.fir.analysis.checkers.getContainingSymbol
 import org.jetbrains.kotlin.fir.declarations.FirDeclaration
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.FirFunction
@@ -21,8 +22,10 @@ import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirAnonymousFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirClassLikeSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirConstructorSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirFileSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertyAccessorSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
@@ -102,9 +105,9 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
         locals: LocalSymbolsCache
     ): Symbol {
         if (skip(symbol)) return Symbol.NONE
-        val ownerSymbol = getParentSymbol(symbol) ?: return Symbol.ROOT_PACKAGE
-        var owner = ownerSymbol.let { this.getSymbol(it, locals) }
-        if ((ownerSymbol.fir as? FirRegularClass)?.classKind == ClassKind.OBJECT ||
+        val ownerSymbol = getParentSymbol(symbol)
+        var owner = ownerSymbol?.let { this.getSymbol(it, locals) } ?: Symbol.ROOT_PACKAGE
+        if ((ownerSymbol?.fir as? FirRegularClass)?.classKind == ClassKind.OBJECT ||
             owner.isLocal() ||
             (ownerSymbol as? FirBasedSymbol<FirDeclaration>)?.fir?.isLocalMember == true ||
             ownerSymbol is FirAnonymousFunctionSymbol ||
@@ -112,7 +115,7 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
             return locals + symbol
 
         // if is a top-level function or variable, Kotlin creates a wrapping class
-        if ((symbol is FirFunctionSymbol || symbol is FirPropertySymbol)) {
+        if (ownerSymbol !is FirClassSymbol && (symbol is FirFunctionSymbol || symbol is FirPropertySymbol)) {
             owner =
                 Symbol.createGlobal(
                     owner, SemanticdbSymbolDescriptor(Kind.TYPE, sourceFileToClassSymbol(symbol)))
@@ -146,17 +149,18 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
      * generates the synthetic class name from the source file
      * https://kotlinlang.org/docs/java-to-kotlin-interop.html#package-level-functions
      */
-    private fun sourceFileToClassSymbol(symbol: FirBasedSymbol<*>): String =
-        (symbol as? FirCallableSymbol<*>)?.let {
-            "${it.callableId.packageName.asString()}.${it.callableId.callableName.asString()}"
-        }
-            ?: ""
+    @OptIn(SymbolInternals::class)
+    private fun sourceFileToClassSymbol(symbol: FirBasedSymbol<*>): String {
+        val callableSymbol = (symbol as? FirCallableSymbol<*>) ?: return ""
+        val packageName = (callableSymbol.getContainingSymbol(symbol.moduleData.session) as? FirFileSymbol)?.fir?.name ?: symbol.callableId.packageName.asString()
+        return "${packageName}.${callableSymbol.callableId.callableName.asString()}"
+    }
 
     @OptIn(SymbolInternals::class)
     private fun semanticdbDescriptor(symbol: FirBasedSymbol<*>): SemanticdbSymbolDescriptor {
         return when {
-            symbol is FirClassSymbol ->
-                SemanticdbSymbolDescriptor(Kind.TYPE, symbol.name.asStringStripSpecialMarkers())
+            symbol is FirClassLikeSymbol ->
+                SemanticdbSymbolDescriptor(Kind.TYPE, symbol.classId.asString())
             symbol is FirPropertyAccessorSymbol &&
                 symbol.fir.nameOrSpecialName.asStringStripSpecialMarkers().startsWith("set") ->
                 SemanticdbSymbolDescriptor(
