@@ -25,4 +25,5 @@ open class AnalyzerParamsProvider(
     val callback: (Semanticdb.TextDocument) -> Unit = callback
 }
 
-val FirSession.analyzerParamsProvider: AnalyzerParamsProvider by FirSession.sessionComponentAccessor()
+val FirSession.analyzerParamsProvider: AnalyzerParamsProvider by FirSession
+    .sessionComponentAccessor()

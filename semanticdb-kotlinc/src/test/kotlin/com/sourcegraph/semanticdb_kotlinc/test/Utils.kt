@@ -25,7 +25,6 @@ import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFileChecker
 import org.jetbrains.kotlin.fir.declarations.FirFile
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrar
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrarAdapter
-import org.jetbrains.kotlin.ir.backend.js.transformers.irToJs.argumentsWithVarargAsSingleArray
 import org.junit.jupiter.api.Assumptions.assumeFalse
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.DynamicTest.dynamicTest
@@ -117,7 +116,6 @@ private fun configureTestCompiler(
             sources = listOf(source)
             inheritClassPath = true
             verbose = false
-            
         }
 
     val analyzer = semanticdbVisitorAnalyzer(globals, locals, compilation.workingDir.toPath(), hook)
@@ -145,8 +143,8 @@ private class TestAnalyzerDeclarationCheckers(
                     val visitor = SemanticdbVisitor(sourceRoot, ktFile, lineMap, globals, locals)
                     visitors[ktFile] = visitor
                 }
-            }, AnalyzerCheckers.SemanticImportsChecker()
-        )
+            },
+            AnalyzerCheckers.SemanticImportsChecker())
 }
 
 private class TestAnalyzerCheckers(session: FirSession) : AnalyzerCheckers(session) {

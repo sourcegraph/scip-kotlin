@@ -611,7 +611,9 @@ class AnalyzerTest {
                inline fun docstrings(msg: String): Int { return msg.length }
         """.trimIndent())
         document.assertDocumentation("`sample/Docstrings`#", "Example class docstring")
-        document.assertDocumentation("`Test.kt.docstrings`#docstringssample.docstrings(kotlin/String): kotlin/Int.", "Example method docstring")
+        document.assertDocumentation(
+            "`Test.kt.docstrings`#docstringssample.docstrings(kotlin/String): kotlin/Int.",
+            "Example method docstring")
     }
 
     private fun TextDocument.assertDocumentation(symbol: String, expectedDocumentation: String) {

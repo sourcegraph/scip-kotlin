@@ -115,7 +115,8 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
             return locals + symbol
 
         // if is a top-level function or variable, Kotlin creates a wrapping class
-        if (ownerSymbol !is FirClassSymbol && (symbol is FirFunctionSymbol || symbol is FirPropertySymbol)) {
+        if (ownerSymbol !is FirClassSymbol &&
+            (symbol is FirFunctionSymbol || symbol is FirPropertySymbol)) {
             owner =
                 Symbol.createGlobal(
                     owner, SemanticdbSymbolDescriptor(Kind.TYPE, sourceFileToClassSymbol(symbol)))
@@ -152,7 +153,11 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
     @OptIn(SymbolInternals::class)
     private fun sourceFileToClassSymbol(symbol: FirBasedSymbol<*>): String {
         val callableSymbol = (symbol as? FirCallableSymbol<*>) ?: return ""
-        val packageName = (callableSymbol.getContainingSymbol(symbol.moduleData.session) as? FirFileSymbol)?.fir?.name ?: symbol.callableId.packageName.asString()
+        val packageName =
+            (callableSymbol.getContainingSymbol(symbol.moduleData.session) as? FirFileSymbol)
+                ?.fir
+                ?.name
+                ?: symbol.callableId.packageName.asString()
         return "${packageName}.${callableSymbol.callableId.callableName.asString()}"
     }
 

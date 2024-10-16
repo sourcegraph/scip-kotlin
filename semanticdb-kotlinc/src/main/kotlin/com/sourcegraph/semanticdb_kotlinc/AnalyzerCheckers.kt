@@ -22,8 +22,6 @@ import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirTypeAliasChecke
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirTypeParameterChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirValueParameterChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.ExpressionCheckers
-import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirCallableReferenceAccessChecker
-import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirPropertyAccessExpressionChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirQualifiedAccessExpressionChecker
 import org.jetbrains.kotlin.fir.analysis.extensions.FirAdditionalCheckersExtension
 import org.jetbrains.kotlin.fir.declarations.FirAnonymousFunction
@@ -36,8 +34,6 @@ import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.declarations.FirTypeAlias
 import org.jetbrains.kotlin.fir.declarations.FirTypeParameter
 import org.jetbrains.kotlin.fir.declarations.FirValueParameter
-import org.jetbrains.kotlin.fir.expressions.FirCallableReferenceAccess
-import org.jetbrains.kotlin.fir.expressions.FirPropertyAccessExpression
 import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
 import org.jetbrains.kotlin.fir.references.FirResolvedNamedReference
 import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
@@ -74,8 +70,10 @@ open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtensio
             setOf(SemanticRegularClassChecker())
         override val constructorCheckers: Set<FirConstructorChecker> =
             setOf(SemanticConstructorChecker())
-        override val simpleFunctionCheckers: Set<FirSimpleFunctionChecker> = setOf(SemanticSimpleFunctionChecker())
-        override val anonymousFunctionCheckers: Set<FirAnonymousFunctionChecker> = setOf(SemanticAnonymousFunctionChecker())
+        override val simpleFunctionCheckers: Set<FirSimpleFunctionChecker> =
+            setOf(SemanticSimpleFunctionChecker())
+        override val anonymousFunctionCheckers: Set<FirAnonymousFunctionChecker> =
+            setOf(SemanticAnonymousFunctionChecker())
         override val propertyCheckers: Set<FirPropertyChecker> = setOf(SemanticPropertyChecker())
         override val valueParameterCheckers: Set<FirValueParameterChecker> =
             setOf(SemanticValueParameterChecker())
@@ -132,13 +130,20 @@ open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtensio
 
     class SemanticImportsChecker : FirFileChecker(MppCheckerKind.Common) {
         @OptIn(ExperimentalContracts::class)
-        override fun check(declaration: FirFile, context: CheckerContext, reporter: DiagnosticReporter) {
+        override fun check(
+            declaration: FirFile,
+            context: CheckerContext,
+            reporter: DiagnosticReporter
+        ) {
             val ktFile = declaration.sourceFile ?: return
             declaration.imports.forEach { import ->
                 val source = import.source ?: return@forEach
                 val visitor = visitors[ktFile]
                 val fqName = import.importedFqName ?: return@forEach
-                val importedClassSymbol = context.session.symbolProvider.getClassLikeSymbolByClassId(ClassId.topLevel(fqName)) ?: return@forEach
+                val importedClassSymbol =
+                    context.session.symbolProvider.getClassLikeSymbolByClassId(
+                        ClassId.topLevel(fqName))
+                        ?: return@forEach
                 visitor?.visitImport(importedClassSymbol, source)
             }
         }
@@ -191,7 +196,8 @@ open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtensio
         }
     }
 
-    private class SemanticAnonymousFunctionChecker : FirAnonymousFunctionChecker(MppCheckerKind.Common) {
+    private class SemanticAnonymousFunctionChecker :
+        FirAnonymousFunctionChecker(MppCheckerKind.Common) {
         @OptIn(ExperimentalContracts::class)
         override fun check(
             declaration: FirAnonymousFunction,

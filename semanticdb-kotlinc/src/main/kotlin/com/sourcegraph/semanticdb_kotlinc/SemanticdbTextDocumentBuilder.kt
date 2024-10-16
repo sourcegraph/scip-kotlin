@@ -12,7 +12,6 @@ import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.KtSourceFile
 import org.jetbrains.kotlin.com.intellij.lang.LighterASTNode
 import org.jetbrains.kotlin.com.intellij.lang.java.JavaLanguage
-import org.jetbrains.kotlin.com.intellij.navigation.NavigationItem
 import org.jetbrains.kotlin.com.intellij.openapi.util.Ref
 import org.jetbrains.kotlin.com.intellij.util.diff.FlyweightCapableTreeStructure
 import org.jetbrains.kotlin.descriptors.*
@@ -38,7 +37,6 @@ import org.jetbrains.kotlin.fir.types.coneTypeSafe
 import org.jetbrains.kotlin.idea.KotlinLanguage
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi
-import org.jetbrains.kotlin.psi.KtPropertyAccessor
 import org.jetbrains.kotlin.text
 
 @ExperimentalContracts

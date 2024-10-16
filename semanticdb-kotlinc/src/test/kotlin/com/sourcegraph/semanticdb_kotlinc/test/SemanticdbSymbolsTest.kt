@@ -29,7 +29,9 @@ class SemanticdbSymbolsTest {
                         |""".trimMargin()),
                     symbolsCacheData =
                         SymbolCacheData(
-                            listOf("Test#sample.sample(): kotlin/Unit.".symbol(), "Test#sample.sample(kotlin/Int): kotlin/Unit.".symbol()),
+                            listOf(
+                                "Test#sample.sample(): kotlin/Unit.".symbol(),
+                                "Test#sample.sample(kotlin/Int): kotlin/Unit.".symbol()),
                         )),
                 ExpectedSymbols(
                     "Inline class constructor",
@@ -37,7 +39,8 @@ class SemanticdbSymbolsTest {
                         """
                         |class Test(val x: Int)
                         |""".trimMargin()),
-                    symbolsCacheData = SymbolCacheData(listOf("Test#Test.Test(kotlin/Int): Test.".symbol()))),
+                    symbolsCacheData =
+                        SymbolCacheData(listOf("Test#Test.Test(kotlin/Int): Test.".symbol()))),
                 ExpectedSymbols(
                     "Inline + secondary class constructors",
                     SourceFile.testKt(
@@ -65,7 +68,10 @@ class SemanticdbSymbolsTest {
                         |""".trimMargin()),
                     symbolsCacheData =
                         SymbolCacheData(
-                            listOf("Test#sample.sample(): kotlin/Unit.".symbol(), "Test#test.test(): kotlin/Unit.".symbol(), "Test#test.test(kotlin/Int): kotlin/Unit.".symbol()))),
+                            listOf(
+                                "Test#sample.sample(): kotlin/Unit.".symbol(),
+                                "Test#test.test(): kotlin/Unit.".symbol(),
+                                "Test#test.test(kotlin/Int): kotlin/Unit.".symbol()))),
                 ExpectedSymbols(
                     "Top level overloaded functions",
                     SourceFile.testKt(
@@ -75,7 +81,9 @@ class SemanticdbSymbolsTest {
                         |""".trimMargin()),
                     symbolsCacheData =
                         SymbolCacheData(
-                            listOf("`Test.kt.test`#test.test(): kotlin/Unit.".symbol(), "`Test.kt.test`#test.test(kotlin/Int): kotlin/Unit.".symbol()))),
+                            listOf(
+                                "`Test.kt.test`#test.test(): kotlin/Unit.".symbol(),
+                                "`Test.kt.test`#test.test(kotlin/Int): kotlin/Unit.".symbol()))),
                 ExpectedSymbols(
                     "Annotations incl annotation type alias",
                     SourceFile.testKt(
@@ -205,7 +213,6 @@ class SemanticdbSymbolsTest {
                     symbolsCacheData = SymbolCacheData(listOf("`java/lang/System`#err.".symbol()))))
             .mapCheckExpectedSymbols()
 
-
     @TestFactory
     fun `properties with getters-setters`() =
         listOf(
@@ -231,7 +238,8 @@ class SemanticdbSymbolsTest {
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol = "`Test.kt.accessor`#accessorspecial.accessor(): kotlin/Int."
+                                        symbol =
+                                            "`Test.kt.accessor`#accessorspecial.accessor(): kotlin/Int."
                                         range {
                                             startLine = 0
                                             startCharacter = 0
@@ -241,7 +249,8 @@ class SemanticdbSymbolsTest {
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol = "`Test.kt.accessor`#accessorspecial.accessor(kotlin/Int): kotlin/Unit."
+                                        symbol =
+                                            "`Test.kt.accessor`#accessorspecial.accessor(kotlin/Int): kotlin/Unit."
                                         range {
                                             startLine = 0
                                             startCharacter = 0
@@ -273,7 +282,8 @@ class SemanticdbSymbolsTest {
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol = "`Test.kt.accessor`#accessorspecial.accessor(): kotlin/Int."
+                                        symbol =
+                                            "`Test.kt.accessor`#accessorspecial.accessor(): kotlin/Int."
                                         range {
                                             startLine = 1
                                             startCharacter = 4
@@ -283,14 +293,16 @@ class SemanticdbSymbolsTest {
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol = "`Test.kt.accessor`#accessorspecial.accessor(kotlin/Int): kotlin/Unit."
+                                        symbol =
+                                            "`Test.kt.accessor`#accessorspecial.accessor(kotlin/Int): kotlin/Unit."
                                         range {
                                             startLine = 0
                                             startCharacter = 0
                                             endLine = 0
                                             endCharacter = 36
                                         }
-                                    },)),
+                                    },
+                                )),
                 ),
                 ExpectedSymbols(
                     "top level properties - explicit setter",
@@ -315,7 +327,8 @@ class SemanticdbSymbolsTest {
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol = "`Test.kt.accessor`#accessorspecial.accessor(): kotlin/Int."
+                                        symbol =
+                                            "`Test.kt.accessor`#accessorspecial.accessor(): kotlin/Int."
                                         range {
                                             startLine = 0
                                             startCharacter = 0
@@ -325,7 +338,8 @@ class SemanticdbSymbolsTest {
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol = "`Test.kt.accessor`#accessorspecial.accessor(kotlin/Int): kotlin/Unit."
+                                        symbol =
+                                            "`Test.kt.accessor`#accessorspecial.accessor(kotlin/Int): kotlin/Unit."
                                         range {
                                             startLine = 1
                                             startCharacter = 4
@@ -358,7 +372,8 @@ class SemanticdbSymbolsTest {
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol = "`Test.kt.accessor`#accessorspecial.accessor(): kotlin/Int."
+                                        symbol =
+                                            "`Test.kt.accessor`#accessorspecial.accessor(): kotlin/Int."
                                         range {
                                             startLine = 1
                                             startCharacter = 4
@@ -368,7 +383,8 @@ class SemanticdbSymbolsTest {
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol = "`Test.kt.accessor`#accessorspecial.accessor(kotlin/Int): kotlin/Unit."
+                                        symbol =
+                                            "`Test.kt.accessor`#accessorspecial.accessor(kotlin/Int): kotlin/Unit."
                                         range {
                                             startLine = 2
                                             startCharacter = 4
@@ -443,7 +459,8 @@ class SemanticdbSymbolsTest {
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol = "Test#accessorspecial.accessor(kotlin/Int): kotlin/Unit."
+                                        symbol =
+                                            "Test#accessorspecial.accessor(kotlin/Int): kotlin/Unit."
                                         range {
                                             startLine = 0
                                             startCharacter = 11
@@ -451,10 +468,8 @@ class SemanticdbSymbolsTest {
                                             endCharacter = 25
                                         }
                                     },
-                                )))
-        )
+                                ))))
             .mapCheckExpectedSymbols()
-
 
     @TestFactory
     fun `class constructors`() =
@@ -551,8 +566,7 @@ class SemanticdbSymbolsTest {
                                             endCharacter = 34
                                         }
                                     },
-                                )))
-            )
+                                ))))
             .mapCheckExpectedSymbols()
 
     @TestFactory
@@ -570,7 +584,8 @@ class SemanticdbSymbolsTest {
                                 listOf(
                                     SymbolOccurrence {
                                         role = Role.REFERENCE
-                                        symbol = "`java/lang/Runnable`#runjava.lang.run(): kotlin/Unit."
+                                        symbol =
+                                            "`java/lang/Runnable`#runjava.lang.run(): kotlin/Unit."
                                         range {
                                             startLine = 0
                                             startCharacter = 8
@@ -580,7 +595,8 @@ class SemanticdbSymbolsTest {
                                     },
                                     SymbolOccurrence {
                                         role = Role.REFERENCE
-                                        symbol = "`java.lang.Runnable`#Runnablejava.lang.Runnable(kotlin/Function0<kotlin/Unit>): java/lang/Runnable."
+                                        symbol =
+                                            "`java.lang.Runnable`#Runnablejava.lang.Runnable(kotlin/Function0<kotlin/Unit>): java/lang/Runnable."
                                         range {
                                             startLine = 0
                                             startCharacter = 8
@@ -619,7 +635,8 @@ class SemanticdbSymbolsTest {
                                         }
                                     },
                                     SymbolInformation {
-                                        symbol = "`Test.kt.accessor`#accessorspecial.accessor(): kotlin/String."
+                                        symbol =
+                                            "`Test.kt.accessor`#accessorspecial.accessor(): kotlin/String."
                                         displayName = "x"
                                         language = Language.KOTLIN
                                         documentation {
