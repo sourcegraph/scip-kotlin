@@ -129,7 +129,8 @@ class AnalyzerTest {
             KotlinCompilation()
                 .apply {
                     sources = listOf(SourceFile.testKt(""))
-                    componentRegistrars = listOf(AnalyzerRegistrar { throw Exception("sample text") })
+                    componentRegistrars =
+                        listOf(AnalyzerRegistrar { throw Exception("sample text") })
                     verbose = false
                     pluginOptions =
                         listOf(
@@ -476,7 +477,7 @@ class AnalyzerTest {
                 C(value = 3)
             }
             fun printProperty() = println(EnumExample1.A.value) // => 1
-            
+
             // Every enum has properties to obtain its name and ordinal(position) in the enum class declaration:
             fun printName() = println(EnumExample1.A.name) // => A
             fun printPosition() = println(EnumExample1.A.ordinal) // => 0
@@ -592,8 +593,8 @@ class AnalyzerTest {
 
                /** Example class docstring */
                class Docstrings: DocstringSuperclass(), Serializable
-               
-               /** 
+
+               /**
                  * Example method docstring
                  *
                  **/
