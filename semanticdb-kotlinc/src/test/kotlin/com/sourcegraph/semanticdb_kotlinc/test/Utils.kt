@@ -11,9 +11,8 @@ import java.nio.file.Path
 import kotlin.contracts.ExperimentalContracts
 import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.analyzer.AnalysisResult
-import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.com.intellij.openapi.project.Project
-import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
+import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
@@ -114,7 +113,7 @@ private fun configureTestCompiler(
         }
 
     val analyzer = semanticdbVisitorAnalyzer(globals, locals, compilation.workingDir.toPath(), hook)
-    compilation.apply { componentRegistrars = listOf(analyzer) }
+    compilation.apply { compilerPluginRegistrars = listOf(analyzer) }
     return compilation
 }
 
@@ -125,14 +124,10 @@ fun semanticdbVisitorAnalyzer(
     locals: LocalSymbolsCache,
     sourceroot: Path,
     hook: (Semanticdb.TextDocument) -> Unit = {}
-): ComponentRegistrar {
-    return object : ComponentRegistrar {
-        override fun registerProjectComponents(
-            project: MockProject,
-            configuration: CompilerConfiguration
-        ) {
+): CompilerPluginRegistrar {
+    return object : CompilerPluginRegistrar() {
+        override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
             AnalysisHandlerExtension.registerExtension(
-                project,
                 object : AnalysisHandlerExtension {
                     override fun analysisCompleted(
                         project: Project,
@@ -151,5 +146,8 @@ fun semanticdbVisitorAnalyzer(
                     }
                 })
         }
+
+        override val supportsK2: Boolean
+            get() = false
     }
 }
