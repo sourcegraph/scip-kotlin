@@ -2,7 +2,7 @@ import com.google.protobuf.gradle.*
 
 plugins {
     kotlin("jvm")
-    id("com.google.protobuf") version "0.8.17"
+    id("com.google.protobuf") version "0.9.4"
 }
 
 repositories {
@@ -49,8 +49,6 @@ protobuf {
     protoc {
         artifact = "com.google.protobuf:protoc:3.17.3"
     }
-
-    generatedFilesBaseDir = kotlin.sourceSets.main.get().kotlin.srcDirs.first().path.split(":")[0].removeSuffix("main/kotlin")
 
     plugins {
         kotlin { }
