@@ -34,7 +34,7 @@ class AnalyzerTest {
             KotlinCompilation()
                 .apply {
                     sources = listOf(source)
-                    componentRegistrars = listOf(AnalyzerRegistrar { document = it })
+                    compilerPluginRegistrars = listOf(AnalyzerRegistrar { document = it })
                     verbose = false
                     pluginOptions =
                         listOf(
@@ -129,7 +129,7 @@ class AnalyzerTest {
             KotlinCompilation()
                 .apply {
                     sources = listOf(SourceFile.testKt(""))
-                    componentRegistrars =
+                    compilerPluginRegistrars =
                         listOf(AnalyzerRegistrar { throw Exception("sample text") })
                     verbose = false
                     pluginOptions =
@@ -567,7 +567,7 @@ class AnalyzerTest {
             KotlinCompilation()
                 .apply {
                     sources = listOf(source)
-                    componentRegistrars = listOf(AnalyzerRegistrar())
+                    compilerPluginRegistrars = listOf(AnalyzerRegistrar())
                     verbose = false
                     pluginOptions =
                         listOf(
