@@ -38,7 +38,7 @@ details on how to generate SemanticDB files and convert SemanticDB into SCIP.
 
 First, fetch the jar file of the SemanticDB compiler plugin:
 [`com.sourcegraph:semanticdb-kotlinc:VERSION`](https://mvnrepository.com/artifact/com.sourcegraph/semanticdb-kotlinc).
-For example, you can use 
+For example, you can use
 [Coursier](https://get-coursier.io) to download the jar file.
 
 ```sh
@@ -75,12 +75,3 @@ If you have Coursier installed, you can run scip-java directly like this
 cd $SOURCEROOT_DIRECTORY
 ./coursier launch --contrib scip-java -- index-semanticdb TARGETROOT_DIRECTORY
 ```
-
-
-
-
-
-
-
-
-

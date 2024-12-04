@@ -52,7 +52,8 @@ class SemanticdbTextDocumentBuilder(
         if (role == Role.DEFINITION) symbols.add(symbolInformation(symbol, descriptor, element))
     }
 
-    private val isIgnoredSuperClass = setOf("kotlin.Any", "java.lang.Object", "java.io.Serializable")
+    private val isIgnoredSuperClass =
+        setOf("kotlin.Any", "java.lang.Object", "java.io.Serializable")
 
     private fun functionDescriptorOverrides(descriptor: FunctionDescriptor): Iterable<String> {
         val result = mutableListOf<String>()
@@ -66,7 +67,8 @@ class SemanticdbTextDocumentBuilder(
             }
 
             isVisited.add(current)
-            val directOverrides = current.overriddenDescriptors.flatMap { cache[it] }.map { it.toString() }
+            val directOverrides =
+                current.overriddenDescriptors.flatMap { cache[it] }.map { it.toString() }
             result.addAll(directOverrides)
             queue.addAll(current.overriddenDescriptors)
         }
@@ -85,14 +87,11 @@ class SemanticdbTextDocumentBuilder(
                         .getAllSuperClassifiers()
                         // first is the class itself
                         .drop(1)
-                        .filter {
-                            it.fqNameSafe.toString() !in isIgnoredSuperClass
-                        }
+                        .filter { it.fqNameSafe.toString() !in isIgnoredSuperClass }
                         .flatMap { cache[it] }
                         .map { it.toString() }
                         .asIterable()
-                is SimpleFunctionDescriptor ->
-                    functionDescriptorOverrides(descriptor)
+                is SimpleFunctionDescriptor -> functionDescriptorOverrides(descriptor)
                 else -> emptyList<String>().asIterable()
             }
         return SymbolInformation {

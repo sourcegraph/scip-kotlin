@@ -7,8 +7,8 @@ import com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrence.Role
 import com.sourcegraph.semanticdb_kotlinc.test.ExpectedSymbols.SemanticdbData
 import com.sourcegraph.semanticdb_kotlinc.test.ExpectedSymbols.SymbolCacheData
 import com.tschuchort.compiletesting.SourceFile
-import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import kotlin.contracts.ExperimentalContracts
+import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.jupiter.api.TestFactory
 
 @ExperimentalCompilerApi
@@ -82,11 +82,11 @@ class SemanticdbSymbolsTest {
                         |import kotlin.contracts.ExperimentalContracts
                         |import kotlin.test.Test
                         |
-                        |@ExperimentalContracts   
+                        |@ExperimentalContracts
                         |class Banaan {
                         |    @Test
-                        |    fun test() {}                   
-                        |} 
+                        |    fun test() {}
+                        |}
                         |""".trimMargin()),
                     symbolsCacheData =
                         SymbolCacheData(
@@ -383,7 +383,7 @@ class SemanticdbSymbolsTest {
                         |    fun test() {
                         |        println(sample)
                         |    }
-                        |}        
+                        |}
                         |""".trimMargin()),
                     semanticdb =
                         SemanticdbData(
@@ -531,7 +531,7 @@ class SemanticdbSymbolsTest {
                     "explicit primary constructor with keyword",
                     SourceFile.testKt(
                         """
-                        |class Banana constructor(size: Int) 
+                        |class Banana constructor(size: Int)
                         |""".trimMargin()),
                     semanticdb =
                         SemanticdbData(

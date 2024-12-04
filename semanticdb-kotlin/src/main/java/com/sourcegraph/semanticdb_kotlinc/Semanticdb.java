@@ -264,7 +264,7 @@ public final class Semanticdb {
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.TextDocument documents = 1;</code>
      */
-    java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.TextDocument> 
+    java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.TextDocument>
         getDocumentsList();
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.TextDocument documents = 1;</code>
@@ -277,7 +277,7 @@ public final class Semanticdb {
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.TextDocument documents = 1;</code>
      */
-    java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.TextDocumentOrBuilder> 
+    java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.TextDocumentOrBuilder>
         getDocumentsOrBuilderList();
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.TextDocument documents = 1;</code>
@@ -389,7 +389,7 @@ public final class Semanticdb {
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.TextDocument documents = 1;</code>
      */
     @java.lang.Override
-    public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.TextDocumentOrBuilder> 
+    public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.TextDocumentOrBuilder>
         getDocumentsOrBuilderList() {
       return documents_;
     }
@@ -720,7 +720,7 @@ public final class Semanticdb {
               documentsBuilder_ = null;
               documents_ = other.documents_;
               bitField0_ = (bitField0_ & ~0x00000001);
-              documentsBuilder_ = 
+              documentsBuilder_ =
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getDocumentsFieldBuilder() : null;
             } else {
@@ -953,7 +953,7 @@ public final class Semanticdb {
       /**
        * <code>repeated .com.sourcegraph.semanticdb_kotlinc.TextDocument documents = 1;</code>
        */
-      public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.TextDocumentOrBuilder> 
+      public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.TextDocumentOrBuilder>
            getDocumentsOrBuilderList() {
         if (documentsBuilder_ != null) {
           return documentsBuilder_.getMessageOrBuilderList();
@@ -979,12 +979,12 @@ public final class Semanticdb {
       /**
        * <code>repeated .com.sourcegraph.semanticdb_kotlinc.TextDocument documents = 1;</code>
        */
-      public java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.TextDocument.Builder> 
+      public java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.TextDocument.Builder>
            getDocumentsBuilderList() {
         return getDocumentsFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.TextDocument, com.sourcegraph.semanticdb_kotlinc.Semanticdb.TextDocument.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.TextDocumentOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.TextDocument, com.sourcegraph.semanticdb_kotlinc.Semanticdb.TextDocument.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.TextDocumentOrBuilder>
           getDocumentsFieldBuilder() {
         if (documentsBuilder_ == null) {
           documentsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
@@ -1115,7 +1115,7 @@ public final class Semanticdb {
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.SymbolInformation symbols = 5;</code>
      */
-    java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformation> 
+    java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformation>
         getSymbolsList();
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.SymbolInformation symbols = 5;</code>
@@ -1128,7 +1128,7 @@ public final class Semanticdb {
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.SymbolInformation symbols = 5;</code>
      */
-    java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformationOrBuilder> 
+    java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformationOrBuilder>
         getSymbolsOrBuilderList();
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.SymbolInformation symbols = 5;</code>
@@ -1139,7 +1139,7 @@ public final class Semanticdb {
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.SymbolOccurrence occurrences = 6;</code>
      */
-    java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrence> 
+    java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrence>
         getOccurrencesList();
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.SymbolOccurrence occurrences = 6;</code>
@@ -1152,7 +1152,7 @@ public final class Semanticdb {
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.SymbolOccurrence occurrences = 6;</code>
      */
-    java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrenceOrBuilder> 
+    java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrenceOrBuilder>
         getOccurrencesOrBuilderList();
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.SymbolOccurrence occurrences = 6;</code>
@@ -1330,7 +1330,7 @@ public final class Semanticdb {
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs = 
+        com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         uri_ = s;
@@ -1346,7 +1346,7 @@ public final class Semanticdb {
         getUriBytes() {
       java.lang.Object ref = uri_;
       if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         uri_ = b;
@@ -1368,7 +1368,7 @@ public final class Semanticdb {
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs = 
+        com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         text_ = s;
@@ -1384,7 +1384,7 @@ public final class Semanticdb {
         getTextBytes() {
       java.lang.Object ref = text_;
       if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         text_ = b;
@@ -1406,7 +1406,7 @@ public final class Semanticdb {
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs = 
+        com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         md5_ = s;
@@ -1422,7 +1422,7 @@ public final class Semanticdb {
         getMd5Bytes() {
       java.lang.Object ref = md5_;
       if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         md5_ = b;
@@ -1464,7 +1464,7 @@ public final class Semanticdb {
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.SymbolInformation symbols = 5;</code>
      */
     @java.lang.Override
-    public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformationOrBuilder> 
+    public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformationOrBuilder>
         getSymbolsOrBuilderList() {
       return symbols_;
     }
@@ -1504,7 +1504,7 @@ public final class Semanticdb {
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.SymbolOccurrence occurrences = 6;</code>
      */
     @java.lang.Override
-    public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrenceOrBuilder> 
+    public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrenceOrBuilder>
         getOccurrencesOrBuilderList() {
       return occurrences_;
     }
@@ -1947,7 +1947,7 @@ public final class Semanticdb {
               symbolsBuilder_ = null;
               symbols_ = other.symbols_;
               bitField0_ = (bitField0_ & ~0x00000001);
-              symbolsBuilder_ = 
+              symbolsBuilder_ =
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getSymbolsFieldBuilder() : null;
             } else {
@@ -1973,7 +1973,7 @@ public final class Semanticdb {
               occurrencesBuilder_ = null;
               occurrences_ = other.occurrences_;
               bitField0_ = (bitField0_ & ~0x00000002);
-              occurrencesBuilder_ = 
+              occurrencesBuilder_ =
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getOccurrencesFieldBuilder() : null;
             } else {
@@ -2025,7 +2025,7 @@ public final class Semanticdb {
        * @return This builder for chaining.
        */
       public Builder setSchemaValue(int value) {
-        
+
         schema_ = value;
         onChanged();
         return this;
@@ -2049,7 +2049,7 @@ public final class Semanticdb {
         if (value == null) {
           throw new NullPointerException();
         }
-        
+
         schema_ = value.getNumber();
         onChanged();
         return this;
@@ -2059,7 +2059,7 @@ public final class Semanticdb {
        * @return This builder for chaining.
        */
       public Builder clearSchema() {
-        
+
         schema_ = 0;
         onChanged();
         return this;
@@ -2090,7 +2090,7 @@ public final class Semanticdb {
           getUriBytes() {
         java.lang.Object ref = uri_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString b =
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
           uri_ = b;
@@ -2109,7 +2109,7 @@ public final class Semanticdb {
         if (value == null) {
     throw new NullPointerException();
   }
-  
+
         uri_ = value;
         onChanged();
         return this;
@@ -2119,7 +2119,7 @@ public final class Semanticdb {
        * @return This builder for chaining.
        */
       public Builder clearUri() {
-        
+
         uri_ = getDefaultInstance().getUri();
         onChanged();
         return this;
@@ -2135,7 +2135,7 @@ public final class Semanticdb {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-        
+
         uri_ = value;
         onChanged();
         return this;
@@ -2166,7 +2166,7 @@ public final class Semanticdb {
           getTextBytes() {
         java.lang.Object ref = text_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString b =
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
           text_ = b;
@@ -2185,7 +2185,7 @@ public final class Semanticdb {
         if (value == null) {
     throw new NullPointerException();
   }
-  
+
         text_ = value;
         onChanged();
         return this;
@@ -2195,7 +2195,7 @@ public final class Semanticdb {
        * @return This builder for chaining.
        */
       public Builder clearText() {
-        
+
         text_ = getDefaultInstance().getText();
         onChanged();
         return this;
@@ -2211,7 +2211,7 @@ public final class Semanticdb {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-        
+
         text_ = value;
         onChanged();
         return this;
@@ -2242,7 +2242,7 @@ public final class Semanticdb {
           getMd5Bytes() {
         java.lang.Object ref = md5_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString b =
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
           md5_ = b;
@@ -2261,7 +2261,7 @@ public final class Semanticdb {
         if (value == null) {
     throw new NullPointerException();
   }
-  
+
         md5_ = value;
         onChanged();
         return this;
@@ -2271,7 +2271,7 @@ public final class Semanticdb {
        * @return This builder for chaining.
        */
       public Builder clearMd5() {
-        
+
         md5_ = getDefaultInstance().getMd5();
         onChanged();
         return this;
@@ -2287,7 +2287,7 @@ public final class Semanticdb {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-        
+
         md5_ = value;
         onChanged();
         return this;
@@ -2307,7 +2307,7 @@ public final class Semanticdb {
        * @return This builder for chaining.
        */
       public Builder setLanguageValue(int value) {
-        
+
         language_ = value;
         onChanged();
         return this;
@@ -2331,7 +2331,7 @@ public final class Semanticdb {
         if (value == null) {
           throw new NullPointerException();
         }
-        
+
         language_ = value.getNumber();
         onChanged();
         return this;
@@ -2341,7 +2341,7 @@ public final class Semanticdb {
        * @return This builder for chaining.
        */
       public Builder clearLanguage() {
-        
+
         language_ = 0;
         onChanged();
         return this;
@@ -2542,7 +2542,7 @@ public final class Semanticdb {
       /**
        * <code>repeated .com.sourcegraph.semanticdb_kotlinc.SymbolInformation symbols = 5;</code>
        */
-      public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformationOrBuilder> 
+      public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformationOrBuilder>
            getSymbolsOrBuilderList() {
         if (symbolsBuilder_ != null) {
           return symbolsBuilder_.getMessageOrBuilderList();
@@ -2568,12 +2568,12 @@ public final class Semanticdb {
       /**
        * <code>repeated .com.sourcegraph.semanticdb_kotlinc.SymbolInformation symbols = 5;</code>
        */
-      public java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformation.Builder> 
+      public java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformation.Builder>
            getSymbolsBuilderList() {
         return getSymbolsFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformation, com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformation.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformationOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformation, com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformation.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformationOrBuilder>
           getSymbolsFieldBuilder() {
         if (symbolsBuilder_ == null) {
           symbolsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
@@ -2782,7 +2782,7 @@ public final class Semanticdb {
       /**
        * <code>repeated .com.sourcegraph.semanticdb_kotlinc.SymbolOccurrence occurrences = 6;</code>
        */
-      public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrenceOrBuilder> 
+      public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrenceOrBuilder>
            getOccurrencesOrBuilderList() {
         if (occurrencesBuilder_ != null) {
           return occurrencesBuilder_.getMessageOrBuilderList();
@@ -2808,12 +2808,12 @@ public final class Semanticdb {
       /**
        * <code>repeated .com.sourcegraph.semanticdb_kotlinc.SymbolOccurrence occurrences = 6;</code>
        */
-      public java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrence.Builder> 
+      public java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrence.Builder>
            getOccurrencesBuilderList() {
         return getOccurrencesFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrence, com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrence.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrenceOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrence, com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrence.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrenceOrBuilder>
           getOccurrencesFieldBuilder() {
         if (occurrencesBuilder_ == null) {
           occurrencesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
@@ -3416,7 +3416,7 @@ public final class Semanticdb {
        * @return This builder for chaining.
        */
       public Builder setStartLine(int value) {
-        
+
         startLine_ = value;
         onChanged();
         return this;
@@ -3426,7 +3426,7 @@ public final class Semanticdb {
        * @return This builder for chaining.
        */
       public Builder clearStartLine() {
-        
+
         startLine_ = 0;
         onChanged();
         return this;
@@ -3447,7 +3447,7 @@ public final class Semanticdb {
        * @return This builder for chaining.
        */
       public Builder setStartCharacter(int value) {
-        
+
         startCharacter_ = value;
         onChanged();
         return this;
@@ -3457,7 +3457,7 @@ public final class Semanticdb {
        * @return This builder for chaining.
        */
       public Builder clearStartCharacter() {
-        
+
         startCharacter_ = 0;
         onChanged();
         return this;
@@ -3478,7 +3478,7 @@ public final class Semanticdb {
        * @return This builder for chaining.
        */
       public Builder setEndLine(int value) {
-        
+
         endLine_ = value;
         onChanged();
         return this;
@@ -3488,7 +3488,7 @@ public final class Semanticdb {
        * @return This builder for chaining.
        */
       public Builder clearEndLine() {
-        
+
         endLine_ = 0;
         onChanged();
         return this;
@@ -3509,7 +3509,7 @@ public final class Semanticdb {
        * @return This builder for chaining.
        */
       public Builder setEndCharacter(int value) {
-        
+
         endCharacter_ = value;
         onChanged();
         return this;
@@ -3519,7 +3519,7 @@ public final class Semanticdb {
        * @return This builder for chaining.
        */
       public Builder clearEndCharacter() {
-        
+
         endCharacter_ = 0;
         onChanged();
         return this;
@@ -4489,7 +4489,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.ClassSignature class_signature = 1;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.ClassSignature, com.sourcegraph.semanticdb_kotlinc.Semanticdb.ClassSignature.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.ClassSignatureOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.ClassSignature, com.sourcegraph.semanticdb_kotlinc.Semanticdb.ClassSignature.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.ClassSignatureOrBuilder>
           getClassSignatureFieldBuilder() {
         if (classSignatureBuilder_ == null) {
           if (!(sealedValueCase_ == 1)) {
@@ -4630,7 +4630,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.MethodSignature method_signature = 2;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.MethodSignature, com.sourcegraph.semanticdb_kotlinc.Semanticdb.MethodSignature.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.MethodSignatureOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.MethodSignature, com.sourcegraph.semanticdb_kotlinc.Semanticdb.MethodSignature.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.MethodSignatureOrBuilder>
           getMethodSignatureFieldBuilder() {
         if (methodSignatureBuilder_ == null) {
           if (!(sealedValueCase_ == 2)) {
@@ -4771,7 +4771,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.TypeSignature type_signature = 3;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeSignature, com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeSignature.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeSignatureOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeSignature, com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeSignature.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeSignatureOrBuilder>
           getTypeSignatureFieldBuilder() {
         if (typeSignatureBuilder_ == null) {
           if (!(sealedValueCase_ == 3)) {
@@ -4912,7 +4912,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.ValueSignature value_signature = 4;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.ValueSignature, com.sourcegraph.semanticdb_kotlinc.Semanticdb.ValueSignature.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.ValueSignatureOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.ValueSignature, com.sourcegraph.semanticdb_kotlinc.Semanticdb.ValueSignature.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.ValueSignatureOrBuilder>
           getValueSignatureFieldBuilder() {
         if (valueSignatureBuilder_ == null) {
           if (!(sealedValueCase_ == 4)) {
@@ -5004,7 +5004,7 @@ public final class Semanticdb {
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.Type parents = 2;</code>
      */
-    java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type> 
+    java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type>
         getParentsList();
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.Type parents = 2;</code>
@@ -5017,7 +5017,7 @@ public final class Semanticdb {
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.Type parents = 2;</code>
      */
-    java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder> 
+    java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder>
         getParentsOrBuilderList();
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.Type parents = 2;</code>
@@ -5196,7 +5196,7 @@ public final class Semanticdb {
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.Type parents = 2;</code>
      */
     @java.lang.Override
-    public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder> 
+    public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder>
         getParentsOrBuilderList() {
       return parents_;
     }
@@ -5610,7 +5610,7 @@ public final class Semanticdb {
               parentsBuilder_ = null;
               parents_ = other.parents_;
               bitField0_ = (bitField0_ & ~0x00000001);
-              parentsBuilder_ = 
+              parentsBuilder_ =
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getParentsFieldBuilder() : null;
             } else {
@@ -5738,7 +5738,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.Scope type_parameters = 1;</code>
        */
       public com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope.Builder getTypeParametersBuilder() {
-        
+
         onChanged();
         return getTypeParametersFieldBuilder().getBuilder();
       }
@@ -5757,7 +5757,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.Scope type_parameters = 1;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.ScopeOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.ScopeOrBuilder>
           getTypeParametersFieldBuilder() {
         if (typeParametersBuilder_ == null) {
           typeParametersBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -5965,7 +5965,7 @@ public final class Semanticdb {
       /**
        * <code>repeated .com.sourcegraph.semanticdb_kotlinc.Type parents = 2;</code>
        */
-      public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder> 
+      public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder>
            getParentsOrBuilderList() {
         if (parentsBuilder_ != null) {
           return parentsBuilder_.getMessageOrBuilderList();
@@ -5991,12 +5991,12 @@ public final class Semanticdb {
       /**
        * <code>repeated .com.sourcegraph.semanticdb_kotlinc.Type parents = 2;</code>
        */
-      public java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type.Builder> 
+      public java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type.Builder>
            getParentsBuilderList() {
         return getParentsFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder>
           getParentsFieldBuilder() {
         if (parentsBuilder_ == null) {
           parentsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
@@ -6097,7 +6097,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.Scope declarations = 4;</code>
        */
       public com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope.Builder getDeclarationsBuilder() {
-        
+
         onChanged();
         return getDeclarationsFieldBuilder().getBuilder();
       }
@@ -6116,7 +6116,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.Scope declarations = 4;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.ScopeOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.ScopeOrBuilder>
           getDeclarationsFieldBuilder() {
         if (declarationsBuilder_ == null) {
           declarationsBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -6203,7 +6203,7 @@ public final class Semanticdb {
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.Scope parameter_lists = 2;</code>
      */
-    java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope> 
+    java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope>
         getParameterListsList();
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.Scope parameter_lists = 2;</code>
@@ -6216,7 +6216,7 @@ public final class Semanticdb {
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.Scope parameter_lists = 2;</code>
      */
-    java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.ScopeOrBuilder> 
+    java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.ScopeOrBuilder>
         getParameterListsOrBuilderList();
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.Scope parameter_lists = 2;</code>
@@ -6395,7 +6395,7 @@ public final class Semanticdb {
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.Scope parameter_lists = 2;</code>
      */
     @java.lang.Override
-    public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.ScopeOrBuilder> 
+    public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.ScopeOrBuilder>
         getParameterListsOrBuilderList() {
       return parameterLists_;
     }
@@ -6809,7 +6809,7 @@ public final class Semanticdb {
               parameterListsBuilder_ = null;
               parameterLists_ = other.parameterLists_;
               bitField0_ = (bitField0_ & ~0x00000001);
-              parameterListsBuilder_ = 
+              parameterListsBuilder_ =
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getParameterListsFieldBuilder() : null;
             } else {
@@ -6937,7 +6937,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.Scope type_parameters = 1;</code>
        */
       public com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope.Builder getTypeParametersBuilder() {
-        
+
         onChanged();
         return getTypeParametersFieldBuilder().getBuilder();
       }
@@ -6956,7 +6956,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.Scope type_parameters = 1;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.ScopeOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.ScopeOrBuilder>
           getTypeParametersFieldBuilder() {
         if (typeParametersBuilder_ == null) {
           typeParametersBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -7164,7 +7164,7 @@ public final class Semanticdb {
       /**
        * <code>repeated .com.sourcegraph.semanticdb_kotlinc.Scope parameter_lists = 2;</code>
        */
-      public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.ScopeOrBuilder> 
+      public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.ScopeOrBuilder>
            getParameterListsOrBuilderList() {
         if (parameterListsBuilder_ != null) {
           return parameterListsBuilder_.getMessageOrBuilderList();
@@ -7190,12 +7190,12 @@ public final class Semanticdb {
       /**
        * <code>repeated .com.sourcegraph.semanticdb_kotlinc.Scope parameter_lists = 2;</code>
        */
-      public java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope.Builder> 
+      public java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope.Builder>
            getParameterListsBuilderList() {
         return getParameterListsFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.ScopeOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.ScopeOrBuilder>
           getParameterListsFieldBuilder() {
         if (parameterListsBuilder_ == null) {
           parameterListsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
@@ -7296,7 +7296,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.Type return_type = 3;</code>
        */
       public com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type.Builder getReturnTypeBuilder() {
-        
+
         onChanged();
         return getReturnTypeFieldBuilder().getBuilder();
       }
@@ -7315,7 +7315,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.Type return_type = 3;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder>
           getReturnTypeFieldBuilder() {
         if (returnTypeBuilder_ == null) {
           returnTypeBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -8085,7 +8085,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.Scope type_parameters = 1;</code>
        */
       public com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope.Builder getTypeParametersBuilder() {
-        
+
         onChanged();
         return getTypeParametersFieldBuilder().getBuilder();
       }
@@ -8104,7 +8104,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.Scope type_parameters = 1;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.ScopeOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.ScopeOrBuilder>
           getTypeParametersFieldBuilder() {
         if (typeParametersBuilder_ == null) {
           typeParametersBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -8204,7 +8204,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.Type lower_bound = 2;</code>
        */
       public com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type.Builder getLowerBoundBuilder() {
-        
+
         onChanged();
         return getLowerBoundFieldBuilder().getBuilder();
       }
@@ -8223,7 +8223,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.Type lower_bound = 2;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder>
           getLowerBoundFieldBuilder() {
         if (lowerBoundBuilder_ == null) {
           lowerBoundBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -8323,7 +8323,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.Type upper_bound = 3;</code>
        */
       public com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type.Builder getUpperBoundBuilder() {
-        
+
         onChanged();
         return getUpperBoundFieldBuilder().getBuilder();
       }
@@ -8342,7 +8342,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.Type upper_bound = 3;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder>
           getUpperBoundFieldBuilder() {
         if (upperBoundBuilder_ == null) {
           upperBoundBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -8944,7 +8944,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.Type tpe = 1;</code>
        */
       public com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type.Builder getTpeBuilder() {
-        
+
         onChanged();
         return getTpeFieldBuilder().getBuilder();
       }
@@ -8963,7 +8963,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.Type tpe = 1;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder>
           getTpeFieldBuilder() {
         if (tpeBuilder_ == null) {
           tpeBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -9662,7 +9662,7 @@ public final class Semanticdb {
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs = 
+        com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         symbol_ = s;
@@ -9678,7 +9678,7 @@ public final class Semanticdb {
         getSymbolBytes() {
       java.lang.Object ref = symbol_;
       if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         symbol_ = b;
@@ -9749,7 +9749,7 @@ public final class Semanticdb {
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs = 
+        com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         displayName_ = s;
@@ -9765,7 +9765,7 @@ public final class Semanticdb {
         getDisplayNameBytes() {
       java.lang.Object ref = displayName_;
       if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         displayName_ = b;
@@ -10407,7 +10407,7 @@ public final class Semanticdb {
           getSymbolBytes() {
         java.lang.Object ref = symbol_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString b =
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
           symbol_ = b;
@@ -10426,7 +10426,7 @@ public final class Semanticdb {
         if (value == null) {
     throw new NullPointerException();
   }
-  
+
         symbol_ = value;
         onChanged();
         return this;
@@ -10436,7 +10436,7 @@ public final class Semanticdb {
        * @return This builder for chaining.
        */
       public Builder clearSymbol() {
-        
+
         symbol_ = getDefaultInstance().getSymbol();
         onChanged();
         return this;
@@ -10452,7 +10452,7 @@ public final class Semanticdb {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-        
+
         symbol_ = value;
         onChanged();
         return this;
@@ -10472,7 +10472,7 @@ public final class Semanticdb {
        * @return This builder for chaining.
        */
       public Builder setLanguageValue(int value) {
-        
+
         language_ = value;
         onChanged();
         return this;
@@ -10496,7 +10496,7 @@ public final class Semanticdb {
         if (value == null) {
           throw new NullPointerException();
         }
-        
+
         language_ = value.getNumber();
         onChanged();
         return this;
@@ -10506,7 +10506,7 @@ public final class Semanticdb {
        * @return This builder for chaining.
        */
       public Builder clearLanguage() {
-        
+
         language_ = 0;
         onChanged();
         return this;
@@ -10526,7 +10526,7 @@ public final class Semanticdb {
        * @return This builder for chaining.
        */
       public Builder setKindValue(int value) {
-        
+
         kind_ = value;
         onChanged();
         return this;
@@ -10550,7 +10550,7 @@ public final class Semanticdb {
         if (value == null) {
           throw new NullPointerException();
         }
-        
+
         kind_ = value.getNumber();
         onChanged();
         return this;
@@ -10560,7 +10560,7 @@ public final class Semanticdb {
        * @return This builder for chaining.
        */
       public Builder clearKind() {
-        
+
         kind_ = 0;
         onChanged();
         return this;
@@ -10581,7 +10581,7 @@ public final class Semanticdb {
        * @return This builder for chaining.
        */
       public Builder setProperties(int value) {
-        
+
         properties_ = value;
         onChanged();
         return this;
@@ -10591,7 +10591,7 @@ public final class Semanticdb {
        * @return This builder for chaining.
        */
       public Builder clearProperties() {
-        
+
         properties_ = 0;
         onChanged();
         return this;
@@ -10622,7 +10622,7 @@ public final class Semanticdb {
           getDisplayNameBytes() {
         java.lang.Object ref = displayName_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString b =
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
           displayName_ = b;
@@ -10641,7 +10641,7 @@ public final class Semanticdb {
         if (value == null) {
     throw new NullPointerException();
   }
-  
+
         displayName_ = value;
         onChanged();
         return this;
@@ -10651,7 +10651,7 @@ public final class Semanticdb {
        * @return This builder for chaining.
        */
       public Builder clearDisplayName() {
-        
+
         displayName_ = getDefaultInstance().getDisplayName();
         onChanged();
         return this;
@@ -10667,7 +10667,7 @@ public final class Semanticdb {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-        
+
         displayName_ = value;
         onChanged();
         return this;
@@ -10760,7 +10760,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.Signature signature = 17;</code>
        */
       public com.sourcegraph.semanticdb_kotlinc.Semanticdb.Signature.Builder getSignatureBuilder() {
-        
+
         onChanged();
         return getSignatureFieldBuilder().getBuilder();
       }
@@ -10779,7 +10779,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.Signature signature = 17;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Signature, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Signature.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.SignatureOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Signature, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Signature.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.SignatureOrBuilder>
           getSignatureFieldBuilder() {
         if (signatureBuilder_ == null) {
           signatureBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -10879,7 +10879,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.Access access = 18;</code>
        */
       public com.sourcegraph.semanticdb_kotlinc.Semanticdb.Access.Builder getAccessBuilder() {
-        
+
         onChanged();
         return getAccessFieldBuilder().getBuilder();
       }
@@ -10898,7 +10898,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.Access access = 18;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Access, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Access.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.AccessOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Access, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Access.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.AccessOrBuilder>
           getAccessFieldBuilder() {
         if (accessBuilder_ == null) {
           accessBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -11108,7 +11108,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.Documentation documentation = 20;</code>
        */
       public com.sourcegraph.semanticdb_kotlinc.Semanticdb.Documentation.Builder getDocumentationBuilder() {
-        
+
         onChanged();
         return getDocumentationFieldBuilder().getBuilder();
       }
@@ -11127,7 +11127,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.Documentation documentation = 20;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Documentation, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Documentation.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.DocumentationOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Documentation, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Documentation.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.DocumentationOrBuilder>
           getDocumentationFieldBuilder() {
         if (documentationBuilder_ == null) {
           documentationBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -12104,7 +12104,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.PrivateAccess private_access = 1;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.PrivateAccess, com.sourcegraph.semanticdb_kotlinc.Semanticdb.PrivateAccess.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.PrivateAccessOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.PrivateAccess, com.sourcegraph.semanticdb_kotlinc.Semanticdb.PrivateAccess.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.PrivateAccessOrBuilder>
           getPrivateAccessFieldBuilder() {
         if (privateAccessBuilder_ == null) {
           if (!(sealedValueCase_ == 1)) {
@@ -12245,7 +12245,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.PrivateWithinAccess private_within_access = 3;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.PrivateWithinAccess, com.sourcegraph.semanticdb_kotlinc.Semanticdb.PrivateWithinAccess.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.PrivateWithinAccessOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.PrivateWithinAccess, com.sourcegraph.semanticdb_kotlinc.Semanticdb.PrivateWithinAccess.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.PrivateWithinAccessOrBuilder>
           getPrivateWithinAccessFieldBuilder() {
         if (privateWithinAccessBuilder_ == null) {
           if (!(sealedValueCase_ == 3)) {
@@ -12386,7 +12386,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.ProtectedAccess protected_access = 4;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.ProtectedAccess, com.sourcegraph.semanticdb_kotlinc.Semanticdb.ProtectedAccess.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.ProtectedAccessOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.ProtectedAccess, com.sourcegraph.semanticdb_kotlinc.Semanticdb.ProtectedAccess.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.ProtectedAccessOrBuilder>
           getProtectedAccessFieldBuilder() {
         if (protectedAccessBuilder_ == null) {
           if (!(sealedValueCase_ == 4)) {
@@ -12527,7 +12527,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.PublicAccess public_access = 7;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.PublicAccess, com.sourcegraph.semanticdb_kotlinc.Semanticdb.PublicAccess.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.PublicAccessOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.PublicAccess, com.sourcegraph.semanticdb_kotlinc.Semanticdb.PublicAccess.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.PublicAccessOrBuilder>
           getPublicAccessFieldBuilder() {
         if (publicAccessBuilder_ == null) {
           if (!(sealedValueCase_ == 7)) {
@@ -13127,7 +13127,7 @@ public final class Semanticdb {
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs = 
+        com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         symbol_ = s;
@@ -13143,7 +13143,7 @@ public final class Semanticdb {
         getSymbolBytes() {
       java.lang.Object ref = symbol_;
       if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         symbol_ = b;
@@ -13480,7 +13480,7 @@ public final class Semanticdb {
           getSymbolBytes() {
         java.lang.Object ref = symbol_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString b =
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
           symbol_ = b;
@@ -13499,7 +13499,7 @@ public final class Semanticdb {
         if (value == null) {
     throw new NullPointerException();
   }
-  
+
         symbol_ = value;
         onChanged();
         return this;
@@ -13509,7 +13509,7 @@ public final class Semanticdb {
        * @return This builder for chaining.
        */
       public Builder clearSymbol() {
-        
+
         symbol_ = getDefaultInstance().getSymbol();
         onChanged();
         return this;
@@ -13525,7 +13525,7 @@ public final class Semanticdb {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-        
+
         symbol_ = value;
         onChanged();
         return this;
@@ -14684,7 +14684,7 @@ public final class Semanticdb {
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs = 
+        com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         message_ = s;
@@ -14700,7 +14700,7 @@ public final class Semanticdb {
         getMessageBytes() {
       java.lang.Object ref = message_;
       if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         message_ = b;
@@ -15072,7 +15072,7 @@ public final class Semanticdb {
           getMessageBytes() {
         java.lang.Object ref = message_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString b =
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
           message_ = b;
@@ -15091,7 +15091,7 @@ public final class Semanticdb {
         if (value == null) {
     throw new NullPointerException();
   }
-  
+
         message_ = value;
         onChanged();
         return this;
@@ -15101,7 +15101,7 @@ public final class Semanticdb {
        * @return This builder for chaining.
        */
       public Builder clearMessage() {
-        
+
         message_ = getDefaultInstance().getMessage();
         onChanged();
         return this;
@@ -15117,7 +15117,7 @@ public final class Semanticdb {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-        
+
         message_ = value;
         onChanged();
         return this;
@@ -15137,7 +15137,7 @@ public final class Semanticdb {
        * @return This builder for chaining.
        */
       public Builder setFormatValue(int value) {
-        
+
         format_ = value;
         onChanged();
         return this;
@@ -15161,7 +15161,7 @@ public final class Semanticdb {
         if (value == null) {
           throw new NullPointerException();
         }
-        
+
         format_ = value.getNumber();
         onChanged();
         return this;
@@ -15171,7 +15171,7 @@ public final class Semanticdb {
        * @return This builder for chaining.
        */
       public Builder clearFormat() {
-        
+
         format_ = 0;
         onChanged();
         return this;
@@ -15530,7 +15530,7 @@ public final class Semanticdb {
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs = 
+        com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         symbol_ = s;
@@ -15546,7 +15546,7 @@ public final class Semanticdb {
         getSymbolBytes() {
       java.lang.Object ref = symbol_;
       if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         symbol_ = b;
@@ -16010,7 +16010,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.Range range = 1;</code>
        */
       public com.sourcegraph.semanticdb_kotlinc.Semanticdb.Range.Builder getRangeBuilder() {
-        
+
         onChanged();
         return getRangeFieldBuilder().getBuilder();
       }
@@ -16029,7 +16029,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.Range range = 1;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Range, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Range.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.RangeOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Range, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Range.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.RangeOrBuilder>
           getRangeFieldBuilder() {
         if (rangeBuilder_ == null) {
           rangeBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -16067,7 +16067,7 @@ public final class Semanticdb {
           getSymbolBytes() {
         java.lang.Object ref = symbol_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString b =
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
           symbol_ = b;
@@ -16086,7 +16086,7 @@ public final class Semanticdb {
         if (value == null) {
     throw new NullPointerException();
   }
-  
+
         symbol_ = value;
         onChanged();
         return this;
@@ -16096,7 +16096,7 @@ public final class Semanticdb {
        * @return This builder for chaining.
        */
       public Builder clearSymbol() {
-        
+
         symbol_ = getDefaultInstance().getSymbol();
         onChanged();
         return this;
@@ -16112,7 +16112,7 @@ public final class Semanticdb {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-        
+
         symbol_ = value;
         onChanged();
         return this;
@@ -16132,7 +16132,7 @@ public final class Semanticdb {
        * @return This builder for chaining.
        */
       public Builder setRoleValue(int value) {
-        
+
         role_ = value;
         onChanged();
         return this;
@@ -16156,7 +16156,7 @@ public final class Semanticdb {
         if (value == null) {
           throw new NullPointerException();
         }
-        
+
         role_ = value.getNumber();
         onChanged();
         return this;
@@ -16166,7 +16166,7 @@ public final class Semanticdb {
        * @return This builder for chaining.
        */
       public Builder clearRole() {
-        
+
         role_ = 0;
         onChanged();
         return this;
@@ -16256,7 +16256,7 @@ public final class Semanticdb {
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.SymbolInformation hardlinks = 2;</code>
      */
-    java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformation> 
+    java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformation>
         getHardlinksList();
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.SymbolInformation hardlinks = 2;</code>
@@ -16269,7 +16269,7 @@ public final class Semanticdb {
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.SymbolInformation hardlinks = 2;</code>
      */
-    java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformationOrBuilder> 
+    java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformationOrBuilder>
         getHardlinksOrBuilderList();
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.SymbolInformation hardlinks = 2;</code>
@@ -16429,7 +16429,7 @@ public final class Semanticdb {
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.SymbolInformation hardlinks = 2;</code>
      */
     @java.lang.Override
-    public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformationOrBuilder> 
+    public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformationOrBuilder>
         getHardlinksOrBuilderList() {
       return hardlinks_;
     }
@@ -16794,7 +16794,7 @@ public final class Semanticdb {
               hardlinksBuilder_ = null;
               hardlinks_ = other.hardlinks_;
               bitField0_ = (bitField0_ & ~0x00000002);
-              hardlinksBuilder_ = 
+              hardlinksBuilder_ =
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getHardlinksFieldBuilder() : null;
             } else {
@@ -17137,7 +17137,7 @@ public final class Semanticdb {
       /**
        * <code>repeated .com.sourcegraph.semanticdb_kotlinc.SymbolInformation hardlinks = 2;</code>
        */
-      public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformationOrBuilder> 
+      public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformationOrBuilder>
            getHardlinksOrBuilderList() {
         if (hardlinksBuilder_ != null) {
           return hardlinksBuilder_.getMessageOrBuilderList();
@@ -17163,12 +17163,12 @@ public final class Semanticdb {
       /**
        * <code>repeated .com.sourcegraph.semanticdb_kotlinc.SymbolInformation hardlinks = 2;</code>
        */
-      public java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformation.Builder> 
+      public java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformation.Builder>
            getHardlinksBuilderList() {
         return getHardlinksFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformation, com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformation.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformationOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformation, com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformation.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolInformationOrBuilder>
           getHardlinksFieldBuilder() {
         if (hardlinksBuilder_ == null) {
           hardlinksBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
@@ -18058,7 +18058,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.TypeRef type_ref = 2;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeRef, com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeRef.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeRefOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeRef, com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeRef.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeRefOrBuilder>
           getTypeRefFieldBuilder() {
         if (typeRefBuilder_ == null) {
           if (!(sealedValueCase_ == 2)) {
@@ -18199,7 +18199,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.ExistentialType existential_type = 9;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.ExistentialType, com.sourcegraph.semanticdb_kotlinc.Semanticdb.ExistentialType.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.ExistentialTypeOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.ExistentialType, com.sourcegraph.semanticdb_kotlinc.Semanticdb.ExistentialType.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.ExistentialTypeOrBuilder>
           getExistentialTypeFieldBuilder() {
         if (existentialTypeBuilder_ == null) {
           if (!(sealedValueCase_ == 9)) {
@@ -18340,7 +18340,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.IntersectionType intersection_type = 17;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.IntersectionType, com.sourcegraph.semanticdb_kotlinc.Semanticdb.IntersectionType.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.IntersectionTypeOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.IntersectionType, com.sourcegraph.semanticdb_kotlinc.Semanticdb.IntersectionType.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.IntersectionTypeOrBuilder>
           getIntersectionTypeFieldBuilder() {
         if (intersectionTypeBuilder_ == null) {
           if (!(sealedValueCase_ == 17)) {
@@ -18429,7 +18429,7 @@ public final class Semanticdb {
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.Type type_arguments = 3;</code>
      */
-    java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type> 
+    java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type>
         getTypeArgumentsList();
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.Type type_arguments = 3;</code>
@@ -18442,7 +18442,7 @@ public final class Semanticdb {
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.Type type_arguments = 3;</code>
      */
-    java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder> 
+    java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder>
         getTypeArgumentsOrBuilderList();
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.Type type_arguments = 3;</code>
@@ -18560,7 +18560,7 @@ public final class Semanticdb {
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs = 
+        com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         symbol_ = s;
@@ -18576,7 +18576,7 @@ public final class Semanticdb {
         getSymbolBytes() {
       java.lang.Object ref = symbol_;
       if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
         symbol_ = b;
@@ -18599,7 +18599,7 @@ public final class Semanticdb {
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.Type type_arguments = 3;</code>
      */
     @java.lang.Override
-    public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder> 
+    public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder>
         getTypeArgumentsOrBuilderList() {
       return typeArguments_;
     }
@@ -18947,7 +18947,7 @@ public final class Semanticdb {
               typeArgumentsBuilder_ = null;
               typeArguments_ = other.typeArguments_;
               bitField0_ = (bitField0_ & ~0x00000001);
-              typeArgumentsBuilder_ = 
+              typeArgumentsBuilder_ =
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getTypeArgumentsFieldBuilder() : null;
             } else {
@@ -19010,7 +19010,7 @@ public final class Semanticdb {
           getSymbolBytes() {
         java.lang.Object ref = symbol_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString b =
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
           symbol_ = b;
@@ -19029,7 +19029,7 @@ public final class Semanticdb {
         if (value == null) {
     throw new NullPointerException();
   }
-  
+
         symbol_ = value;
         onChanged();
         return this;
@@ -19039,7 +19039,7 @@ public final class Semanticdb {
        * @return This builder for chaining.
        */
       public Builder clearSymbol() {
-        
+
         symbol_ = getDefaultInstance().getSymbol();
         onChanged();
         return this;
@@ -19055,7 +19055,7 @@ public final class Semanticdb {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-        
+
         symbol_ = value;
         onChanged();
         return this;
@@ -19256,7 +19256,7 @@ public final class Semanticdb {
       /**
        * <code>repeated .com.sourcegraph.semanticdb_kotlinc.Type type_arguments = 3;</code>
        */
-      public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder> 
+      public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder>
            getTypeArgumentsOrBuilderList() {
         if (typeArgumentsBuilder_ != null) {
           return typeArgumentsBuilder_.getMessageOrBuilderList();
@@ -19282,12 +19282,12 @@ public final class Semanticdb {
       /**
        * <code>repeated .com.sourcegraph.semanticdb_kotlinc.Type type_arguments = 3;</code>
        */
-      public java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type.Builder> 
+      public java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type.Builder>
            getTypeArgumentsBuilderList() {
         return getTypeArgumentsFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder>
           getTypeArgumentsFieldBuilder() {
         if (typeArgumentsBuilder_ == null) {
           typeArgumentsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
@@ -19360,7 +19360,7 @@ public final class Semanticdb {
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.Type types = 1;</code>
      */
-    java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type> 
+    java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type>
         getTypesList();
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.Type types = 1;</code>
@@ -19373,7 +19373,7 @@ public final class Semanticdb {
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.Type types = 1;</code>
      */
-    java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder> 
+    java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder>
         getTypesOrBuilderList();
     /**
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.Type types = 1;</code>
@@ -19485,7 +19485,7 @@ public final class Semanticdb {
      * <code>repeated .com.sourcegraph.semanticdb_kotlinc.Type types = 1;</code>
      */
     @java.lang.Override
-    public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder> 
+    public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder>
         getTypesOrBuilderList() {
       return types_;
     }
@@ -19816,7 +19816,7 @@ public final class Semanticdb {
               typesBuilder_ = null;
               types_ = other.types_;
               bitField0_ = (bitField0_ & ~0x00000001);
-              typesBuilder_ = 
+              typesBuilder_ =
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getTypesFieldBuilder() : null;
             } else {
@@ -20049,7 +20049,7 @@ public final class Semanticdb {
       /**
        * <code>repeated .com.sourcegraph.semanticdb_kotlinc.Type types = 1;</code>
        */
-      public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder> 
+      public java.util.List<? extends com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder>
            getTypesOrBuilderList() {
         if (typesBuilder_ != null) {
           return typesBuilder_.getMessageOrBuilderList();
@@ -20075,12 +20075,12 @@ public final class Semanticdb {
       /**
        * <code>repeated .com.sourcegraph.semanticdb_kotlinc.Type types = 1;</code>
        */
-      public java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type.Builder> 
+      public java.util.List<com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type.Builder>
            getTypesBuilderList() {
         return getTypesFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder>
           getTypesFieldBuilder() {
         if (typesBuilder_ == null) {
           typesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
@@ -20767,7 +20767,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.Type tpe = 1;</code>
        */
       public com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type.Builder getTpeBuilder() {
-        
+
         onChanged();
         return getTpeFieldBuilder().getBuilder();
       }
@@ -20786,7 +20786,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.Type tpe = 1;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Type.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.TypeOrBuilder>
           getTpeFieldBuilder() {
         if (tpeBuilder_ == null) {
           tpeBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -20886,7 +20886,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.Scope declarations = 3;</code>
        */
       public com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope.Builder getDeclarationsBuilder() {
-        
+
         onChanged();
         return getDeclarationsFieldBuilder().getBuilder();
       }
@@ -20905,7 +20905,7 @@ public final class Semanticdb {
        * <code>.com.sourcegraph.semanticdb_kotlinc.Scope declarations = 3;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.ScopeOrBuilder> 
+          com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope, com.sourcegraph.semanticdb_kotlinc.Semanticdb.Scope.Builder, com.sourcegraph.semanticdb_kotlinc.Semanticdb.ScopeOrBuilder>
           getDeclarationsFieldBuilder() {
         if (declarationsBuilder_ == null) {
           declarationsBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -20972,107 +20972,107 @@ public final class Semanticdb {
 
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_com_sourcegraph_semanticdb_kotlinc_TextDocuments_descriptor;
-  private static final 
+  private static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_sourcegraph_semanticdb_kotlinc_TextDocuments_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_com_sourcegraph_semanticdb_kotlinc_TextDocument_descriptor;
-  private static final 
+  private static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_sourcegraph_semanticdb_kotlinc_TextDocument_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_com_sourcegraph_semanticdb_kotlinc_Range_descriptor;
-  private static final 
+  private static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_sourcegraph_semanticdb_kotlinc_Range_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_com_sourcegraph_semanticdb_kotlinc_Signature_descriptor;
-  private static final 
+  private static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_sourcegraph_semanticdb_kotlinc_Signature_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_com_sourcegraph_semanticdb_kotlinc_ClassSignature_descriptor;
-  private static final 
+  private static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_sourcegraph_semanticdb_kotlinc_ClassSignature_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_com_sourcegraph_semanticdb_kotlinc_MethodSignature_descriptor;
-  private static final 
+  private static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_sourcegraph_semanticdb_kotlinc_MethodSignature_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_com_sourcegraph_semanticdb_kotlinc_TypeSignature_descriptor;
-  private static final 
+  private static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_sourcegraph_semanticdb_kotlinc_TypeSignature_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_com_sourcegraph_semanticdb_kotlinc_ValueSignature_descriptor;
-  private static final 
+  private static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_sourcegraph_semanticdb_kotlinc_ValueSignature_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_com_sourcegraph_semanticdb_kotlinc_SymbolInformation_descriptor;
-  private static final 
+  private static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_sourcegraph_semanticdb_kotlinc_SymbolInformation_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_com_sourcegraph_semanticdb_kotlinc_Access_descriptor;
-  private static final 
+  private static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_sourcegraph_semanticdb_kotlinc_Access_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_com_sourcegraph_semanticdb_kotlinc_PrivateAccess_descriptor;
-  private static final 
+  private static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_sourcegraph_semanticdb_kotlinc_PrivateAccess_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_com_sourcegraph_semanticdb_kotlinc_PrivateWithinAccess_descriptor;
-  private static final 
+  private static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_sourcegraph_semanticdb_kotlinc_PrivateWithinAccess_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_com_sourcegraph_semanticdb_kotlinc_ProtectedAccess_descriptor;
-  private static final 
+  private static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_sourcegraph_semanticdb_kotlinc_ProtectedAccess_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_com_sourcegraph_semanticdb_kotlinc_PublicAccess_descriptor;
-  private static final 
+  private static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_sourcegraph_semanticdb_kotlinc_PublicAccess_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_com_sourcegraph_semanticdb_kotlinc_Documentation_descriptor;
-  private static final 
+  private static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_sourcegraph_semanticdb_kotlinc_Documentation_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_com_sourcegraph_semanticdb_kotlinc_SymbolOccurrence_descriptor;
-  private static final 
+  private static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_sourcegraph_semanticdb_kotlinc_SymbolOccurrence_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_com_sourcegraph_semanticdb_kotlinc_Scope_descriptor;
-  private static final 
+  private static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_sourcegraph_semanticdb_kotlinc_Scope_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_com_sourcegraph_semanticdb_kotlinc_Type_descriptor;
-  private static final 
+  private static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_sourcegraph_semanticdb_kotlinc_Type_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_com_sourcegraph_semanticdb_kotlinc_TypeRef_descriptor;
-  private static final 
+  private static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_sourcegraph_semanticdb_kotlinc_TypeRef_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_com_sourcegraph_semanticdb_kotlinc_IntersectionType_descriptor;
-  private static final 
+  private static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_sourcegraph_semanticdb_kotlinc_IntersectionType_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_com_sourcegraph_semanticdb_kotlinc_ExistentialType_descriptor;
-  private static final 
+  private static final
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_sourcegraph_semanticdb_kotlinc_ExistentialType_fieldAccessorTable;
 
