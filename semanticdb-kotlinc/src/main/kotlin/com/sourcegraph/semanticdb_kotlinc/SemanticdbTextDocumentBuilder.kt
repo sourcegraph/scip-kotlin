@@ -148,7 +148,7 @@ class SemanticdbTextDocumentBuilder(
                     firBasedSymbol
                         .resolvedSuperTypeRefs
                         .filter {
-                            (it.coneTypeOrNull as? ConeClassLikeType)?.toString() !in
+                            (it.coneType as? ConeClassLikeType)?.toString() !in
                                 isIgnoredSuperClass
                         }
                         .map { it.toString() }
