@@ -136,7 +136,7 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
     @OptIn(SymbolInternals::class)
     private fun getParentSymbol(symbol: FirBasedSymbol<*>): FirBasedSymbol<*>? {
         val session = symbol.fir.moduleData.session
-        return symbol.getContainingClassSymbol(session)
+        return symbol.getContainingClassSymbol()
             ?: (symbol as? FirBasedSymbol<*>)?.let {
                 try {
                     session.firProvider.getContainingFile(it)?.symbol
@@ -259,8 +259,7 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
 
     private fun FirConstructorSymbol.getTypeAliasSymbol(): FirTypeAliasSymbol? {
         val session = moduleData.session
-        val classId =
-            resolvedReturnTypeRef.coneTypeSafe<ConeClassLikeType>()?.classId ?: return null
+        val classId = resolvedReturnTypeRef.coneType.classId ?: return null
         val classSymbol = session.symbolProvider.getClassLikeSymbolByClassId(classId)
         return classSymbol as? FirTypeAliasSymbol
     }
