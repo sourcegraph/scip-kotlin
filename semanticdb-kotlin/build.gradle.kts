@@ -47,7 +47,7 @@ afterEvaluate {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.17.3"
+        artifact = "com.google.protobuf:protoc:4.29.3"
     }
 
     generatedFilesBaseDir = kotlin.sourceSets.main.get().kotlin.srcDirs.first().path.split(":")[0].removeSuffix("main/kotlin")
