@@ -183,8 +183,8 @@ class SemanticdbSymbolsTest {
                     symbolsCacheData =
                         SymbolCacheData(
                             listOf(
-                                "kotlin/collections/mapOf(+1).".symbol(),
-                                "kotlin/io/println().".symbol()))))
+                                "kotlin/collections/mapOf(+2).".symbol(),
+                                "kotlin/io/println(+10).".symbol()))))
             .mapCheckExpectedSymbols()
 
     @TestFactory

@@ -6,16 +6,16 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.isLocalMember
 import org.jetbrains.kotlin.fir.analysis.checkers.getContainingSymbol
+import org.jetbrains.kotlin.fir.declarations.FirClass
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
-import org.jetbrains.kotlin.fir.declarations.FirFunction
+import org.jetbrains.kotlin.fir.declarations.utils.memberDeclarationNameOrNull
 import org.jetbrains.kotlin.fir.declarations.utils.nameOrSpecialName
 import org.jetbrains.kotlin.fir.packageFqName
 import org.jetbrains.kotlin.fir.resolve.getContainingDeclaration
+import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.*
-import org.jetbrains.kotlin.fir.types.ConeKotlinType
-import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.capitalizeAsciiOnly
 
@@ -163,43 +163,36 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
     }
 
     @OptIn(SymbolInternals::class)
-    fun disambiguateCallableSymbol(callableSymbol: FirCallableSymbol<*>): String {
-        val callableId = callableSymbol.callableId
-        val callableName = callableId.callableName.asString()
-        val fqName = callableId.packageName.asString()
+    private fun methodDisambiguator(symbol: FirFunctionSymbol<*>): String {
+        val session = symbol.moduleData.session
 
-        // Get the FIR element associated with the callable symbol
-        val firFunction = callableSymbol.fir as? FirFunction ?: return "$fqName.$callableName"
-
-        // Get parameter types from the function's value parameters
-        val parameterTypes =
-            firFunction.valueParameters.joinToString(separator = ", ") {
-                it.returnTypeRef.coneType.render()
+        val siblings =
+            when (val containingSymbol = symbol.getContainingSymbol(session)) {
+                is FirClassSymbol ->
+                    (containingSymbol.fir as FirClass).declarations.map { it.symbol }
+                is FirFileSymbol -> containingSymbol.fir.declarations.map { it.symbol }
+                null ->
+                    symbol.moduleData.session.symbolProvider.getTopLevelCallableSymbols(
+                        symbol.packageFqName(), symbol.name)
+                else -> return "()"
             }
 
-        // Get the return type (for functions and properties)
-        val returnType = firFunction.returnTypeRef.coneType.render()
+        var count = 0
+        var found = false
+        for (decl in siblings) {
+            if (decl == symbol) {
+                found = true
+                break
+            }
 
-        // Create a string representing the fully qualified name + signature
-        return "$fqName.$callableName($parameterTypes): $returnType"
-    }
-
-    // Extension function to render a ConeKotlinType to a string
-    private fun ConeKotlinType?.render(): String = this?.toString() ?: "Unit"
-
-    private fun disambiguateClassSymbol(classSymbol: FirClassSymbol<*>): String {
-        val classId = classSymbol.classId
-        val fqName = classId.asString()
-        // You can also add additional details like visibility or modifiers if needed
-        return "class $fqName"
-    }
-
-    private fun methodDisambiguator(symbol: FirBasedSymbol<*>): String =
-        when (symbol) {
-            is FirCallableSymbol<*> -> disambiguateCallableSymbol(symbol)
-            is FirClassSymbol<*> -> disambiguateClassSymbol(symbol)
-            else -> "()"
+            if (decl.memberDeclarationNameOrNull?.equals(symbol.name) == true) {
+                count++
+            }
         }
+
+        if (count == 0 || !found) return "()"
+        return "(+${count})"
+    }
 
     override fun iterator(): Iterator<Symbol> = globals.values.iterator()
 }
