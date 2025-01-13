@@ -199,7 +199,7 @@ class SemanticdbTextDocumentBuilder(
         @OptIn(SymbolInternals::class)
         private fun displayName(firBasedSymbol: FirBasedSymbol<*>): String =
             when (firBasedSymbol) {
-                is FirClassSymbol -> firBasedSymbol.classId.asSingleFqName().asString()
+                is FirClassSymbol -> firBasedSymbol.classId.shortClassName.asString()
                 is FirPropertyAccessorSymbol -> firBasedSymbol.fir.propertySymbol.name.asString()
                 is FirFunctionSymbol -> firBasedSymbol.callableId.callableName.asString()
                 is FirPropertySymbol -> firBasedSymbol.callableId.callableName.asString()

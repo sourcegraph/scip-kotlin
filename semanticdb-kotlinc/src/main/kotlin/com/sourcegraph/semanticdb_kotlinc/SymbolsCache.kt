@@ -139,7 +139,7 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
     private fun semanticdbDescriptor(symbol: FirBasedSymbol<*>): SemanticdbSymbolDescriptor {
         return when {
             symbol is FirClassLikeSymbol ->
-                SemanticdbSymbolDescriptor(Kind.TYPE, symbol.classId.asString())
+                SemanticdbSymbolDescriptor(Kind.TYPE, symbol.classId.shortClassName.asString())
             symbol is FirPropertyAccessorSymbol &&
                 symbol.fir.nameOrSpecialName.asStringStripSpecialMarkers().startsWith("set") ->
                 SemanticdbSymbolDescriptor(
