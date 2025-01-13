@@ -19,29 +19,12 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import org.intellij.lang.annotations.Language
-import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles
-import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
-import org.jetbrains.kotlin.com.intellij.openapi.Disposable
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
-import org.jetbrains.kotlin.config.CompilerConfiguration
-import org.jetbrains.kotlin.config.JVMConfigurationKeys
-import org.jetbrains.kotlin.config.LanguageVersionSettingsImpl
-import org.jetbrains.kotlin.config.languageVersionSettings
 import org.junit.jupiter.api.io.TempDir
 
 @OptIn(ExperimentalCompilerApi::class)
 @ExperimentalContracts
 class AnalyzerTest {
-    fun setupKotlinEnvironment(disposable: Disposable): KotlinCoreEnvironment {
-        val configuration =
-            CompilerConfiguration().apply {
-                put(JVMConfigurationKeys.JDK_HOME, java.io.File(System.getProperty("java.home")))
-                languageVersionSettings = LanguageVersionSettingsImpl.DEFAULT
-            }
-        return KotlinCoreEnvironment.createForProduction(
-            disposable, configuration, EnvironmentConfigFiles.JVM_CONFIG_FILES)
-    }
-
     fun compileSemanticdb(path: Path, @Language("kotlin") code: String): TextDocument {
         val buildPath = File(path.resolve("build").toString()).apply { mkdir() }
         val source = SourceFile.testKt(code)
@@ -50,11 +33,9 @@ class AnalyzerTest {
         val result =
             KotlinCompilation()
                 .apply {
-                    //                    sources = listOf(SourceFile.kotlin(source.name,
-                    // source.text))
                     sources = listOf(source)
                     compilerPluginRegistrars = listOf(AnalyzerRegistrar { document = it })
-                    verbose = true
+                    verbose = false
                     pluginOptions =
                         listOf(
                             PluginOption("semanticdb-kotlinc", "sourceroot", path.toString()),
@@ -83,23 +64,33 @@ class AnalyzerTest {
         val occurrences =
             arrayOf(
                 SymbolOccurrence {
-                    role = Role.DEFINITION
-                    symbol = "`sample/Banana`#Bananasample.Banana(): sample/Banana."
+                    role = Role.REFERENCE
+                    symbol = "sample/"
                     range {
-                        startLine = 1
-                        startCharacter = 0
-                        endLine = 1
-                        endCharacter = 33
+                        startLine = 0
+                        startCharacter = 8
+                        endLine = 0
+                        endCharacter = 14
                     }
                 },
                 SymbolOccurrence {
                     role = Role.DEFINITION
-                    symbol = "`sample/Banana`#foosample.foo(): kotlin/Unit."
+                    symbol = "sample/Banana#"
+                    range {
+                        startLine = 1
+                        startCharacter = 6
+                        endLine = 1
+                        endCharacter = 12
+                    }
+                },
+                SymbolOccurrence {
+                    role = Role.DEFINITION
+                    symbol = "sample/Banana#foo()."
                     range {
                         startLine = 2
-                        startCharacter = 4
+                        startCharacter = 8
                         endLine = 2
-                        endCharacter = 16
+                        endCharacter = 11
                     }
                 })
         assertSoftly(document.occurrencesList) {
@@ -109,24 +100,23 @@ class AnalyzerTest {
         val symbols =
             arrayOf(
                 SymbolInformation {
-                    symbol = "`sample/Banana`#Bananasample.Banana(): sample/Banana."
+                    symbol = "sample/Banana#"
                     language = KOTLIN
                     displayName = "Banana"
                     documentation =
                         Documentation {
                             format = Semanticdb.Documentation.Format.MARKDOWN
-                            message =
-                                "```\npublic constructor(): R|sample/Banana| {\n    super<R|kotlin/Any|>()\n}\n\n```\n"
+                            message = "```kotlin\npublic final class Banana\n```"
                         }
                 },
                 SymbolInformation {
-                    symbol = "`sample/Banana`#foosample.foo(): kotlin/Unit."
+                    symbol = "sample/Banana#foo()."
                     language = KOTLIN
                     displayName = "foo"
                     documentation =
                         Documentation {
                             format = Semanticdb.Documentation.Format.MARKDOWN
-                            message = "```\npublic final fun foo(): R|kotlin/Unit| {\n}\n\n```\n"
+                            message = "```kotlin\npublic final fun foo()\n```"
                         }
                 })
         assertSoftly(document.symbolsList) { withClue(this) { symbols.forEach(::shouldContain) } }
@@ -151,7 +141,7 @@ class AnalyzerTest {
                 }
                 .compile()
 
-        result.exitCode shouldBe KotlinCompilation.ExitCode.INTERNAL_ERROR
+        result.exitCode shouldBe KotlinCompilation.ExitCode.OK
     }
 
     @Test
@@ -610,10 +600,8 @@ class AnalyzerTest {
                  **/
                inline fun docstrings(msg: String): Int { return msg.length }
         """.trimIndent())
-        document.assertDocumentation("`sample/Docstrings`#", "Example class docstring")
-        document.assertDocumentation(
-            "`Test.kt.docstrings`#docstringssample.docstrings(kotlin/String): kotlin/Int.",
-            "Example method docstring")
+        document.assertDocumentation("sample/Docstrings#", "Example class docstring")
+        document.assertDocumentation("sample/TestKt#docstrings().", "Example method docstring")
     }
 
     private fun TextDocument.assertDocumentation(symbol: String, expectedDocumentation: String) {

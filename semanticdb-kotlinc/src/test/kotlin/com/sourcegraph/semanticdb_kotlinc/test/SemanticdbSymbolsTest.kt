@@ -9,7 +9,6 @@ import com.sourcegraph.semanticdb_kotlinc.test.ExpectedSymbols.SymbolCacheData
 import com.tschuchort.compiletesting.SourceFile
 import kotlin.contracts.ExperimentalContracts
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestFactory
 
 @ExperimentalCompilerApi
@@ -17,7 +16,7 @@ import org.junit.jupiter.api.TestFactory
 class SemanticdbSymbolsTest {
     @TestFactory
     fun `method disambiguator`() =
-        listOf<ExpectedSymbols>(
+        listOf(
                 ExpectedSymbols(
                     "Basic two methods",
                     SourceFile.testKt(
@@ -29,9 +28,7 @@ class SemanticdbSymbolsTest {
                         |""".trimMargin()),
                     symbolsCacheData =
                         SymbolCacheData(
-                            listOf(
-                                "Test#sample.sample(): kotlin/Unit.".symbol(),
-                                "Test#sample.sample(kotlin/Int): kotlin/Unit.".symbol()),
+                            listOf("Test#sample().".symbol(), "Test#sample(+1).".symbol()),
                         )),
                 ExpectedSymbols(
                     "Inline class constructor",
@@ -39,8 +36,7 @@ class SemanticdbSymbolsTest {
                         """
                         |class Test(val x: Int)
                         |""".trimMargin()),
-                    symbolsCacheData =
-                        SymbolCacheData(listOf("Test#Test.Test(kotlin/Int): Test.".symbol()))),
+                    symbolsCacheData = SymbolCacheData(listOf("Test#`<init>`().(x)".symbol()))),
                 ExpectedSymbols(
                     "Inline + secondary class constructors",
                     SourceFile.testKt(
@@ -53,9 +49,9 @@ class SemanticdbSymbolsTest {
                     symbolsCacheData =
                         SymbolCacheData(
                             listOf(
-                                "Test#Test.Test(kotlin/Int): Test.".symbol(),
-                                "Test#Test.Test(kotlin/Long): Test.".symbol(),
-                                "Test#Test.Test(kotlin/String): Test.".symbol()))),
+                                "Test#`<init>`().(x)".symbol(),
+                                "Test#`<init>`(+1).(y)".symbol(),
+                                "Test#`<init>`(+2).(z)".symbol()))),
                 ExpectedSymbols(
                     "Disambiguator number is not affected by different named methods",
                     SourceFile.testKt(
@@ -68,10 +64,7 @@ class SemanticdbSymbolsTest {
                         |""".trimMargin()),
                     symbolsCacheData =
                         SymbolCacheData(
-                            listOf(
-                                "Test#sample.sample(): kotlin/Unit.".symbol(),
-                                "Test#test.test(): kotlin/Unit.".symbol(),
-                                "Test#test.test(kotlin/Int): kotlin/Unit.".symbol()))),
+                            listOf("Test#test().".symbol(), "Test#test(+1).".symbol()))),
                 ExpectedSymbols(
                     "Top level overloaded functions",
                     SourceFile.testKt(
@@ -81,9 +74,7 @@ class SemanticdbSymbolsTest {
                         |""".trimMargin()),
                     symbolsCacheData =
                         SymbolCacheData(
-                            listOf(
-                                "`Test.kt.test`#test.test(): kotlin/Unit.".symbol(),
-                                "`Test.kt.test`#test.test(kotlin/Int): kotlin/Unit.".symbol()))),
+                            listOf("TestKt#test().".symbol(), "TestKt#test(+1).(x)".symbol()))),
                 ExpectedSymbols(
                     "Annotations incl annotation type alias",
                     SourceFile.testKt(
@@ -100,8 +91,8 @@ class SemanticdbSymbolsTest {
                     symbolsCacheData =
                         SymbolCacheData(
                             listOf(
-                                "`kotlin/contracts/ExperimentalContracts`#".symbol(),
-                                "`kotlin/test/Test`#".symbol()))),
+                                "kotlin/contracts/ExperimentalContracts#".symbol(),
+                                "kotlin/test/Test#".symbol()))),
                 // https://kotlinlang.slack.com/archives/C7L3JB43G/p1624995376114900
                 /*ExpectedSymbols(
                     "Method call with type parameters",
@@ -127,7 +118,7 @@ class SemanticdbSymbolsTest {
                         |
                         |class Test
                         |""".trimMargin()),
-                    symbolsCacheData = SymbolCacheData(listOf("`main/Test`#".symbol()), 0)),
+                    symbolsCacheData = SymbolCacheData(listOf("main/Test#".symbol()), 0)),
                 ExpectedSymbols(
                     "multi component package name",
                     SourceFile.testKt(
@@ -137,7 +128,7 @@ class SemanticdbSymbolsTest {
                         |class Test
                         |""".trimMargin()),
                     symbolsCacheData =
-                        SymbolCacheData(listOf("`test/sample/main/Test`#".symbol()), 0)),
+                        SymbolCacheData(listOf("test/sample/main/Test#".symbol()), 0)),
                 ExpectedSymbols(
                     "no package name",
                     SourceFile.testKt(
@@ -162,7 +153,7 @@ class SemanticdbSymbolsTest {
                     symbolsCacheData = SymbolCacheData(localsCount = 1)))
             .mapCheckExpectedSymbols()
 
-    @Test
+    @TestFactory
     fun `builtin symbols`() =
         listOf(
                 ExpectedSymbols(
@@ -177,10 +168,10 @@ class SemanticdbSymbolsTest {
                     symbolsCacheData =
                         SymbolCacheData(
                             listOf(
-                                "`Test.kt.accessor`#accessorspecial.accessor(): kotlin/Int.".symbol(),
-                                "`Test.kt.accessor`#accessorspecial.accessor(): kotlin/Unit.".symbol(),
-                                "`Test.kt.accessor`#accessorspecial.accessor(): kotlin/Any.".symbol(),
-                                "`Test.kt.accessor`#accessorspecial.accessor(): kotlin/Nothing.".symbol()))),
+                                "kotlin/Int#".symbol(),
+                                "kotlin/Unit#".symbol(),
+                                "kotlin/Any#".symbol(),
+                                "kotlin/Nothing#".symbol()))),
                 ExpectedSymbols(
                     "functions",
                     SourceFile.testKt(
@@ -193,8 +184,8 @@ class SemanticdbSymbolsTest {
                     symbolsCacheData =
                         SymbolCacheData(
                             listOf(
-                                "`kotlin.collections.mapOf`#mapOfkotlin.collections.mapOf(): kotlin/collections/Map<K, V>.".symbol(),
-                                "`kotlin.io.println`#printlnkotlin.io.println(): kotlin/Unit.".symbol()))))
+                                "kotlin/collections/MapsKt#mapOf(+1).".symbol(),
+                                "kotlin/io/ConsoleKt#println().".symbol()))))
             .mapCheckExpectedSymbols()
 
     @TestFactory
@@ -210,7 +201,7 @@ class SemanticdbSymbolsTest {
                         |    System.err
                         |}
                         |""".trimMargin()),
-                    symbolsCacheData = SymbolCacheData(listOf("`java/lang/System`#err.".symbol()))))
+                    symbolsCacheData = SymbolCacheData(listOf("java/lang/System#err.".symbol()))))
             .mapCheckExpectedSymbols()
 
     @TestFactory
@@ -228,34 +219,32 @@ class SemanticdbSymbolsTest {
                                 listOf(
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol = "`Test.kt.x`#x."
+                                        symbol = "TestKt#x."
                                         range {
                                             startLine = 0
-                                            startCharacter = 0
+                                            startCharacter = 4
                                             endLine = 0
-                                            endCharacter = 13
+                                            endCharacter = 5
                                         }
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol =
-                                            "`Test.kt.accessor`#accessorspecial.accessor(): kotlin/Int."
+                                        symbol = "TestKt#getX()."
                                         range {
                                             startLine = 0
-                                            startCharacter = 0
+                                            startCharacter = 4
                                             endLine = 0
-                                            endCharacter = 13
+                                            endCharacter = 5
                                         }
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol =
-                                            "`Test.kt.accessor`#accessorspecial.accessor(kotlin/Int): kotlin/Unit."
+                                        symbol = "TestKt#setX()."
                                         range {
                                             startLine = 0
-                                            startCharacter = 0
+                                            startCharacter = 4
                                             endLine = 0
-                                            endCharacter = 13
+                                            endCharacter = 5
                                         }
                                     })),
                 ),
@@ -272,37 +261,34 @@ class SemanticdbSymbolsTest {
                                 listOf(
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol = "`Test.kt.x`#x."
+                                        symbol = "TestKt#x."
                                         range {
                                             startLine = 0
-                                            startCharacter = 0
+                                            startCharacter = 4
                                             endLine = 0
-                                            endCharacter = 36
+                                            endCharacter = 5
                                         }
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol =
-                                            "`Test.kt.accessor`#accessorspecial.accessor(): kotlin/Int."
+                                        symbol = "TestKt#setX()."
+                                        range {
+                                            startLine = 0
+                                            startCharacter = 4
+                                            endLine = 0
+                                            endCharacter = 5
+                                        }
+                                    },
+                                    SymbolOccurrence {
+                                        role = Role.DEFINITION
+                                        symbol = "TestKt#getX()."
                                         range {
                                             startLine = 1
                                             startCharacter = 4
                                             endLine = 1
-                                            endCharacter = 21
+                                            endCharacter = 7
                                         }
-                                    },
-                                    SymbolOccurrence {
-                                        role = Role.DEFINITION
-                                        symbol =
-                                            "`Test.kt.accessor`#accessorspecial.accessor(kotlin/Int): kotlin/Unit."
-                                        range {
-                                            startLine = 0
-                                            startCharacter = 0
-                                            endLine = 0
-                                            endCharacter = 36
-                                        }
-                                    },
-                                )),
+                                    })),
                 ),
                 ExpectedSymbols(
                     "top level properties - explicit setter",
@@ -317,34 +303,32 @@ class SemanticdbSymbolsTest {
                                 listOf(
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol = "`Test.kt.x`#x."
+                                        symbol = "TestKt#x."
                                         range {
                                             startLine = 0
-                                            startCharacter = 0
+                                            startCharacter = 4
                                             endLine = 0
-                                            endCharacter = 50
+                                            endCharacter = 5
                                         }
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol =
-                                            "`Test.kt.accessor`#accessorspecial.accessor(): kotlin/Int."
+                                        symbol = "TestKt#getX()."
                                         range {
                                             startLine = 0
-                                            startCharacter = 0
+                                            startCharacter = 4
                                             endLine = 0
-                                            endCharacter = 50
+                                            endCharacter = 5
                                         }
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol =
-                                            "`Test.kt.accessor`#accessorspecial.accessor(kotlin/Int): kotlin/Unit."
+                                        symbol = "TestKt#setX()."
                                         range {
                                             startLine = 1
                                             startCharacter = 4
                                             endLine = 1
-                                            endCharacter = 35
+                                            endCharacter = 7
                                         }
                                     })),
                 ),
@@ -362,34 +346,32 @@ class SemanticdbSymbolsTest {
                                 listOf(
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol = "`Test.kt.x`#x."
+                                        symbol = "TestKt#x."
                                         range {
                                             startLine = 0
-                                            startCharacter = 0
+                                            startCharacter = 4
                                             endLine = 0
-                                            endCharacter = 74
+                                            endCharacter = 5
                                         }
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol =
-                                            "`Test.kt.accessor`#accessorspecial.accessor(): kotlin/Int."
+                                        symbol = "TestKt#getX()."
                                         range {
                                             startLine = 1
                                             startCharacter = 4
                                             endLine = 1
-                                            endCharacter = 21
+                                            endCharacter = 7
                                         }
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol =
-                                            "`Test.kt.accessor`#accessorspecial.accessor(kotlin/Int): kotlin/Unit."
+                                        symbol = "TestKt#setX()."
                                         range {
                                             startLine = 2
                                             startCharacter = 4
                                             endLine = 2
-                                            endCharacter = 36
+                                            endCharacter = 7
                                         }
                                     })),
                 ),
@@ -409,63 +391,72 @@ class SemanticdbSymbolsTest {
                                 listOf(
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol = "Test#Test.Test(kotlin/Int, kotlin/String): Test."
+                                        symbol = "Test#sample."
                                         range {
                                             startLine = 0
-                                            startCharacter = 10
+                                            startCharacter = 15
                                             endLine = 0
-                                            endCharacter = 40
+                                            endCharacter = 21
+                                        }
+                                    },
+                                    SymbolOccurrence {
+                                        role = Role.DEFINITION
+                                        symbol = "Test#getSample()."
+                                        range {
+                                            startLine = 0
+                                            startCharacter = 15
+                                            endLine = 0
+                                            endCharacter = 21
+                                        }
+                                    },
+                                    SymbolOccurrence {
+                                        role = Role.DEFINITION
+                                        symbol = "Test#setSample()."
+                                        range {
+                                            startLine = 0
+                                            startCharacter = 15
+                                            endLine = 0
+                                            endCharacter = 21
+                                        }
+                                    },
+                                    SymbolOccurrence {
+                                        role = Role.DEFINITION
+                                        symbol = "Test#`<init>`().(sample)"
+                                        range {
+                                            startLine = 0
+                                            startCharacter = 15
+                                            endLine = 0
+                                            endCharacter = 21
                                         }
                                     },
                                     SymbolOccurrence {
                                         role = Role.REFERENCE
-                                        symbol = "(sample)"
+                                        symbol = "Test#`<init>`().(sample)"
                                         range {
                                             startLine = 0
                                             startCharacter = 53
                                             endLine = 0
-                                            endCharacter = 58
-                                        }
-                                    },
-                                    SymbolOccurrence {
-                                        role = Role.DEFINITION
-                                        symbol = "Test#sample."
-                                        range {
-                                            startLine = 0
-                                            startCharacter = 11
-                                            endLine = 0
-                                            endCharacter = 25
+                                            endCharacter = 59
                                         }
                                     },
                                     SymbolOccurrence {
                                         role = Role.REFERENCE
-                                        symbol = "(sample)"
+                                        symbol = "Test#sample."
                                         range {
-                                            startLine = 0
-                                            startCharacter = 11
-                                            endLine = 0
-                                            endCharacter = 25
+                                            startLine = 2
+                                            startCharacter = 16
+                                            endLine = 2
+                                            endCharacter = 22
                                         }
                                     },
                                     SymbolOccurrence {
-                                        role = Role.DEFINITION
-                                        symbol = "Test#accessorspecial.accessor(): kotlin/Int."
+                                        role = Role.REFERENCE
+                                        symbol = "Test#getSample()."
                                         range {
-                                            startLine = 0
-                                            startCharacter = 11
-                                            endLine = 0
-                                            endCharacter = 25
-                                        }
-                                    },
-                                    SymbolOccurrence {
-                                        role = Role.DEFINITION
-                                        symbol =
-                                            "Test#accessorspecial.accessor(kotlin/Int): kotlin/Unit."
-                                        range {
-                                            startLine = 0
-                                            startCharacter = 11
-                                            endLine = 0
-                                            endCharacter = 25
+                                            startLine = 2
+                                            startCharacter = 16
+                                            endLine = 2
+                                            endCharacter = 22
                                         }
                                     },
                                 ))))
@@ -489,19 +480,19 @@ class SemanticdbSymbolsTest {
                                         symbol = "Banana#"
                                         range {
                                             startLine = 0
-                                            startCharacter = 0
+                                            startCharacter = 6
                                             endLine = 0
-                                            endCharacter = 11
+                                            endCharacter = 12
                                         }
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol = "Banana#Banana.Banana(): Banana."
+                                        symbol = "Banana#`<init>`()."
                                         range {
                                             startLine = 0
-                                            startCharacter = 0
+                                            startCharacter = 6
                                             endLine = 0
-                                            endCharacter = 11
+                                            endCharacter = 12
                                         }
                                     },
                                 ))),
@@ -520,19 +511,19 @@ class SemanticdbSymbolsTest {
                                         symbol = "Banana#"
                                         range {
                                             startLine = 0
-                                            startCharacter = 0
+                                            startCharacter = 6
                                             endLine = 0
-                                            endCharacter = 22
+                                            endCharacter = 12
                                         }
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol = "Banana#Banana.Banana(kotlin/Int): Banana."
+                                        symbol = "Banana#`<init>`()."
                                         range {
                                             startLine = 0
-                                            startCharacter = 12
+                                            startCharacter = 6
                                             endLine = 0
-                                            endCharacter = 22
+                                            endCharacter = 12
                                         }
                                     },
                                 ))),
@@ -551,19 +542,19 @@ class SemanticdbSymbolsTest {
                                         symbol = "Banana#"
                                         range {
                                             startLine = 0
-                                            startCharacter = 0
+                                            startCharacter = 6
                                             endLine = 0
-                                            endCharacter = 34
+                                            endCharacter = 12
                                         }
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol = "Banana#Banana.Banana(kotlin/Int): Banana."
+                                        symbol = "Banana#`<init>`()."
                                         range {
                                             startLine = 0
                                             startCharacter = 13
                                             endLine = 0
-                                            endCharacter = 34
+                                            endCharacter = 24
                                         }
                                     },
                                 ))))
@@ -584,29 +575,27 @@ class SemanticdbSymbolsTest {
                                 listOf(
                                     SymbolOccurrence {
                                         role = Role.REFERENCE
-                                        symbol =
-                                            "`java/lang/Runnable`#runjava.lang.run(): kotlin/Unit."
+                                        symbol = "java/lang/Runnable#"
                                         range {
                                             startLine = 0
                                             startCharacter = 8
                                             endLine = 0
-                                            endCharacter = 25
+                                            endCharacter = 16
                                         }
                                     },
                                     SymbolOccurrence {
                                         role = Role.REFERENCE
-                                        symbol =
-                                            "`java.lang.Runnable`#Runnablejava.lang.Runnable(kotlin/Function0<kotlin/Unit>): java/lang/Runnable."
+                                        symbol = "java/lang/Runnable#run()."
                                         range {
                                             startLine = 0
-                                            startCharacter = 8
+                                            startCharacter = 21
                                             endLine = 0
-                                            endCharacter = 19
+                                            endCharacter = 24
                                         }
                                     }))))
             .mapCheckExpectedSymbols()
 
-    @Test
+    @TestFactory
     fun kdoc() =
         listOf(
                 ExpectedSymbols(
@@ -625,23 +614,22 @@ class SemanticdbSymbolsTest {
                             expectedSymbols =
                                 listOf(
                                     SymbolInformation {
-                                        symbol = "`Test.kt.x`#x."
+                                        symbol = "TestKt#x."
                                         displayName = "x"
                                         language = Language.KOTLIN
                                         documentation {
                                             message =
-                                                "```\npublic final val x: R|kotlin/String| = String()\n    public get(): R|kotlin/String|\n\n```\n\n\n----\n\n\nhello world\n test content\n"
+                                                "```kotlin\npublic val x: kotlin.String\n```\n\n----\n\n\nhello world\n test content\n"
                                             format = Format.MARKDOWN
                                         }
                                     },
                                     SymbolInformation {
-                                        symbol =
-                                            "`Test.kt.accessor`#accessorspecial.accessor(): kotlin/String."
+                                        symbol = "TestKt#getX()."
                                         displayName = "x"
                                         language = Language.KOTLIN
                                         documentation {
                                             message =
-                                                "```\npublic get(): R|kotlin/String|\n```\n\n\n----\n\n\nhello world\n test content\n"
+                                                "```kotlin\npublic val x: kotlin.String\n```\n\n----\n\n\nhello world\n test content\n"
                                             format = Format.MARKDOWN
                                         }
                                     }))))
