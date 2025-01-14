@@ -31,6 +31,8 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
         emitSymbols(symbol, locals)
     }
 
+    operator fun get(symbol: FqName): Sequence<Symbol> = sequence { emitSymbols(symbol) }
+
     /**
      * called whenever a new symbol should be yielded in the sequence e.g. for properties we also
      * want to yield for every implicit getter/setter, but wouldn't want to yield for e.g. the
@@ -48,6 +50,10 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
             if (symbol.fir.setter?.origin is FirDeclarationOrigin.Synthetic)
                 emitSymbols(symbol.fir.setter!!.symbol, locals)
         }
+    }
+
+    private suspend fun SequenceScope<Symbol>.emitSymbols(symbol: FqName) {
+        yield(getSymbol(symbol))
     }
 
     /**
@@ -220,4 +226,5 @@ class LocalSymbolsCache : Iterable<Symbol> {
 @ExperimentalContracts
 class SymbolsCache(private val globals: GlobalSymbolsCache, private val locals: LocalSymbolsCache) {
     operator fun get(symbol: FirBasedSymbol<*>) = globals[symbol, locals]
+    operator fun get(symbol: FqName) = globals[symbol]
 }
