@@ -14,7 +14,7 @@ import org.jetbrains.kotlin.fir.renderer.*
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.*
-import org.jetbrains.kotlin.fir.types.ConeClassLikeType
+import org.jetbrains.kotlin.fir.types.impl.FirImplicitAnyTypeRef
 import org.jetbrains.kotlin.idea.KotlinLanguage
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi
@@ -57,9 +57,6 @@ class SemanticdbTextDocumentBuilder(
             symbols.add(symbolInformation)
     }
 
-    private val isIgnoredSuperClass =
-        setOf("kotlin.Any", "java.lang.Object", "java.io.Serializable")
-
     @OptIn(SymbolInternals::class)
     private fun symbolInformation(
         firBasedSymbol: FirBasedSymbol<*>?,
@@ -71,10 +68,7 @@ class SemanticdbTextDocumentBuilder(
                 is FirClassSymbol ->
                     firBasedSymbol
                         .resolvedSuperTypeRefs
-                        .filter {
-                            (it.coneType as? ConeClassLikeType)?.toString() !in
-                                isIgnoredSuperClass
-                        }
+                        .filter { it !is FirImplicitAnyTypeRef }
                         .map { it.toString() }
                         .asIterable()
                 else -> emptyList<String>().asIterable()
