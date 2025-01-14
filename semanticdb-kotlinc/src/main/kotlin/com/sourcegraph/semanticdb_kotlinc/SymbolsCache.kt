@@ -9,7 +9,6 @@ import org.jetbrains.kotlin.fir.analysis.checkers.getContainingSymbol
 import org.jetbrains.kotlin.fir.declarations.FirClass
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.utils.memberDeclarationNameOrNull
-import org.jetbrains.kotlin.fir.declarations.utils.nameOrSpecialName
 import org.jetbrains.kotlin.fir.packageFqName
 import org.jetbrains.kotlin.fir.resolve.getContainingDeclaration
 import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
@@ -136,13 +135,11 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
         return when {
             symbol is FirClassLikeSymbol ->
                 SemanticdbSymbolDescriptor(Kind.TYPE, symbol.classId.shortClassName.asString())
-            symbol is FirPropertyAccessorSymbol &&
-                symbol.fir.nameOrSpecialName.asStringStripSpecialMarkers().startsWith("set") ->
+            symbol is FirPropertyAccessorSymbol && symbol.isSetter ->
                 SemanticdbSymbolDescriptor(
                     Kind.METHOD,
                     "set" + symbol.propertySymbol.fir.name.toString().capitalizeAsciiOnly())
-            symbol is FirPropertyAccessorSymbol &&
-                symbol.fir.nameOrSpecialName.asStringStripSpecialMarkers().startsWith("get") ->
+            symbol is FirPropertyAccessorSymbol && symbol.isGetter ->
                 SemanticdbSymbolDescriptor(
                     Kind.METHOD,
                     "get" + symbol.propertySymbol.fir.name.toString().capitalizeAsciiOnly())
