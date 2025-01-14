@@ -143,6 +143,8 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
                 SemanticdbSymbolDescriptor(
                     Kind.METHOD,
                     "get" + symbol.propertySymbol.fir.name.toString().capitalizeAsciiOnly())
+            symbol is FirConstructorSymbol ->
+                SemanticdbSymbolDescriptor(Kind.METHOD, "<init>", methodDisambiguator(symbol))
             symbol is FirFunctionSymbol ->
                 SemanticdbSymbolDescriptor(
                     Kind.METHOD, symbol.name.toString(), methodDisambiguator(symbol))
