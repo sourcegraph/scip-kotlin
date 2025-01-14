@@ -8,7 +8,7 @@ value class Symbol(private val symbol: String) {
 
         fun createGlobal(owner: Symbol, desc: SemanticdbSymbolDescriptor): Symbol =
             when {
-                desc == SemanticdbSymbolDescriptor.NONE -> NONE
+                desc == SemanticdbSymbolDescriptor.NONE -> owner
                 owner != ROOT_PACKAGE -> Symbol(owner.symbol + desc.encode().symbol)
                 else -> desc.encode()
             }
