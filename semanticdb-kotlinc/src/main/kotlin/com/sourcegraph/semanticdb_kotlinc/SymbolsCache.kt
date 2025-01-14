@@ -4,22 +4,19 @@ import com.sourcegraph.semanticdb_kotlinc.SemanticdbSymbolDescriptor.Kind
 import java.lang.System.err
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
-import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.isLocalMember
-import org.jetbrains.kotlin.fir.analysis.checkers.getContainingClassSymbol
 import org.jetbrains.kotlin.fir.analysis.checkers.getContainingSymbol
-import org.jetbrains.kotlin.fir.declarations.FirDeclaration
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.FirFunction
-import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.utils.nameOrSpecialName
-import org.jetbrains.kotlin.fir.resolve.providers.firProvider
-import org.jetbrains.kotlin.fir.resolve.providers.getContainingFile
+import org.jetbrains.kotlin.fir.packageFqName
+import org.jetbrains.kotlin.fir.resolve.getContainingDeclaration
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.*
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.coneType
+import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.capitalizeAsciiOnly
 
 @ExperimentalContracts
@@ -27,6 +24,8 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
     private val globals =
         if (testing) LinkedHashMap<FirBasedSymbol<*>, Symbol>()
         else HashMap<FirBasedSymbol<*>, Symbol>()
+    private val packages =
+        if (testing) LinkedHashMap<FqName, Symbol>() else HashMap<FqName, Symbol>()
 
     operator fun get(symbol: FirBasedSymbol<*>, locals: LocalSymbolsCache): Sequence<Symbol> =
         sequence {
@@ -67,6 +66,12 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
             if (it.isGlobal()) globals[symbol] = it
         }
     }
+    private fun getSymbol(symbol: FqName): Symbol {
+        packages[symbol]?.let {
+            return it
+        }
+        return uncachedSemanticdbSymbol(symbol).also { if (it.isGlobal()) packages[symbol] = it }
+    }
 
     private fun skip(symbol: FirBasedSymbol<*>?): Boolean {
         contract { returns(false) implies (symbol != null) }
@@ -79,25 +84,21 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
         locals: LocalSymbolsCache
     ): Symbol {
         if (skip(symbol)) return Symbol.NONE
-        val ownerSymbol = getParentSymbol(symbol)
-        var owner = ownerSymbol?.let { this.getSymbol(it, locals) } ?: Symbol.ROOT_PACKAGE
-        if ((ownerSymbol?.fir as? FirRegularClass)?.classKind == ClassKind.OBJECT ||
-            owner.isLocal() ||
-            (ownerSymbol as? FirBasedSymbol<FirDeclaration>)?.fir?.isLocalMember == true ||
-            ownerSymbol is FirAnonymousFunctionSymbol ||
-            (symbol as? FirBasedSymbol<FirDeclaration>)?.fir?.isLocalMember == true)
-            return locals + symbol
 
-        // if is a top-level function or variable, Kotlin creates a wrapping class
-        if (ownerSymbol !is FirClassSymbol &&
-            (symbol is FirFunctionSymbol || symbol is FirPropertySymbol)) {
-            owner =
-                Symbol.createGlobal(
-                    owner, SemanticdbSymbolDescriptor(Kind.TYPE, sourceFileToClassSymbol(symbol)))
-        }
+        if (symbol.fir.isLocalMember) return locals + symbol
 
+        val owner = getParentSymbol(symbol, locals)
         val semanticdbDescriptor = semanticdbDescriptor(symbol)
+
         return Symbol.createGlobal(owner, semanticdbDescriptor)
+    }
+
+    private fun uncachedSemanticdbSymbol(symbol: FqName): Symbol {
+        if (symbol.isRoot) return Symbol.ROOT_PACKAGE
+
+        val owner = this.getSymbol(symbol.parent())
+        return Symbol.createGlobal(
+            owner, SemanticdbSymbolDescriptor(Kind.PACKAGE, symbol.shortName().asString()))
     }
 
     /**
@@ -108,31 +109,26 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
      * `test.sample`.
      */
     @OptIn(SymbolInternals::class)
-    private fun getParentSymbol(symbol: FirBasedSymbol<*>): FirBasedSymbol<*>? {
-        val session = symbol.fir.moduleData.session
-        return symbol.getContainingClassSymbol()
-            ?: (symbol as? FirBasedSymbol<*>)?.let {
-                try {
-                    session.firProvider.getContainingFile(it)?.symbol
-                } catch (ex: IllegalStateException) {
-                    null
-                }
+    private fun getParentSymbol(symbol: FirBasedSymbol<*>, locals: LocalSymbolsCache): Symbol {
+        when (symbol) {
+            is FirTypeParameterSymbol ->
+                return getSymbol(symbol.containingDeclarationSymbol, locals)
+            is FirValueParameterSymbol -> return getSymbol(symbol.containingFunctionSymbol, locals)
+            is FirCallableSymbol -> {
+                val session = symbol.fir.moduleData.session
+                return symbol.getContainingSymbol(session)?.let { getSymbol(it, locals) }
+                    ?: getSymbol(symbol.packageFqName())
             }
-    }
-
-    /**
-     * generates the synthetic class name from the source file
-     * https://kotlinlang.org/docs/java-to-kotlin-interop.html#package-level-functions
-     */
-    @OptIn(SymbolInternals::class)
-    private fun sourceFileToClassSymbol(symbol: FirBasedSymbol<*>): String {
-        val callableSymbol = (symbol as? FirCallableSymbol<*>) ?: return ""
-        val packageName =
-            (callableSymbol.getContainingSymbol(symbol.moduleData.session) as? FirFileSymbol)
-                ?.fir
-                ?.name
-                ?: symbol.callableId.packageName.asString()
-        return "${packageName}.${callableSymbol.callableId.callableName.asString()}"
+            is FirClassLikeSymbol -> {
+                val session = symbol.fir.moduleData.session
+                return symbol.getContainingDeclaration(session)?.let { getSymbol(it, locals) }
+                    ?: getSymbol(symbol.packageFqName())
+            }
+            is FirFileSymbol -> {
+                return getSymbol(symbol.fir.packageFqName)
+            }
+            else -> return Symbol.NONE
+        }
     }
 
     @OptIn(SymbolInternals::class)

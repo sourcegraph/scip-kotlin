@@ -601,7 +601,7 @@ class AnalyzerTest {
                inline fun docstrings(msg: String): Int { return msg.length }
         """.trimIndent())
         document.assertDocumentation("sample/Docstrings#", "Example class docstring")
-        document.assertDocumentation("sample/TestKt#docstrings().", "Example method docstring")
+        document.assertDocumentation("sample/docstrings().", "Example method docstring")
     }
 
     private fun TextDocument.assertDocumentation(symbol: String, expectedDocumentation: String) {

@@ -73,8 +73,7 @@ class SemanticdbSymbolsTest {
                         |fun test(x: Int) {}
                         |""".trimMargin()),
                     symbolsCacheData =
-                        SymbolCacheData(
-                            listOf("TestKt#test().".symbol(), "TestKt#test(+1).(x)".symbol()))),
+                        SymbolCacheData(listOf("test().".symbol(), "test(+1).(x)".symbol()))),
                 ExpectedSymbols(
                     "Annotations incl annotation type alias",
                     SourceFile.testKt(
@@ -184,8 +183,8 @@ class SemanticdbSymbolsTest {
                     symbolsCacheData =
                         SymbolCacheData(
                             listOf(
-                                "kotlin/collections/MapsKt#mapOf(+1).".symbol(),
-                                "kotlin/io/ConsoleKt#println().".symbol()))))
+                                "kotlin/collections/mapOf(+1).".symbol(),
+                                "kotlin/io/println().".symbol()))))
             .mapCheckExpectedSymbols()
 
     @TestFactory
@@ -219,7 +218,7 @@ class SemanticdbSymbolsTest {
                                 listOf(
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol = "TestKt#x."
+                                        symbol = "x."
                                         range {
                                             startLine = 0
                                             startCharacter = 4
@@ -229,7 +228,7 @@ class SemanticdbSymbolsTest {
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol = "TestKt#getX()."
+                                        symbol = "getX()."
                                         range {
                                             startLine = 0
                                             startCharacter = 4
@@ -239,7 +238,7 @@ class SemanticdbSymbolsTest {
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol = "TestKt#setX()."
+                                        symbol = "setX()."
                                         range {
                                             startLine = 0
                                             startCharacter = 4
@@ -261,7 +260,7 @@ class SemanticdbSymbolsTest {
                                 listOf(
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol = "TestKt#x."
+                                        symbol = "x."
                                         range {
                                             startLine = 0
                                             startCharacter = 4
@@ -271,7 +270,7 @@ class SemanticdbSymbolsTest {
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol = "TestKt#setX()."
+                                        symbol = "setX()."
                                         range {
                                             startLine = 0
                                             startCharacter = 4
@@ -281,7 +280,7 @@ class SemanticdbSymbolsTest {
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol = "TestKt#getX()."
+                                        symbol = "getX()."
                                         range {
                                             startLine = 1
                                             startCharacter = 4
@@ -303,7 +302,7 @@ class SemanticdbSymbolsTest {
                                 listOf(
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol = "TestKt#x."
+                                        symbol = "x."
                                         range {
                                             startLine = 0
                                             startCharacter = 4
@@ -313,7 +312,7 @@ class SemanticdbSymbolsTest {
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol = "TestKt#getX()."
+                                        symbol = "getX()."
                                         range {
                                             startLine = 0
                                             startCharacter = 4
@@ -323,7 +322,7 @@ class SemanticdbSymbolsTest {
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol = "TestKt#setX()."
+                                        symbol = "setX()."
                                         range {
                                             startLine = 1
                                             startCharacter = 4
@@ -346,7 +345,7 @@ class SemanticdbSymbolsTest {
                                 listOf(
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol = "TestKt#x."
+                                        symbol = "x."
                                         range {
                                             startLine = 0
                                             startCharacter = 4
@@ -356,7 +355,7 @@ class SemanticdbSymbolsTest {
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol = "TestKt#getX()."
+                                        symbol = "getX()."
                                         range {
                                             startLine = 1
                                             startCharacter = 4
@@ -366,7 +365,7 @@ class SemanticdbSymbolsTest {
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
-                                        symbol = "TestKt#setX()."
+                                        symbol = "setX()."
                                         range {
                                             startLine = 2
                                             startCharacter = 4
@@ -614,7 +613,7 @@ class SemanticdbSymbolsTest {
                             expectedSymbols =
                                 listOf(
                                     SymbolInformation {
-                                        symbol = "TestKt#x."
+                                        symbol = "x."
                                         displayName = "x"
                                         language = Language.KOTLIN
                                         documentation {
@@ -624,7 +623,7 @@ class SemanticdbSymbolsTest {
                                         }
                                     },
                                     SymbolInformation {
-                                        symbol = "TestKt#getX()."
+                                        symbol = "getX()."
                                         displayName = "x"
                                         language = Language.KOTLIN
                                         documentation {
