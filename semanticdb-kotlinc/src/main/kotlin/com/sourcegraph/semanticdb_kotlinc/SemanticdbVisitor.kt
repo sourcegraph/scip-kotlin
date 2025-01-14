@@ -8,7 +8,9 @@ import org.jetbrains.kotlin.KtSourceFile
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.references.FirResolvedNamedReference
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassLikeSymbol
+import org.jetbrains.kotlin.name.FqName
 
 @ExperimentalContracts
 class SemanticdbVisitor(
@@ -22,7 +24,7 @@ class SemanticdbVisitor(
     private val documentBuilder = SemanticdbTextDocumentBuilder(sourceroot, file, lineMap)
 
     private data class SymbolDescriptorPair(
-        val firBasedSymbol: FirBasedSymbol<*>,
+        val firBasedSymbol: FirBasedSymbol<*>?,
         val symbol: Symbol
     )
 
@@ -40,10 +42,18 @@ class SemanticdbVisitor(
             ?.map { it.symbol }
             ?.toList()
 
-    private fun Sequence<Symbol>.with(firBasedSymbol: FirBasedSymbol<*>) =
+    private fun Sequence<Symbol>.with(firBasedSymbol: FirBasedSymbol<*>?) =
         this.map { SymbolDescriptorPair(firBasedSymbol, it) }
 
-    fun visitImport(firClassSymbol: FirClassLikeSymbol<*>, element: KtSourceElement) {
+    fun visitPackage(pkg: FqName, element: KtSourceElement) {
+        cache[pkg].with(null).emitAll(element, Role.REFERENCE)
+    }
+
+    fun visitClassReference(firClassSymbol: FirClassLikeSymbol<*>, element: KtSourceElement) {
+        cache[firClassSymbol].with(firClassSymbol).emitAll(element, Role.REFERENCE)
+    }
+
+    fun visitCallableReference(firClassSymbol: FirCallableSymbol<*>, element: KtSourceElement) {
         cache[firClassSymbol].with(firClassSymbol).emitAll(element, Role.REFERENCE)
     }
 

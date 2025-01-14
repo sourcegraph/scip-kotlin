@@ -42,7 +42,7 @@ class SemanticdbTextDocumentBuilder(
     }
 
     fun emitSemanticdbData(
-        firBasedSymbol: FirBasedSymbol<*>,
+        firBasedSymbol: FirBasedSymbol<*>?,
         symbol: Symbol,
         element: KtSourceElement,
         role: Role
@@ -62,7 +62,7 @@ class SemanticdbTextDocumentBuilder(
 
     @OptIn(SymbolInternals::class)
     private fun symbolInformation(
-        firBasedSymbol: FirBasedSymbol<*>,
+        firBasedSymbol: FirBasedSymbol<*>?,
         symbol: Symbol,
         element: KtSourceElement
     ): Semanticdb.SymbolInformation {
@@ -81,8 +81,21 @@ class SemanticdbTextDocumentBuilder(
             }
         return SymbolInformation {
             this.symbol = symbol.toString()
-            this.displayName = displayName(firBasedSymbol)
-            this.documentation = semanticdbDocumentation(firBasedSymbol.fir)
+            this.displayName =
+                if (firBasedSymbol != null) {
+                    displayName(firBasedSymbol)
+                } else {
+                    element.text.toString()
+                }
+            this.documentation =
+                if (firBasedSymbol != null) {
+                    semanticdbDocumentation(firBasedSymbol.fir)
+                } else {
+                    Documentation {
+                        format = Semanticdb.Documentation.Format.MARKDOWN
+                        message = ""
+                    }
+                }
             this.addAllOverriddenSymbols(supers)
             this.language =
                 when (element.psi?.language ?: KotlinLanguage.INSTANCE) {

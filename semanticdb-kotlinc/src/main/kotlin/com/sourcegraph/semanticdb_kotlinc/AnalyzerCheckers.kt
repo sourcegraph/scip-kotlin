@@ -2,10 +2,13 @@ package com.sourcegraph.semanticdb_kotlinc
 
 import java.nio.file.Path
 import kotlin.contracts.ExperimentalContracts
-import org.jetbrains.kotlin.KtSourceElement
-import org.jetbrains.kotlin.KtSourceFile
+import org.jetbrains.kotlin.*
+import org.jetbrains.kotlin.com.intellij.lang.LighterASTNode
+import org.jetbrains.kotlin.com.intellij.util.diff.FlyweightCapableTreeStructure
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
+import org.jetbrains.kotlin.diagnostics.collectDescendantsOfType
 import org.jetbrains.kotlin.diagnostics.findChildByType
+import org.jetbrains.kotlin.diagnostics.findLastDescendant
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
@@ -20,7 +23,7 @@ import org.jetbrains.kotlin.fir.references.FirResolvedNamedReference
 import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.name.ClassId
-import org.jetbrains.kotlin.toKtLightSourceElement
+import org.jetbrains.kotlin.name.FqName
 
 open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtension(session) {
     companion object {
@@ -92,15 +95,69 @@ open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtensio
             reporter: DiagnosticReporter
         ) {
             val ktFile = declaration.sourceFile ?: return
+            val visitor = visitors[ktFile]
+
+            val eachFqNameElement =
+                {
+                fqName: FqName,
+                tree: FlyweightCapableTreeStructure<LighterASTNode>,
+                names: LighterASTNode,
+                callback: (FqName, KtLightSourceElement) -> Unit ->
+                val nameList =
+                    if (names.tokenType == KtNodeTypes.REFERENCE_EXPRESSION) listOf(names)
+                    else tree.collectDescendantsOfType(names, KtNodeTypes.REFERENCE_EXPRESSION)
+
+                var ancestor = fqName
+                var depth = 0
+                while (ancestor != FqName.ROOT) {
+                    val nameNode = nameList[nameList.lastIndex - depth]
+                    val nameSource = nameNode.toKtLightSourceElement(tree)
+
+                    callback(ancestor, nameSource)
+
+                    ancestor = ancestor.parent()
+                    depth++
+                }
+            }
+
+            val packageDirective = declaration.packageDirective
+            val fqName = packageDirective.packageFqName
+            val source = packageDirective.source
+            if (source != null) {
+                val names = source.treeStructure.findLastDescendant(source.lighterASTNode) { true }
+                if (names != null) {
+                    eachFqNameElement(fqName, source.treeStructure, names) { fqName, name ->
+                        visitor?.visitPackage(fqName, name)
+                    }
+                }
+            }
+
             declaration.imports.forEach { import ->
                 val source = import.source ?: return@forEach
-                val visitor = visitors[ktFile]
                 val fqName = import.importedFqName ?: return@forEach
-                val importedClassSymbol =
-                    context.session.symbolProvider.getClassLikeSymbolByClassId(
-                        ClassId.topLevel(fqName))
-                        ?: return@forEach
-                visitor?.visitImport(importedClassSymbol, source)
+
+                val names = source.treeStructure.findLastDescendant(source.lighterASTNode) { true }
+                if (names != null) {
+                    eachFqNameElement(fqName, source.treeStructure, names) { fqName, name ->
+                        val symbolProvider = context.session.symbolProvider
+
+                        val klass =
+                            symbolProvider.getClassLikeSymbolByClassId(ClassId.topLevel(fqName))
+                        val callables =
+                            symbolProvider.getTopLevelCallableSymbols(
+                                fqName.parent(), fqName.shortName())
+
+                        if (klass != null) {
+                            visitor?.visitClassReference(klass, name)
+                        } else if (callables.isNotEmpty()) {
+                            for (callable in callables) {
+                                visitor?.visitCallableReference(callable, name)
+                            }
+                        } else {
+                            visitor?.visitPackage(fqName, name)
+                        }
+                    }
+                }
             }
         }
     }
