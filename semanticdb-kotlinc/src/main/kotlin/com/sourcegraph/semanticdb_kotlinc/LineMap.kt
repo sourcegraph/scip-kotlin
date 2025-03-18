@@ -3,7 +3,6 @@ package com.sourcegraph.semanticdb_kotlinc
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.com.intellij.navigation.NavigationItem
 import org.jetbrains.kotlin.fir.declarations.FirFile
-import org.jetbrains.kotlin.psi.KtPropertyAccessor
 import org.jetbrains.kotlin.text
 
 /** Maps between an element and its identifier positions */
@@ -26,7 +25,6 @@ class LineMap(private val file: FirFile) {
     companion object {
         fun nameForOffset(element: KtSourceElement): String =
             when (element) {
-                is KtPropertyAccessor -> element.namePlaceholder.text
                 is NavigationItem -> element.name ?: element.text?.toString() ?: ""
                 else -> element.text?.toString() ?: ""
             }
