@@ -3,7 +3,6 @@ package com.sourcegraph.semanticdb_kotlinc
 import java.nio.file.Path
 import kotlin.contracts.ExperimentalContracts
 import org.jetbrains.kotlin.KtSourceFile
-import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
@@ -17,9 +16,6 @@ import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
 import org.jetbrains.kotlin.fir.references.FirResolvedNamedReference
 import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
 import org.jetbrains.kotlin.name.ClassId
-import org.jetbrains.kotlin.psi.KtDeclaration
-import org.jetbrains.kotlin.resolve.checkers.DeclarationChecker
-import org.jetbrains.kotlin.resolve.checkers.DeclarationCheckerContext
 
 open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtension(session) {
     companion object {
@@ -250,12 +246,4 @@ open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtensio
             visitor?.visitSimpleNameExpression(calleeReference, source)
         }
     }
-}
-
-class AnalyzerDeclarationChecker : DeclarationChecker {
-    override fun check(
-        declaration: KtDeclaration,
-        descriptor: DeclarationDescriptor,
-        context: DeclarationCheckerContext
-    ) = Unit
 }
