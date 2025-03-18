@@ -5,7 +5,6 @@ value class Symbol(private val symbol: String) {
     companion object {
         val NONE = Symbol("")
         val ROOT_PACKAGE = Symbol("_root_/")
-        val EMPTY_PACKAGE = Symbol("_empty_/")
 
         fun createGlobal(owner: Symbol, desc: SemanticdbSymbolDescriptor): Symbol =
             when {
