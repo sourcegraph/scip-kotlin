@@ -128,9 +128,8 @@ private fun configureTestCompiler(
 private class TestAnalyzerDeclarationCheckers(
     globals: GlobalSymbolsCache,
     locals: LocalSymbolsCache,
-    sourceRoot: Path,
-    callback: (Semanticdb.TextDocument) -> Unit
-) : AnalyzerCheckers.AnalyzerDeclarationCheckers(sourceRoot, callback) {
+    sourceRoot: Path
+) : AnalyzerCheckers.AnalyzerDeclarationCheckers(sourceRoot) {
     override val fileCheckers: Set<FirFileChecker> =
         setOf(
             object : FirFileChecker(MppCheckerKind.Common) {
@@ -155,8 +154,8 @@ private class TestAnalyzerCheckers(session: FirSession) : AnalyzerCheckers(sessi
             TestAnalyzerDeclarationCheckers(
                 session.testAnalyzerParamsProvider.globals,
                 session.testAnalyzerParamsProvider.locals,
-                session.testAnalyzerParamsProvider.sourceroot,
-                session.testAnalyzerParamsProvider.callback)
+                session.testAnalyzerParamsProvider.sourceroot
+            )
 }
 
 @OptIn(ExperimentalContracts::class)
@@ -166,18 +165,16 @@ class TestAnalyzerParamsProvider(
     locals: LocalSymbolsCache,
     sourceroot: Path,
     targetroot: Path,
-    callback: (Semanticdb.TextDocument) -> Unit
-) : AnalyzerParamsProvider(session, sourceroot, targetroot, callback) {
+) : AnalyzerParamsProvider(session, sourceroot, targetroot) {
     companion object {
         fun getFactory(
             globals: GlobalSymbolsCache,
             locals: LocalSymbolsCache,
             sourceroot: Path,
             targetroot: Path,
-            callback: (Semanticdb.TextDocument) -> Unit
         ): Factory {
             return Factory {
-                TestAnalyzerParamsProvider(it, globals, locals, sourceroot, targetroot, callback)
+                TestAnalyzerParamsProvider(it, globals, locals, sourceroot, targetroot)
             }
         }
     }
@@ -203,7 +200,8 @@ fun semanticdbVisitorAnalyzer(
                 object : FirExtensionRegistrar() {
                     override fun ExtensionRegistrarContext.configurePlugin() {
                         +TestAnalyzerParamsProvider.getFactory(
-                            globals, locals, sourceroot, Paths.get(""), hook)
+                            globals, locals, sourceroot, Paths.get("")
+                        )
                         +::TestAnalyzerCheckers
                     }
                 })

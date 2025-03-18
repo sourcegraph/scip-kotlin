@@ -16,7 +16,8 @@ class AnalyzerRegistrar(private val callback: (Semanticdb.TextDocument) -> Unit 
             AnalyzerFirExtensionRegistrar(
                 sourceroot = configuration[KEY_SOURCES]!!,
                 targetroot = configuration[KEY_TARGET]!!,
-                callback = callback))
+            )
+        )
         IrGenerationExtension.registerExtension(
             PostAnalysisExtension(
                 sourceRoot = configuration[KEY_SOURCES]!!,

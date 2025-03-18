@@ -27,9 +27,7 @@ open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtensio
         val visitors: MutableMap<KtSourceFile, SemanticdbVisitor> = mutableMapOf()
     }
     override val declarationCheckers: DeclarationCheckers
-        get() =
-            AnalyzerDeclarationCheckers(
-                session.analyzerParamsProvider.sourceroot, session.analyzerParamsProvider.callback)
+        get() = AnalyzerDeclarationCheckers(session.analyzerParamsProvider.sourceroot)
 
     override val expressionCheckers: ExpressionCheckers
         get() =
@@ -39,12 +37,9 @@ open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtensio
                     setOf(SemanticQualifiedAccessExpressionChecker())
             }
 
-    open class AnalyzerDeclarationCheckers(
-        sourceroot: Path,
-        callback: (Semanticdb.TextDocument) -> Unit
-    ) : DeclarationCheckers() {
+    open class AnalyzerDeclarationCheckers(sourceroot: Path) : DeclarationCheckers() {
         override val fileCheckers: Set<FirFileChecker> =
-            setOf(SemanticFileChecker(sourceroot, callback), SemanticImportsChecker())
+            setOf(SemanticFileChecker(sourceroot), SemanticImportsChecker())
         override val regularClassCheckers: Set<FirRegularClassChecker> =
             setOf(SemanticRegularClassChecker())
         override val constructorCheckers: Set<FirConstructorChecker> =
@@ -63,10 +58,8 @@ open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtensio
             setOf(SemanticPropertyAccessorChecker())
     }
 
-    private class SemanticFileChecker(
-        private val sourceroot: Path,
-        private val callback: (Semanticdb.TextDocument) -> Unit
-    ) : FirFileChecker(MppCheckerKind.Common) {
+    private class SemanticFileChecker(private val sourceroot: Path) :
+        FirFileChecker(MppCheckerKind.Common) {
         companion object {
             @OptIn(ExperimentalContracts::class) val globals = GlobalSymbolsCache()
         }
