@@ -231,12 +231,12 @@ open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtensio
         FirQualifiedAccessExpressionChecker(MppCheckerKind.Common) {
         @OptIn(ExperimentalContracts::class)
         override fun check(
-            declaration: FirQualifiedAccessExpression,
+            expression: FirQualifiedAccessExpression,
             context: CheckerContext,
             reporter: DiagnosticReporter
         ) {
-            val source = declaration.source ?: return
-            val calleeReference = declaration.calleeReference
+            val source = expression.source ?: return
+            val calleeReference = expression.calleeReference
             if ((calleeReference as? FirResolvedNamedReference) == null) {
                 return
             }
