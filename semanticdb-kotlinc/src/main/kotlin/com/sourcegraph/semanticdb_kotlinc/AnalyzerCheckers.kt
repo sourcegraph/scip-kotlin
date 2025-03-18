@@ -1,8 +1,6 @@
 package com.sourcegraph.semanticdb_kotlinc
 
-import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.Paths
 import kotlin.contracts.ExperimentalContracts
 import org.jetbrains.kotlin.KtSourceFile
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
@@ -83,29 +81,6 @@ open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtensio
             val lineMap = LineMap(declaration)
             val visitor = SemanticdbVisitor(sourceroot, ktFile, lineMap, globals)
             visitors[ktFile] = visitor
-        }
-
-        private fun semanticdbOutPathForFile(session: FirSession, file: KtSourceFile): Path? {
-            val sourceRoot = session.analyzerParamsProvider.sourceroot
-            val normalizedPath = Paths.get(file.path).normalize()
-            if (normalizedPath.startsWith(sourceRoot)) {
-                val relative = sourceRoot.relativize(normalizedPath)
-                val filename = relative.fileName.toString() + ".semanticdb"
-                val semanticdbOutPath =
-                    session
-                        .analyzerParamsProvider
-                        .targetroot
-                        .resolve("META-INF")
-                        .resolve("semanticdb")
-                        .resolve(relative)
-                        .resolveSibling(filename)
-
-                Files.createDirectories(semanticdbOutPath.parent)
-                return semanticdbOutPath
-            }
-            System.err.println(
-                "given file is not under the sourceroot.\n\tSourceroot: $sourceRoot\n\tFile path: ${file.path}\n\tNormalized file path: $normalizedPath")
-            return null
         }
     }
 
