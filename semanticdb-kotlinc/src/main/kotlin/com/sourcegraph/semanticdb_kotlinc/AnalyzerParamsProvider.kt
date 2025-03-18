@@ -8,19 +8,14 @@ import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent.Factory
 open class AnalyzerParamsProvider(
     session: FirSession,
     sourceroot: Path,
-    targetroot: Path,
 ) : FirExtensionSessionComponent(session) {
     companion object {
-        fun getFactory(
-            sourceroot: Path,
-            targetroot: Path,
-        ): Factory {
-            return Factory { AnalyzerParamsProvider(it, sourceroot, targetroot) }
+        fun getFactory(sourceroot: Path): Factory {
+            return Factory { AnalyzerParamsProvider(it, sourceroot) }
         }
     }
 
     val sourceroot: Path = sourceroot
-    val targetroot: Path = targetroot
 }
 
 val FirSession.analyzerParamsProvider: AnalyzerParamsProvider by FirSession

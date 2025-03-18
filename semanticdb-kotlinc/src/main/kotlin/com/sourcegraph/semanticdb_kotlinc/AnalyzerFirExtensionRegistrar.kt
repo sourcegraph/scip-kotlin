@@ -5,10 +5,9 @@ import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrar
 
 class AnalyzerFirExtensionRegistrar(
     private val sourceroot: Path,
-    private val targetroot: Path,
 ) : FirExtensionRegistrar() {
     override fun ExtensionRegistrarContext.configurePlugin() {
-        +AnalyzerParamsProvider.getFactory(sourceroot, targetroot)
+        +AnalyzerParamsProvider.getFactory(sourceroot)
         +::AnalyzerCheckers
     }
 }

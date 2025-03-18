@@ -13,10 +13,7 @@ class AnalyzerRegistrar(private val callback: (Semanticdb.TextDocument) -> Unit 
     CompilerPluginRegistrar() {
     override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
         FirExtensionRegistrarAdapter.registerExtension(
-            AnalyzerFirExtensionRegistrar(
-                sourceroot = configuration[KEY_SOURCES]!!,
-                targetroot = configuration[KEY_TARGET]!!,
-            )
+            AnalyzerFirExtensionRegistrar(sourceroot = configuration[KEY_SOURCES]!!)
         )
         IrGenerationExtension.registerExtension(
             PostAnalysisExtension(
