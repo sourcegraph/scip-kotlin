@@ -164,18 +164,14 @@ class TestAnalyzerParamsProvider(
     globals: GlobalSymbolsCache,
     locals: LocalSymbolsCache,
     sourceroot: Path,
-    targetroot: Path,
-) : AnalyzerParamsProvider(session, sourceroot, targetroot) {
+) : AnalyzerParamsProvider(session, sourceroot) {
     companion object {
         fun getFactory(
             globals: GlobalSymbolsCache,
             locals: LocalSymbolsCache,
             sourceroot: Path,
-            targetroot: Path,
         ): Factory {
-            return Factory {
-                TestAnalyzerParamsProvider(it, globals, locals, sourceroot, targetroot)
-            }
+            return Factory { TestAnalyzerParamsProvider(it, globals, locals, sourceroot) }
         }
     }
 
@@ -199,9 +195,7 @@ fun semanticdbVisitorAnalyzer(
             FirExtensionRegistrarAdapter.registerExtension(
                 object : FirExtensionRegistrar() {
                     override fun ExtensionRegistrarContext.configurePlugin() {
-                        +TestAnalyzerParamsProvider.getFactory(
-                            globals, locals, sourceroot, Paths.get("")
-                        )
+                        +TestAnalyzerParamsProvider.getFactory(globals, locals, sourceroot)
                         +::TestAnalyzerCheckers
                     }
                 })
