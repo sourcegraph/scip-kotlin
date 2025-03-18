@@ -34,7 +34,6 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
     private val globals =
         if (testing) LinkedHashMap<FirBasedSymbol<*>, Symbol>()
         else HashMap<FirBasedSymbol<*>, Symbol>()
-    lateinit var resolver: DescriptorResolver
 
     operator fun get(symbol: FirBasedSymbol<*>, locals: LocalSymbolsCache): Sequence<Symbol> =
         sequence {
