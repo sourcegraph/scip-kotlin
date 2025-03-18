@@ -9,21 +9,18 @@ open class AnalyzerParamsProvider(
     session: FirSession,
     sourceroot: Path,
     targetroot: Path,
-    callback: (Semanticdb.TextDocument) -> Unit
 ) : FirExtensionSessionComponent(session) {
     companion object {
         fun getFactory(
             sourceroot: Path,
             targetroot: Path,
-            callback: (Semanticdb.TextDocument) -> Unit
         ): Factory {
-            return Factory { AnalyzerParamsProvider(it, sourceroot, targetroot, callback) }
+            return Factory { AnalyzerParamsProvider(it, sourceroot, targetroot) }
         }
     }
 
     val sourceroot: Path = sourceroot
     val targetroot: Path = targetroot
-    val callback: (Semanticdb.TextDocument) -> Unit = callback
 }
 
 val FirSession.analyzerParamsProvider: AnalyzerParamsProvider by FirSession
