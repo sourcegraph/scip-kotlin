@@ -13,8 +13,8 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirClassLikeSymbol
 @ExperimentalContracts
 class SemanticdbVisitor(
     sourceroot: Path,
-    private val file: KtSourceFile,
-    private val lineMap: LineMap,
+    file: KtSourceFile,
+    lineMap: LineMap,
     globals: GlobalSymbolsCache,
     locals: LocalSymbolsCache = LocalSymbolsCache()
 ) {
