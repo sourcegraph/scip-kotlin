@@ -161,8 +161,8 @@ private class TestAnalyzerCheckers(session: FirSession) : AnalyzerCheckers(sessi
 @OptIn(ExperimentalContracts::class)
 class TestAnalyzerParamsProvider(
     session: FirSession,
-    globals: GlobalSymbolsCache,
-    locals: LocalSymbolsCache,
+    var globals: GlobalSymbolsCache,
+    var locals: LocalSymbolsCache,
     sourceroot: Path,
 ) : AnalyzerParamsProvider(session, sourceroot) {
     companion object {
@@ -174,9 +174,6 @@ class TestAnalyzerParamsProvider(
             return Factory { TestAnalyzerParamsProvider(it, globals, locals, sourceroot) }
         }
     }
-
-    val globals: GlobalSymbolsCache = globals
-    val locals: LocalSymbolsCache = locals
 }
 
 val FirSession.testAnalyzerParamsProvider: TestAnalyzerParamsProvider by FirSession
