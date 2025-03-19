@@ -19,7 +19,7 @@ class SemanticdbVisitor(
     locals: LocalSymbolsCache = LocalSymbolsCache()
 ) {
     private val cache = SymbolsCache(globals, locals)
-    private val documentBuilder = SemanticdbTextDocumentBuilder(sourceroot, file, lineMap, cache)
+    private val documentBuilder = SemanticdbTextDocumentBuilder(sourceroot, file, lineMap)
 
     private data class SymbolDescriptorPair(
         val firBasedSymbol: FirBasedSymbol<*>,

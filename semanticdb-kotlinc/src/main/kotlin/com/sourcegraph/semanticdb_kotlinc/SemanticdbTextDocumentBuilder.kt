@@ -33,8 +33,7 @@ import org.jetbrains.kotlin.psi
 class SemanticdbTextDocumentBuilder(
     private val sourceroot: Path,
     private val file: KtSourceFile,
-    private val lineMap: LineMap,
-    private val cache: SymbolsCache
+    private val lineMap: LineMap
 ) {
     private val occurrences = mutableListOf<Semanticdb.SymbolOccurrence>()
     private val symbols = mutableListOf<Semanticdb.SymbolInformation>()
