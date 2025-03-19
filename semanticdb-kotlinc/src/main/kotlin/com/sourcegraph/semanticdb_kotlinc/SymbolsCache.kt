@@ -166,8 +166,6 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
                 SemanticdbSymbolDescriptor(Kind.PARAMETER, symbol.name.toString())
             symbol is FirVariableSymbol ->
                 SemanticdbSymbolDescriptor(Kind.TERM, symbol.name.toString())
-            symbol is FirTypeAliasSymbol ->
-                SemanticdbSymbolDescriptor(Kind.TYPE, symbol.name.toString())
             else -> {
                 err.println("unknown symbol kind ${symbol.javaClass.simpleName}")
                 SemanticdbSymbolDescriptor.NONE
