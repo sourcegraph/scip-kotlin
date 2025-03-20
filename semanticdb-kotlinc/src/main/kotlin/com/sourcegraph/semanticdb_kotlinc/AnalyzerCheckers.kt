@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.fir.analysis.checkers.declaration.*
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.ExpressionCheckers
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirQualifiedAccessExpressionChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.getContainingClassSymbol
+import org.jetbrains.kotlin.fir.analysis.checkers.toClassLikeSymbol
 import org.jetbrains.kotlin.fir.analysis.extensions.FirAdditionalCheckersExtension
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
@@ -245,6 +246,12 @@ open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtensio
             val ktFile = context.containingFile?.sourceFile ?: return
             val visitor = visitors[ktFile]
             visitor?.visitProperty(declaration, getIdentifier(source))
+
+            val klass = declaration.returnTypeRef.toClassLikeSymbol(context.session)
+            val klassSource = declaration.returnTypeRef.source
+            if (klass != null && klassSource != null) {
+                visitor?.visitClassReference(klass, getIdentifier(klassSource))
+            }
         }
     }
 
