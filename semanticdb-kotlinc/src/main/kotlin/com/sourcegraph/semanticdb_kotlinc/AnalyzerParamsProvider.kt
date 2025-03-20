@@ -3,6 +3,7 @@ package com.sourcegraph.semanticdb_kotlinc
 import java.nio.file.Path
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent
+import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent.Factory
 
 open class AnalyzerParamsProvider(
     session: FirSession,
