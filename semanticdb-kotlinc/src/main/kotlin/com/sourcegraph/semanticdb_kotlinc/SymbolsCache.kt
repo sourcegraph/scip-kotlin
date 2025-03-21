@@ -198,20 +198,10 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
         return "class $fqName"
     }
 
-    @OptIn(SymbolInternals::class)
-    private fun disambiguatePropertySymbol(propertySymbol: FirPropertySymbol): String {
-        val propertyId = propertySymbol.callableId
-        val fqName = propertyId.packageName.asString()
-        val propertyName = propertyId.callableName.asString()
-        val returnType = propertySymbol.fir.returnTypeRef.coneType.render()
-        return "$fqName.$propertyName: $returnType"
-    }
-
     private fun methodDisambiguator(symbol: FirBasedSymbol<*>): String =
         when (symbol) {
             is FirCallableSymbol<*> -> disambiguateCallableSymbol(symbol)
             is FirClassSymbol<*> -> disambiguateClassSymbol(symbol)
-            is FirPropertySymbol -> disambiguatePropertySymbol(symbol)
             else -> "()"
         }
 
