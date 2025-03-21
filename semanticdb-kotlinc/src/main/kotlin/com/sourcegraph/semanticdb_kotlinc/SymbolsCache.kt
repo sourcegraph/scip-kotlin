@@ -322,7 +322,7 @@ class LocalSymbolsCache : Iterable<Symbol> {
 
     operator fun plus(symbol: FirBasedSymbol<*>): Symbol {
         val result = Symbol.createLocal(localsCounter++)
-        symbols.put(symbol, result)
+        symbols[symbol] = result
         return result
     }
 
