@@ -21,7 +21,9 @@ import org.jetbrains.kotlin.fir.analysis.extensions.FirAdditionalCheckersExtensi
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
 import org.jetbrains.kotlin.fir.references.FirResolvedNamedReference
+import org.jetbrains.kotlin.fir.resolve.calls.FirSyntheticFunctionSymbol
 import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
+import org.jetbrains.kotlin.fir.resolve.toClassLikeSymbol
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
@@ -346,6 +348,14 @@ open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtensio
             val ktFile = context.containingFile?.sourceFile ?: return
             val visitor = visitors[ktFile]
             visitor?.visitSimpleNameExpression(calleeReference, getIdentifier(calleeReference.source ?: source))
+
+            val resolvedSymbol = calleeReference.resolvedSymbol
+            if (resolvedSymbol.origin == FirDeclarationOrigin.SamConstructor && resolvedSymbol is FirSyntheticFunctionSymbol) {
+                val referencedKlass = resolvedSymbol.resolvedReturnType.toClassLikeSymbol(context.session)
+                if (referencedKlass != null) {
+                    visitor?.visitClassReference(referencedKlass, getIdentifier(calleeReference.source ?: source))
+                }
+            }
         }
     }
 }
