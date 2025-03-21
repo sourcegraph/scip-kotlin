@@ -390,6 +390,16 @@ class SemanticdbSymbolsTest {
                                 listOf(
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
+                                        symbol = "Test#`<init>`().(sample)"
+                                        range {
+                                            startLine = 0
+                                            startCharacter = 15
+                                            endLine = 0
+                                            endCharacter = 21
+                                        }
+                                    },
+                                    SymbolOccurrence {
+                                        role = Role.DEFINITION
                                         symbol = "Test#sample."
                                         range {
                                             startLine = 0
@@ -411,16 +421,6 @@ class SemanticdbSymbolsTest {
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
                                         symbol = "Test#setSample()."
-                                        range {
-                                            startLine = 0
-                                            startCharacter = 15
-                                            endLine = 0
-                                            endCharacter = 21
-                                        }
-                                    },
-                                    SymbolOccurrence {
-                                        role = Role.DEFINITION
-                                        symbol = "Test#`<init>`().(sample)"
                                         range {
                                             startLine = 0
                                             startCharacter = 15

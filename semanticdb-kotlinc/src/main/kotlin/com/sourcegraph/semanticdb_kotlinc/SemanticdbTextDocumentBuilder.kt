@@ -37,6 +37,7 @@ class SemanticdbTextDocumentBuilder(
         this.md5 = semanticMd5
         this.schema = Semanticdb.Schema.SEMANTICDB4
         this.language = Semanticdb.Language.KOTLIN
+        occurrences.sortWith(compareBy({ it.range.startLine }, { it.range.startCharacter }))
         this.addAllOccurrences(occurrences)
         this.addAllSymbols(symbols)
     }
