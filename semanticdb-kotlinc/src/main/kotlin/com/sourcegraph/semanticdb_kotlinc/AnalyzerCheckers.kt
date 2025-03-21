@@ -2,25 +2,36 @@ package com.sourcegraph.semanticdb_kotlinc
 
 import java.nio.file.Path
 import kotlin.contracts.ExperimentalContracts
+import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.KtSourceFile
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
+import org.jetbrains.kotlin.diagnostics.findChildByType
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.*
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.ExpressionCheckers
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirQualifiedAccessExpressionChecker
+import org.jetbrains.kotlin.fir.analysis.checkers.getContainingClassSymbol
 import org.jetbrains.kotlin.fir.analysis.extensions.FirAdditionalCheckersExtension
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
 import org.jetbrains.kotlin.fir.references.FirResolvedNamedReference
 import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
+import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.name.ClassId
+import org.jetbrains.kotlin.toKtLightSourceElement
 
 open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtension(session) {
     companion object {
         @OptIn(ExperimentalContracts::class)
         val visitors: MutableMap<KtSourceFile, SemanticdbVisitor> = mutableMapOf()
+
+        private fun getIdentifier(element: KtSourceElement): KtSourceElement =
+            element
+                .treeStructure
+                .findChildByType(element.lighterASTNode, KtTokens.IDENTIFIER)
+                ?.toKtLightSourceElement(element.treeStructure) ?: element
     }
     override val declarationCheckers: DeclarationCheckers
         get() = AnalyzerDeclarationCheckers(session.analyzerParamsProvider.sourceroot)
@@ -104,7 +115,7 @@ open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtensio
             val source = declaration.source ?: return
             val ktFile = context.containingFile?.sourceFile ?: return
             val visitor = visitors[ktFile]
-            visitor?.visitClassOrObject(declaration, source)
+            visitor?.visitClassOrObject(declaration, getIdentifier(source))
         }
     }
 
@@ -120,9 +131,19 @@ open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtensio
             val visitor = visitors[ktFile]
 
             if (declaration.isPrimary) {
-                visitor?.visitPrimaryConstructor(declaration, source)
+                // if the constructor is not denoted by the 'constructor' keyword, we want to link it to the
+                // class identifier
+                val klass = declaration.symbol.getContainingClassSymbol()
+                val klassSource = klass?.source ?: source
+                val constructorKeyboard =
+                    source
+                        .treeStructure
+                        .findChildByType(source.lighterASTNode, KtTokens.CONSTRUCTOR_KEYWORD)
+                        ?.toKtLightSourceElement(source.treeStructure)
+
+                visitor?.visitPrimaryConstructor(declaration, constructorKeyboard ?: getIdentifier(klassSource))
             } else {
-                visitor?.visitSecondaryConstructor(declaration, source)
+                visitor?.visitSecondaryConstructor(declaration, getIdentifier(source))
             }
         }
     }
@@ -137,7 +158,7 @@ open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtensio
             val source = declaration.source ?: return
             val ktFile = context.containingFile?.sourceFile ?: return
             val visitor = visitors[ktFile]
-            visitor?.visitNamedFunction(declaration, source)
+            visitor?.visitNamedFunction(declaration, getIdentifier(source))
         }
     }
 
@@ -166,7 +187,7 @@ open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtensio
             val source = declaration.source ?: return
             val ktFile = context.containingFile?.sourceFile ?: return
             val visitor = visitors[ktFile]
-            visitor?.visitProperty(declaration, source)
+            visitor?.visitProperty(declaration, getIdentifier(source))
         }
     }
 
@@ -180,7 +201,7 @@ open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtensio
             val source = declaration.source ?: return
             val ktFile = context.containingFile?.sourceFile ?: return
             val visitor = visitors[ktFile]
-            visitor?.visitParameter(declaration, source)
+            visitor?.visitParameter(declaration, getIdentifier(source))
         }
     }
 
@@ -194,7 +215,7 @@ open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtensio
             val source = declaration.source ?: return
             val ktFile = context.containingFile?.sourceFile ?: return
             val visitor = visitors[ktFile]
-            visitor?.visitTypeParameter(declaration, source)
+            visitor?.visitTypeParameter(declaration, getIdentifier(source))
         }
     }
 
@@ -208,7 +229,7 @@ open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtensio
             val source = declaration.source ?: return
             val ktFile = context.containingFile?.sourceFile ?: return
             val visitor = visitors[ktFile]
-            visitor?.visitTypeAlias(declaration, source)
+            visitor?.visitTypeAlias(declaration, getIdentifier(source))
         }
     }
 
@@ -223,7 +244,24 @@ open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtensio
             val source = declaration.source ?: return
             val ktFile = context.containingFile?.sourceFile ?: return
             val visitor = visitors[ktFile]
-            visitor?.visitPropertyAccessor(declaration, source)
+            val identifierSource =
+                if (declaration.isGetter) {
+                    source
+                        .treeStructure
+                        .findChildByType(source.lighterASTNode, KtTokens.GET_KEYWORD)
+                        ?.toKtLightSourceElement(source.treeStructure)
+                        ?: getIdentifier(source)
+                } else if (declaration.isSetter) {
+                    source
+                        .treeStructure
+                        .findChildByType(source.lighterASTNode, KtTokens.SET_KEYWORD)
+                        ?.toKtLightSourceElement(source.treeStructure)
+                        ?: getIdentifier(source)
+                } else {
+                    getIdentifier(source)
+                }
+
+            visitor?.visitPropertyAccessor(declaration, identifierSource)
         }
     }
 
@@ -243,7 +281,7 @@ open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtensio
 
             val ktFile = context.containingFile?.sourceFile ?: return
             val visitor = visitors[ktFile]
-            visitor?.visitSimpleNameExpression(calleeReference, source)
+            visitor?.visitSimpleNameExpression(calleeReference, getIdentifier(calleeReference.source ?: source))
         }
     }
 }
