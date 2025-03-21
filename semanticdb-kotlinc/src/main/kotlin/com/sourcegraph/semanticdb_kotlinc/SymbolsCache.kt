@@ -189,7 +189,7 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
     }
 
     // Extension function to render a ConeKotlinType to a string
-    fun ConeKotlinType?.render(): String = this?.toString() ?: "Unit"
+    private fun ConeKotlinType?.render(): String = this?.toString() ?: "Unit"
 
     private fun disambiguateClassSymbol(classSymbol: FirClassSymbol<*>): String {
         val classId = classSymbol.classId
