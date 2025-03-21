@@ -222,20 +222,6 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
             else -> "()"
         }
 
-    @OptIn(SymbolInternals::class)
-    private fun FirConstructorSymbol.isFromTypeAlias(): Boolean {
-        val session = moduleData.session
-        val classId =
-            resolvedReturnTypeRef.coneTypeSafe<ConeClassLikeType>()?.classId ?: return false
-        val classSymbol = session.symbolProvider.getClassLikeSymbolByClassId(classId)
-
-        if (classSymbol is FirTypeAliasSymbol) {
-            val expandedClassId = classSymbol.fir.expandedTypeRef.coneType.classId
-            return expandedClassId == classId
-        }
-        return false
-    }
-
     private fun FirConstructorSymbol.getTypeAliasSymbol(): FirTypeAliasSymbol? {
         val session = moduleData.session
         val classId = resolvedReturnTypeRef.coneType.classId ?: return null
