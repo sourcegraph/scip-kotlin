@@ -24,6 +24,7 @@ import org.jetbrains.kotlin.fir.references.FirResolvedNamedReference
 import org.jetbrains.kotlin.fir.resolve.calls.FirSyntheticFunctionSymbol
 import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
 import org.jetbrains.kotlin.fir.resolve.toClassLikeSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
@@ -354,6 +355,16 @@ open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtensio
                 val referencedKlass = resolvedSymbol.resolvedReturnType.toClassLikeSymbol(context.session)
                 if (referencedKlass != null) {
                     visitor?.visitClassReference(referencedKlass, getIdentifier(calleeReference.source ?: source))
+                }
+            }
+
+            // When encountering a reference to a property symbol, emit both getter and setter symbols
+            if (resolvedSymbol is FirPropertySymbol) {
+                resolvedSymbol.getterSymbol?.let {
+                    visitor?.visitCallableReference(it, getIdentifier(calleeReference.source ?: source))
+                }
+                resolvedSymbol.setterSymbol?.let {
+                    visitor?.visitCallableReference(it, getIdentifier(calleeReference.source ?: source))
                 }
             }
         }
