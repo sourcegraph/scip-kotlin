@@ -99,4 +99,3 @@ class SemanticdbVisitor(
     }
 }
 
-class VisitorException(msg: String, throwable: Throwable) : Exception(msg, throwable)
