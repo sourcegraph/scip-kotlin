@@ -4,7 +4,7 @@ import com.sourcegraph.semanticdb_kotlinc.SemanticdbSymbolDescriptor.Kind
 import java.lang.System.err
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
-import org.jetbrains.kotlin.descriptors.*
+import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.isLocalMember
 import org.jetbrains.kotlin.fir.analysis.checkers.getContainingClassSymbol
 import org.jetbrains.kotlin.fir.analysis.checkers.getContainingSymbol
@@ -18,14 +18,8 @@ import org.jetbrains.kotlin.fir.resolve.providers.getContainingFile
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.*
-import org.jetbrains.kotlin.fir.types.*
-import org.jetbrains.kotlin.load.kotlin.toSourceElement
-import org.jetbrains.kotlin.psi.KtBlockExpression
-import org.jetbrains.kotlin.psi.KtNamedFunction
-import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter
-import org.jetbrains.kotlin.resolve.scopes.getDescriptorsFiltered
-import org.jetbrains.kotlin.resolve.source.getPsi
-import org.jetbrains.kotlin.types.TypeUtils
+import org.jetbrains.kotlin.fir.types.ConeKotlinType
+import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.capitalizeAsciiOnly
 
 @ExperimentalContracts
@@ -219,68 +213,6 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
             is FirClassSymbol<*> -> disambiguateClassSymbol(symbol)
             is FirPropertySymbol -> disambiguatePropertySymbol(symbol)
             else -> "()"
-        }
-
-    private fun getAllMethods(
-        desc: FunctionDescriptor,
-        ownerDecl: DeclarationDescriptor
-    ): Collection<CallableMemberDescriptor> =
-        when (ownerDecl) {
-            is PackageFragmentDescriptor ->
-                ownerDecl
-                    .getMemberScope()
-                    .getDescriptorsFiltered(DescriptorKindFilter.FUNCTIONS)
-                    .map { it as CallableMemberDescriptor }
-            is ClassDescriptorWithResolutionScopes -> {
-                when (desc) {
-                    is ClassConstructorDescriptor -> {
-                        val constructors =
-                            (desc.containingDeclaration as ClassDescriptorWithResolutionScopes)
-                                .constructors as
-                                ArrayList
-                        // primary constructor always seems to be last, so move it to the start.
-                        if (constructors.last().isPrimary)
-                            constructors.add(0, constructors.removeLast())
-                        constructors
-                    }
-                    else -> ownerDecl.declaredCallableMembers
-                }
-            }
-            is FunctionDescriptor ->
-                ownerDecl.toSourceElement.getPsi()!!
-                    .children
-                    .first { it is KtBlockExpression }
-                    .children
-                    .filterIsInstance<KtNamedFunction>()
-                    .map { resolver.fromDeclaration(it).single() as CallableMemberDescriptor }
-            is ClassDescriptor -> {
-                // Do we have to go recursively?
-                // https://sourcegraph.com/github.com/JetBrains/kotlin/-/blob/idea/src/org/jetbrains/kotlin/idea/actions/generate/utils.kt?L32:5
-                val methods =
-                    ownerDecl
-                        .unsubstitutedMemberScope
-                        .getContributedDescriptors()
-                        .filterIsInstance<FunctionDescriptor>()
-                val staticMethods =
-                    ownerDecl
-                        .staticScope
-                        .getContributedDescriptors()
-                        .filterIsInstance<FunctionDescriptor>()
-                val ctors = ownerDecl.constructors.toList()
-                val allFuncs =
-                    ArrayList<FunctionDescriptor>(methods.size + ctors.size + staticMethods.size)
-                allFuncs.addAll(ctors)
-                allFuncs.addAll(methods)
-                allFuncs.addAll(staticMethods)
-                allFuncs
-            }
-            is TypeAliasDescriptor -> {
-                // We get the underlying class descriptor and restart the process recursively
-                getAllMethods(desc, TypeUtils.getClassDescriptor(ownerDecl.underlyingType)!!)
-            }
-            else ->
-                throw IllegalStateException(
-                    "unexpected owner decl type '${ownerDecl.javaClass}':\n\t\tMethod: ${desc}\n\t\tParent: $ownerDecl")
         }
 
     override fun iterator(): Iterator<Symbol> = globals.values.iterator()
