@@ -109,7 +109,7 @@ class SemanticdbTextDocumentBuilder(
         return Range {
             startCharacter = lineMap.startCharacter(element)
             startLine = lineMap.lineNumber(element) - 1
-            endCharacter = lineMap.endCharacter(element) - 1
+            endCharacter = lineMap.endCharacter(element)
             endLine = lineMap.lineNumber(element) - 1
         }
     }
