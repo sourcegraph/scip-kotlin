@@ -15,7 +15,6 @@ import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.utils.nameOrSpecialName
 import org.jetbrains.kotlin.fir.resolve.providers.firProvider
 import org.jetbrains.kotlin.fir.resolve.providers.getContainingFile
-import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.*
@@ -221,13 +220,6 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
             is FirPropertySymbol -> disambiguatePropertySymbol(symbol)
             else -> "()"
         }
-
-    private fun FirConstructorSymbol.getTypeAliasSymbol(): FirTypeAliasSymbol? {
-        val session = moduleData.session
-        val classId = resolvedReturnTypeRef.coneType.classId ?: return null
-        val classSymbol = session.symbolProvider.getClassLikeSymbolByClassId(classId)
-        return classSymbol as? FirTypeAliasSymbol
-    }
 
     private fun getAllMethods(
         desc: FunctionDescriptor,
