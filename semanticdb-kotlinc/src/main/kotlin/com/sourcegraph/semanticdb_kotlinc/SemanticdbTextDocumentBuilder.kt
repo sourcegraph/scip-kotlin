@@ -49,7 +49,7 @@ class SemanticdbTextDocumentBuilder(
         element: KtSourceElement,
         role: Role
     ) {
-        symbolOccurrence(symbol, element, role)?.let {
+        symbolOccurrence(symbol, element, role).let {
             if (!occurrences.contains(it)) {
                 occurrences.add(it)
             }
@@ -99,12 +99,7 @@ class SemanticdbTextDocumentBuilder(
         symbol: Symbol,
         element: KtSourceElement,
         role: Role
-    ): Semanticdb.SymbolOccurrence? {
-        /*val symbol = when(val s = globals[descriptor, locals]) {
-            Symbol.NONE -> return null
-            else -> s
-        }.symbol*/
-
+    ): Semanticdb.SymbolOccurrence {
         return SymbolOccurrence {
             this.symbol = symbol.toString()
             this.role = role
