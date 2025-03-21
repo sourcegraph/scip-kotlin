@@ -5,15 +5,12 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.security.MessageDigest
 import kotlin.contracts.ExperimentalContracts
-import org.jetbrains.kotlin.KtLightSourceElement
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.KtSourceFile
-import org.jetbrains.kotlin.com.intellij.lang.LighterASTNode
 import org.jetbrains.kotlin.com.intellij.lang.java.JavaLanguage
-import org.jetbrains.kotlin.com.intellij.openapi.util.Ref
-import org.jetbrains.kotlin.com.intellij.util.diff.FlyweightCapableTreeStructure
 import org.jetbrains.kotlin.fir.FirElement
-import org.jetbrains.kotlin.fir.render
+import org.jetbrains.kotlin.fir.analysis.getChild
+import org.jetbrains.kotlin.fir.renderer.*
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.*
@@ -21,6 +18,7 @@ import org.jetbrains.kotlin.fir.types.ConeClassLikeType
 import org.jetbrains.kotlin.idea.KotlinLanguage
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi
+import org.jetbrains.kotlin.text
 
 @ExperimentalContracts
 class SemanticdbTextDocumentBuilder(
@@ -84,7 +82,7 @@ class SemanticdbTextDocumentBuilder(
         return SymbolInformation {
             this.symbol = symbol.toString()
             this.displayName = displayName(firBasedSymbol)
-            this.documentation = semanticdbDocumentation(firBasedSymbol.fir, element)
+            this.documentation = semanticdbDocumentation(firBasedSymbol.fir)
             this.addAllOverriddenSymbols(supers)
             this.language =
                 when (element.psi?.language ?: KotlinLanguage.INSTANCE) {
@@ -127,35 +125,23 @@ class SemanticdbTextDocumentBuilder(
             .digest(file.getContentsAsStream().readBytes())
             .joinToString("") { "%02X".format(it) }
 
-    private fun semanticdbDocumentation(
-        element: FirElement,
-        source: KtSourceElement
-    ): Semanticdb.Documentation = Documentation {
+    private fun semanticdbDocumentation(element: FirElement): Semanticdb.Documentation = Documentation {
         format = Semanticdb.Documentation.Format.MARKDOWN
-        val renderOutput = element.render()
-        val kdoc = getKDocFromKtLightSourceElement(source as? KtLightSourceElement) ?: ""
-        message = "```\n$renderOutput\n```\n${stripKDocAsterisks(kdoc)}"
-    }
-
-    private fun getKDocFromKtLightSourceElement(
-        lightSourceElement: KtLightSourceElement?
-    ): String? {
-        if (lightSourceElement == null) return null
-        val tree = lightSourceElement.treeStructure // FlyweightCapableTreeStructure<LighterASTNode>
-        val node =
-            lightSourceElement.lighterASTNode // LighterASTNode, the root of the element's structure
-        return findKDoc(tree, node)
-    }
-
-    // Helper function to find the KDoc node in the AST
-    private fun findKDoc(
-        tree: FlyweightCapableTreeStructure<LighterASTNode>,
-        node: LighterASTNode
-    ): String? {
-        // Recursively traverse the light tree to find a DOC_COMMENT node
-        val kidsRef = Ref<Array<LighterASTNode?>>()
-        tree.getChildren(node, kidsRef)
-        return kidsRef.get().singleOrNull { it?.tokenType == KtTokens.DOC_COMMENT }?.toString()
+        // Like FirRenderer().forReadability, but using FirAllModifierRenderer instead of FirPartialModifierRenderer
+        val renderer = FirRenderer(
+            typeRenderer = ConeTypeRenderer(),
+            idRenderer = ConeIdShortRenderer(),
+            classMemberRenderer = FirNoClassMemberRenderer(),
+            bodyRenderer = null,
+            propertyAccessorRenderer = null,
+            callArgumentsRenderer = FirCallNoArgumentsRenderer(),
+            modifierRenderer = FirAllModifierRenderer(),
+            valueParameterRenderer = FirValueParameterRendererForReadability(),
+            declarationRenderer = FirDeclarationRenderer("local "),
+        )
+        val renderOutput = renderer.renderElementAsString(element)
+        val kdoc = element.source?.getChild(KtTokens.DOC_COMMENT)?.text?.toString() ?: ""
+        message = "```kotlin\n$renderOutput\n```${stripKDocAsterisks(kdoc)}"
     }
 
     // Returns the kdoc string with all leading and trailing "/*" tokens removed. Naive
