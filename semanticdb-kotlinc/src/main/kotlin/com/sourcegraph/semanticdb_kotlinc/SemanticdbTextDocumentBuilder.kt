@@ -13,18 +13,11 @@ import org.jetbrains.kotlin.com.intellij.lang.java.JavaLanguage
 import org.jetbrains.kotlin.com.intellij.openapi.util.Ref
 import org.jetbrains.kotlin.com.intellij.util.diff.FlyweightCapableTreeStructure
 import org.jetbrains.kotlin.fir.FirElement
-import org.jetbrains.kotlin.fir.containingClassLookupTag
-import org.jetbrains.kotlin.fir.declarations.FirRegularClass
-import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
-import org.jetbrains.kotlin.fir.declarations.utils.isOverride
 import org.jetbrains.kotlin.fir.render
-import org.jetbrains.kotlin.fir.resolve.toSymbol
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.*
 import org.jetbrains.kotlin.fir.types.ConeClassLikeType
-import org.jetbrains.kotlin.fir.types.coneType
-import org.jetbrains.kotlin.fir.types.coneTypeSafe
 import org.jetbrains.kotlin.idea.KotlinLanguage
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi
@@ -70,62 +63,6 @@ class SemanticdbTextDocumentBuilder(
         setOf("kotlin.Any", "java.lang.Object", "java.io.Serializable")
 
     @OptIn(SymbolInternals::class)
-    private fun functionDescriptorOverrides(
-        functionSymbol: FirFunctionSymbol<*>
-    ): Iterable<String> {
-        val containingClassSymbol =
-            functionSymbol
-                .containingClassLookupTag()
-                ?.toSymbol(functionSymbol.fir.moduleData.session) as?
-                FirRegularClass
-        if (containingClassSymbol != null) {
-            // Get the super types of the class
-            val superTypes: List<ConeClassLikeType> =
-                containingClassSymbol.superTypeRefs.mapNotNull { it.coneTypeSafe() }
-
-            val overriddenFunctions = mutableListOf<FirFunctionSymbol<*>>()
-
-            // Traverse the super types to find functions with the same signature
-            superTypes.forEach { superType ->
-                val superClassSymbol =
-                    superType.lookupTag.toSymbol(functionSymbol.fir.moduleData.session) as?
-                        FirRegularClass
-                superClassSymbol?.declarations?.forEach { declaration ->
-                    if (declaration is FirSimpleFunction &&
-                        declaration.isOverride &&
-                        declaration.isOverride(functionSymbol)) {
-                        overriddenFunctions.add(declaration.symbol)
-                    }
-                }
-            }
-            return overriddenFunctions.map { it.toString() }
-        }
-        return emptyList()
-    }
-
-    @OptIn(SymbolInternals::class)
-    private fun FirSimpleFunction.isOverride(otherFunctionSymbol: FirFunctionSymbol<*>): Boolean {
-        // Compare names
-        if (this.symbol.callableId.callableName != otherFunctionSymbol.callableId.callableName)
-            return false
-
-        // Compare return types
-        if (this.returnTypeRef.coneType != otherFunctionSymbol.fir.returnTypeRef.coneType)
-            return false
-
-        // Compare value parameters
-        val thisParams = this.valueParameters
-        val otherParams = otherFunctionSymbol.fir.valueParameters
-        if (thisParams.size != otherParams.size) return false
-
-        for ((thisParam, otherParam) in thisParams.zip(otherParams)) {
-            if (thisParam.returnTypeRef.coneType != otherParam.returnTypeRef.coneType) return false
-        }
-
-        return true
-    }
-
-    @OptIn(SymbolInternals::class)
     private fun symbolInformation(
         firBasedSymbol: FirBasedSymbol<*>,
         symbol: Symbol,
@@ -142,7 +79,6 @@ class SemanticdbTextDocumentBuilder(
                         }
                         .map { it.toString() }
                         .asIterable()
-                is FirFunctionSymbol -> functionDescriptorOverrides(firBasedSymbol)
                 else -> emptyList<String>().asIterable()
             }
         return SymbolInformation {
