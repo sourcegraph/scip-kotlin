@@ -9,6 +9,9 @@ import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.KtSourceFile
 import org.jetbrains.kotlin.com.intellij.lang.java.JavaLanguage
 import org.jetbrains.kotlin.fir.FirElement
+import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
+import org.jetbrains.kotlin.fir.analysis.checkers.getDirectOverriddenSymbols
+import org.jetbrains.kotlin.fir.analysis.checkers.toClassLikeSymbol
 import org.jetbrains.kotlin.fir.analysis.getChild
 import org.jetbrains.kotlin.fir.renderer.*
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
@@ -24,7 +27,8 @@ import org.jetbrains.kotlin.text
 class SemanticdbTextDocumentBuilder(
     private val sourceroot: Path,
     private val file: KtSourceFile,
-    private val lineMap: LineMap
+    private val lineMap: LineMap,
+    private val cache: SymbolsCache,
 ) {
     private val occurrences = mutableListOf<Semanticdb.SymbolOccurrence>()
     private val symbols = mutableListOf<Semanticdb.SymbolInformation>()
@@ -46,14 +50,15 @@ class SemanticdbTextDocumentBuilder(
         firBasedSymbol: FirBasedSymbol<*>?,
         symbol: Symbol,
         element: KtSourceElement,
-        role: Role
+        role: Role,
+        context: CheckerContext,
     ) {
         symbolOccurrence(symbol, element, role).let {
             if (!occurrences.contains(it)) {
                 occurrences.add(it)
             }
         }
-        val symbolInformation = symbolInformation(firBasedSymbol, symbol, element)
+        val symbolInformation = symbolInformation(firBasedSymbol, symbol, element, context)
         if (role == Role.DEFINITION && !symbols.contains(symbolInformation))
             symbols.add(symbolInformation)
     }
@@ -62,7 +67,8 @@ class SemanticdbTextDocumentBuilder(
     private fun symbolInformation(
         firBasedSymbol: FirBasedSymbol<*>?,
         symbol: Symbol,
-        element: KtSourceElement
+        element: KtSourceElement,
+        context: CheckerContext,
     ): Semanticdb.SymbolInformation {
         val supers =
             when (firBasedSymbol) {
@@ -70,9 +76,12 @@ class SemanticdbTextDocumentBuilder(
                     firBasedSymbol
                         .resolvedSuperTypeRefs
                         .filter { it !is FirImplicitAnyTypeRef }
-                        .map { it.toString() }
-                        .asIterable()
-                else -> emptyList<String>().asIterable()
+                        .map { it.toClassLikeSymbol(firBasedSymbol.moduleData.session) }
+                        .filterNotNull()
+                        .flatMap { cache[it] }
+                is FirFunctionSymbol<*> ->
+                    firBasedSymbol.fir.getDirectOverriddenSymbols(context).flatMap { cache[it] }
+                else -> emptyList<Symbol>().asIterable()
             }
         return SymbolInformation {
             this.symbol = symbol.toString()
@@ -91,7 +100,7 @@ class SemanticdbTextDocumentBuilder(
                         message = ""
                     }
                 }
-            this.addAllOverriddenSymbols(supers)
+            this.addAllOverriddenSymbols(supers.map { it.toString() })
             this.language =
                 when (element.psi?.language ?: KotlinLanguage.INSTANCE) {
                     is KotlinLanguage -> Semanticdb.Language.KOTLIN
