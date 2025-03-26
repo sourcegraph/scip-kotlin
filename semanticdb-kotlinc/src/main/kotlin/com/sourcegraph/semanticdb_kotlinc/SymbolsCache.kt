@@ -139,6 +139,10 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
     @OptIn(SymbolInternals::class)
     private fun semanticdbDescriptor(symbol: FirBasedSymbol<*>): SemanticdbSymbolDescriptor {
         return when {
+            symbol is FirAnonymousObjectSymbol ->
+                symbol.source?.let { source ->
+                    SemanticdbSymbolDescriptor(Kind.TYPE, "<anonymous object at ${source.startOffset}>")
+                } ?: SemanticdbSymbolDescriptor.NONE
             symbol is FirClassLikeSymbol ->
                 SemanticdbSymbolDescriptor(Kind.TYPE, symbol.classId.shortClassName.asString())
             symbol is FirPropertyAccessorSymbol && symbol.isSetter ->
