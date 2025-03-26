@@ -5,3 +5,5 @@ semanticdb-*.jar
 *.lsif
 generated/*
 *.svg
+/.kotlin/
+/semanticdb-kotlinc/META-INF/
