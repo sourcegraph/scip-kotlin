@@ -251,6 +251,200 @@ class AnalyzerTest {
     }
 
     @Test
+    fun `anonymous object`(@TempDir path: Path) {
+        val document =
+            compileSemanticdb(
+                path,
+                """
+            package sample
+
+            interface Interface {
+                fun foo()
+            }
+
+            fun main() {
+                val a = object : Interface {
+                    override fun foo() {}
+                }
+                val b = object : Interface {
+                    override fun foo() {}
+                }
+            }
+            """)
+
+        val occurrences =
+            arrayOf(
+                SymbolOccurrence {
+                    role = Role.REFERENCE
+                    symbol = "sample/"
+                    range {
+                        startLine = 0
+                        startCharacter = 8
+                        endLine = 0
+                        endCharacter = 14
+                    }
+                },
+                SymbolOccurrence {
+                    role = Role.DEFINITION
+                    symbol = "sample/Interface#"
+                    range {
+                        startLine = 2
+                        startCharacter = 10
+                        endLine = 2
+                        endCharacter = 19
+                    }
+                },
+                SymbolOccurrence {
+                    role = Role.DEFINITION
+                    symbol = "sample/Interface#foo()."
+                    range {
+                        startLine = 3
+                        startCharacter = 8
+                        endLine = 3
+                        endCharacter = 11
+                    }
+                },
+                SymbolOccurrence {
+                    role = Role.DEFINITION
+                    symbol = "sample/`<anonymous object at 80>`#"
+                    range {
+                        startLine = 7
+                        startCharacter = 12
+                        endLine = 7
+                        endCharacter = 18
+                    }
+                },
+                SymbolOccurrence {
+                    role = Role.DEFINITION
+                    symbol = "sample/`<anonymous object at 80>`#`<init>`()."
+                    range {
+                        startLine = 7
+                        startCharacter = 12
+                        endLine = 7
+                        endCharacter = 18
+                    }
+                },
+                SymbolOccurrence {
+                    role = Role.REFERENCE
+                    symbol = "sample/Interface#"
+                    range {
+                        startLine = 7
+                        startCharacter = 21
+                        endLine = 7
+                        endCharacter = 30
+                    }
+                },
+                SymbolOccurrence {
+                    role = Role.DEFINITION
+                    symbol = "sample/`<anonymous object at 80>`#foo()."
+                    range {
+                        startLine = 8
+                        startCharacter = 21
+                        endLine = 8
+                        endCharacter = 24
+                    }
+                },
+                SymbolOccurrence {
+                    role = Role.DEFINITION
+                    symbol = "sample/`<anonymous object at 149>`#"
+                    range {
+                        startLine = 10
+                        startCharacter = 12
+                        endLine = 10
+                        endCharacter = 18
+                    }
+                },
+                SymbolOccurrence {
+                    role = Role.DEFINITION
+                    symbol = "sample/`<anonymous object at 149>`#`<init>`()."
+                    range {
+                        startLine = 10
+                        startCharacter = 12
+                        endLine = 10
+                        endCharacter = 18
+                    }
+                },
+                SymbolOccurrence {
+                    role = Role.REFERENCE
+                    symbol = "sample/Interface#"
+                    range {
+                        startLine = 10
+                        startCharacter = 21
+                        endLine = 10
+                        endCharacter = 30
+                    }
+                },
+                SymbolOccurrence {
+                    role = Role.DEFINITION
+                    symbol = "sample/`<anonymous object at 149>`#foo()."
+                    range {
+                        startLine = 11
+                        startCharacter = 21
+                        endLine = 11
+                        endCharacter = 24
+                    }
+                },
+            )
+        assertSoftly(document.occurrencesList) {
+            withClue(this) { occurrences.forEach(::shouldContain) }
+        }
+
+        val symbols =
+            arrayOf(
+                SymbolInformation {
+                    symbol = "sample/Interface#"
+                    displayName = "Interface"
+                    language = KOTLIN
+                    documentation {
+                        message = "```kotlin\npublic abstract interface Interface : Any\n```"
+                        format = Semanticdb.Documentation.Format.MARKDOWN
+                    }
+                },
+                SymbolInformation {
+                    symbol = "sample/`<anonymous object at 80>`#"
+                    displayName = "<anonymous>"
+                    language = KOTLIN
+                    documentation {
+                        message = "```kotlin\nobject : Interface\n```"
+                        format = Semanticdb.Documentation.Format.MARKDOWN
+                    }
+                    addOverriddenSymbols("sample/Interface#")
+                },
+                SymbolInformation {
+                    symbol = "sample/`<anonymous object at 80>`#foo()."
+                    displayName = "foo"
+                    language = KOTLIN
+                    documentation {
+                        message = "```kotlin\npublic open override fun foo(): Unit\n```"
+                        format = Semanticdb.Documentation.Format.MARKDOWN
+                    }
+                    addOverriddenSymbols("sample/Interface#foo().")
+                },
+                SymbolInformation {
+                    symbol = "sample/`<anonymous object at 149>`#"
+                    displayName = "<anonymous>"
+                    language = KOTLIN
+                    documentation {
+                        message = "```kotlin\nobject : Interface\n```"
+                        format = Semanticdb.Documentation.Format.MARKDOWN
+                    }
+                    addOverriddenSymbols("sample/Interface#")
+                },
+                SymbolInformation {
+                    symbol = "sample/`<anonymous object at 149>`#foo()."
+                    displayName = "foo"
+                    language = KOTLIN
+                    documentation {
+                        message = "```kotlin\npublic open override fun foo(): Unit\n```"
+                        format = Semanticdb.Documentation.Format.MARKDOWN
+                    }
+                    addOverriddenSymbols("sample/Interface#foo().")
+                },
+            )
+        assertSoftly(document.symbolsList) { withClue(this) { symbols.forEach(::shouldContain) } }
+    }
+
+    @Test
     fun `exception test`(@TempDir path: Path) {
         val buildPath = File(path.resolve("build").toString()).apply { mkdir() }
         val result =

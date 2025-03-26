@@ -59,7 +59,7 @@ class SemanticdbVisitor(
         cache[firClassSymbol].with(firClassSymbol).emitAll(element, Role.REFERENCE, context)
     }
 
-    fun visitClassOrObject(firClass: FirClass, element: KtSourceElement, context: CheckerContext) {
+    fun visitClassOrObject(firClass: FirClassLikeDeclaration, element: KtSourceElement, context: CheckerContext) {
         cache[firClass.symbol].with(firClass.symbol).emitAll(element, Role.DEFINITION, context)
     }
 

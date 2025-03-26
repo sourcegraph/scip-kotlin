@@ -24,6 +24,7 @@ import org.jetbrains.kotlin.fir.references.FirResolvedNamedReference
 import org.jetbrains.kotlin.fir.resolve.calls.FirSyntheticFunctionSymbol
 import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
 import org.jetbrains.kotlin.fir.resolve.toClassLikeSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirAnonymousObjectSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.name.ClassId
@@ -54,8 +55,8 @@ open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtensio
     open class AnalyzerDeclarationCheckers(sourceroot: Path) : DeclarationCheckers() {
         override val fileCheckers: Set<FirFileChecker> =
             setOf(SemanticFileChecker(sourceroot), SemanticImportsChecker())
-        override val regularClassCheckers: Set<FirRegularClassChecker> =
-            setOf(SemanticRegularClassChecker())
+        override val classLikeCheckers: Set<FirClassLikeChecker> =
+            setOf(SemanticClassLikeChecker())
         override val constructorCheckers: Set<FirConstructorChecker> =
             setOf(SemanticConstructorChecker())
         override val simpleFunctionCheckers: Set<FirSimpleFunctionChecker> =
@@ -166,23 +167,33 @@ open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtensio
         }
     }
 
-    private class SemanticRegularClassChecker : FirRegularClassChecker(MppCheckerKind.Common) {
+    private class SemanticClassLikeChecker : FirClassLikeChecker(MppCheckerKind.Common) {
         @OptIn(ExperimentalContracts::class)
         override fun check(
-            declaration: FirRegularClass,
+            declaration: FirClassLikeDeclaration,
             context: CheckerContext,
             reporter: DiagnosticReporter
         ) {
             val source = declaration.source ?: return
             val ktFile = context.containingFile?.sourceFile ?: return
             val visitor = visitors[ktFile]
-            visitor?.visitClassOrObject(declaration, getIdentifier(source), context)
+            val objectKeyword = if (declaration is FirAnonymousObject) {
+                source
+                    .treeStructure
+                    .findChildByType(source.lighterASTNode, KtTokens.OBJECT_KEYWORD)
+                    ?.toKtLightSourceElement(source.treeStructure)
+            } else {
+                null
+            }
+            visitor?.visitClassOrObject(declaration, objectKeyword ?: getIdentifier(source), context)
 
-            for (superType in declaration.superTypeRefs) {
-                val superSymbol = superType.toClassLikeSymbol(context.session)
-                val superSource = superType.source
-                if (superSymbol != null && superSource != null) {
-                    visitor?.visitClassReference(superSymbol, superSource, context)
+            if (declaration is FirClass) {
+                for (superType in declaration.superTypeRefs) {
+                    val superSymbol = superType.toClassLikeSymbol(context.session)
+                    val superSource = superType.source
+                    if (superSymbol != null && superSource != null) {
+                        visitor?.visitClassReference(superSymbol, superSource, context)
+                    }
                 }
             }
         }
@@ -210,7 +221,16 @@ open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtensio
                         .findChildByType(source.lighterASTNode, KtTokens.CONSTRUCTOR_KEYWORD)
                         ?.toKtLightSourceElement(source.treeStructure)
 
-                visitor?.visitPrimaryConstructor(declaration, constructorKeyboard ?: getIdentifier(klassSource), context)
+                val objectKeyword = if (klass is FirAnonymousObjectSymbol) {
+                    source
+                        .treeStructure
+                        .findChildByType(source.lighterASTNode, KtTokens.OBJECT_KEYWORD)
+                        ?.toKtLightSourceElement(source.treeStructure)
+                } else {
+                    null
+                }
+
+                visitor?.visitPrimaryConstructor(declaration, constructorKeyboard ?: objectKeyword ?: getIdentifier(klassSource), context)
             } else {
                 visitor?.visitSecondaryConstructor(declaration, getIdentifier(source), context)
             }
