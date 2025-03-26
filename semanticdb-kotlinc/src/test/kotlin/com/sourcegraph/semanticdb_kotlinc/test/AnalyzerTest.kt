@@ -123,6 +123,134 @@ class AnalyzerTest {
     }
 
     @Test
+    fun overrides(@TempDir path: Path) {
+        val document =
+            compileSemanticdb(
+                path,
+                """
+            package sample
+
+            interface Interface {
+                fun foo()
+            }
+
+            class Class : Interface {
+                override fun foo() {}
+            }
+            """)
+
+        val occurrences =
+            arrayOf(
+                SymbolOccurrence {
+                    role = Role.REFERENCE
+                    symbol = "sample/"
+                    range {
+                        startLine = 0
+                        startCharacter = 8
+                        endLine = 0
+                        endCharacter = 14
+                    }
+                },
+                SymbolOccurrence {
+                    role = Role.DEFINITION
+                    symbol = "sample/Interface#"
+                    range {
+                        startLine = 2
+                        startCharacter = 10
+                        endLine = 2
+                        endCharacter = 19
+                    }
+                },
+                SymbolOccurrence {
+                    role = Role.DEFINITION
+                    symbol = "sample/Interface#foo()."
+                    range {
+                        startLine = 3
+                        startCharacter = 8
+                        endLine = 3
+                        endCharacter = 11
+                    }
+                },
+                SymbolOccurrence {
+                    role = Role.DEFINITION
+                    symbol = "sample/Class#"
+                    range {
+                        startLine = 6
+                        startCharacter = 6
+                        endLine = 6
+                        endCharacter = 11
+                    }
+                },
+                SymbolOccurrence {
+                    role = Role.REFERENCE
+                    symbol = "sample/Interface#"
+                    range {
+                        startLine = 6
+                        startCharacter = 14
+                        endLine = 6
+                        endCharacter = 23
+                    }
+                },
+                SymbolOccurrence {
+                    role = Role.DEFINITION
+                    symbol = "sample/Class#foo()."
+                    range {
+                        startLine = 7
+                        startCharacter = 17
+                        endLine = 7
+                        endCharacter = 20
+                    }
+                },
+            )
+        assertSoftly(document.occurrencesList) {
+            withClue(this) { occurrences.forEach(::shouldContain) }
+        }
+
+        val symbols =
+            arrayOf(
+                SymbolInformation {
+                    symbol = "sample/Interface#"
+                    displayName = "Interface"
+                    language = KOTLIN
+                    documentation {
+                        message = "```kotlin\npublic abstract interface Interface : Any\n```"
+                        format = Semanticdb.Documentation.Format.MARKDOWN
+                    }
+                },
+                SymbolInformation {
+                    symbol = "sample/Interface#foo()."
+                    displayName = "foo"
+                    language = KOTLIN
+                    documentation {
+                        message = "```kotlin\npublic abstract fun foo(): Unit\n\n```"
+                        format = Semanticdb.Documentation.Format.MARKDOWN
+                    }
+                },
+                SymbolInformation {
+                    symbol = "sample/Class#"
+                    displayName = "Class"
+                    language = KOTLIN
+                    documentation {
+                        message = "```kotlin\npublic final class Class : Interface\n```"
+                        format = Semanticdb.Documentation.Format.MARKDOWN
+                    }
+                    addOverriddenSymbols("sample/Interface#")
+                },
+                SymbolInformation {
+                    symbol = "sample/Class#foo()."
+                    displayName = "foo"
+                    language = KOTLIN
+                    documentation {
+                        message = "```kotlin\npublic open override fun foo(): Unit\n```"
+                        format = Semanticdb.Documentation.Format.MARKDOWN
+                    }
+                    addOverriddenSymbols("sample/Interface#foo().")
+                },
+            )
+        assertSoftly(document.symbolsList) { withClue(this) { symbols.forEach(::shouldContain) } }
+    }
+
+    @Test
     fun `exception test`(@TempDir path: Path) {
         val buildPath = File(path.resolve("build").toString()).apply { mkdir() }
         val result =
