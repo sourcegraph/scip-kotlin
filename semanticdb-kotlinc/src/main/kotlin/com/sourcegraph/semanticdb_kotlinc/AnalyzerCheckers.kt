@@ -280,7 +280,7 @@ open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtensio
 
             val klass = declaration.returnTypeRef.toClassLikeSymbol(context.session)
             val klassSource = declaration.returnTypeRef.source
-            if (klass != null && klassSource != null) {
+            if (klass != null && klassSource != null && klassSource.kind !is KtFakeSourceElementKind) {
                 visitor?.visitClassReference(klass, getIdentifier(klassSource), context)
             }
         }
