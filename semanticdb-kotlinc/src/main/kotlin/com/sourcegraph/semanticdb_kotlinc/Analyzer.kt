@@ -13,6 +13,8 @@ import org.jetbrains.kotlin.cli.common.messages.MessageRenderer
 import org.jetbrains.kotlin.cli.common.messages.PrintingMessageCollector
 import org.jetbrains.kotlin.com.intellij.openapi.project.Project
 import org.jetbrains.kotlin.config.CompilerConfiguration
+import org.jetbrains.kotlin.container.ComponentProvider
+import org.jetbrains.kotlin.context.ProjectContext
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingTrace
@@ -31,6 +33,18 @@ class Analyzer(
             .get(
                 CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY,
                 PrintingMessageCollector(System.err, MessageRenderer.PLAIN_FULL_PATHS, false))
+
+    override fun doAnalysis(
+        project: Project,
+        module: ModuleDescriptor,
+        projectContext: ProjectContext,
+        files: Collection<KtFile>,
+        bindingTrace: BindingTrace,
+        componentProvider: ComponentProvider
+    ): AnalysisResult? {
+        return super.doAnalysis(
+            project, module, projectContext, files, bindingTrace, componentProvider)
+    }
 
     override fun analysisCompleted(
         project: Project,

@@ -7,8 +7,8 @@ import com.sourcegraph.semanticdb_kotlinc.Semanticdb.SymbolOccurrence.Role
 import com.sourcegraph.semanticdb_kotlinc.test.ExpectedSymbols.SemanticdbData
 import com.sourcegraph.semanticdb_kotlinc.test.ExpectedSymbols.SymbolCacheData
 import com.tschuchort.compiletesting.SourceFile
-import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import kotlin.contracts.ExperimentalContracts
+import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.jupiter.api.TestFactory
 
 @ExperimentalCompilerApi
