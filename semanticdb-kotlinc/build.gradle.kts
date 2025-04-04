@@ -4,7 +4,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.publish.maven.MavenPublication
 
 plugins {
-    kotlin("jvm")
+    kotlin("jvm") version "2.1.20"
     id("com.github.johnrengelman.shadow")
     id("maven-publish")
     signing
@@ -49,7 +49,7 @@ dependencies {
         }
     }.because("transitive dependencies introduce 1.4.31 to the classpath which conflicts, can't use testRuntimeOnly")
     testImplementation(kotlin("reflect"))
-    testImplementation(kotlin("script-runtime", "1.5.0"))
+    testImplementation("org.jetbrains.kotlin:kotlin-script-runtime:2.0.21")
 
     snapshotsImplementation("com.sourcegraph", "scip-java_2.13", "0.8.24")
 }
@@ -180,7 +180,7 @@ subprojects {
 
     dependencies {
         implementation(kotlin("stdlib"))
-        compileOnly("com.sourcegraph", "semanticdb-javac", "0.6.12")
+        compileOnly("com.sourcegraph", "semanticdb-javac", "0.10.4")
     }
 
     afterEvaluate {

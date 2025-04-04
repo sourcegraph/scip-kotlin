@@ -19,6 +19,8 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import org.intellij.lang.annotations.Language
+import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
+import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.jupiter.api.io.TempDir
 
@@ -34,7 +36,7 @@ class AnalyzerTest {
             KotlinCompilation()
                 .apply {
                     sources = listOf(source)
-                    componentRegistrars = listOf(AnalyzerRegistrar { document = it })
+                    compilerPluginRegistrars = listOf( AnalyzerRegistrar { document = it })
                     verbose = false
                     pluginOptions =
                         listOf(
@@ -129,7 +131,7 @@ class AnalyzerTest {
             KotlinCompilation()
                 .apply {
                     sources = listOf(SourceFile.testKt(""))
-                    componentRegistrars =
+                    compilerPluginRegistrars =
                         listOf(AnalyzerRegistrar { throw Exception("sample text") })
                     verbose = false
                     pluginOptions =
@@ -567,7 +569,7 @@ class AnalyzerTest {
             KotlinCompilation()
                 .apply {
                     sources = listOf(source)
-                    componentRegistrars = listOf(AnalyzerRegistrar())
+                    compilerPluginRegistrars = listOf(AnalyzerRegistrar())
                     verbose = false
                     pluginOptions =
                         listOf(
