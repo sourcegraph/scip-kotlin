@@ -445,6 +445,65 @@ class AnalyzerTest {
     }
 
     @Test
+    fun `function return type`(@TempDir path: Path) {
+        val document =
+            compileSemanticdb(
+                path,
+                """
+            package sample
+
+            fun foo(arg: Int): Boolean = true
+            """)
+
+        val occurrences =
+            arrayOf(
+                SymbolOccurrence {
+                    role = Role.DEFINITION
+                    symbol = "sample/foo()."
+                    range {
+                        startLine = 2
+                        startCharacter = 4
+                        endLine = 2
+                        endCharacter = 7
+                    }
+                },
+                SymbolOccurrence {
+                    role = Role.DEFINITION
+                    symbol = "sample/foo().(arg)"
+                    range {
+                        startLine = 2
+                        startCharacter = 8
+                        endLine = 2
+                        endCharacter = 11
+                    }
+                },
+                SymbolOccurrence {
+                    role = Role.REFERENCE
+                    symbol = "kotlin/Int#"
+                    range {
+                        startLine = 2
+                        startCharacter = 13
+                        endLine = 2
+                        endCharacter = 16
+                    }
+                },
+                SymbolOccurrence {
+                    role = Role.REFERENCE
+                    symbol = "kotlin/Boolean#"
+                    range {
+                        startLine = 2
+                        startCharacter = 19
+                        endLine = 2
+                        endCharacter = 26
+                    }
+                },
+            )
+        assertSoftly(document.occurrencesList) {
+            withClue(this) { occurrences.forEach(::shouldContain) }
+        }
+    }
+
+    @Test
     fun `exception test`(@TempDir path: Path) {
         val buildPath = File(path.resolve("build").toString()).apply { mkdir() }
         val result =

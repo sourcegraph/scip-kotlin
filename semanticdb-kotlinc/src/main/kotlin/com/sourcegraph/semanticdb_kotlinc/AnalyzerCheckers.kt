@@ -248,6 +248,12 @@ open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtensio
             val ktFile = context.containingFile?.sourceFile ?: return
             val visitor = visitors[ktFile]
             visitor?.visitNamedFunction(declaration, getIdentifier(source), context)
+
+            val klass = declaration.returnTypeRef.toClassLikeSymbol(context.session)
+            val klassSource = declaration.returnTypeRef.source
+            if (klass != null && klassSource != null && klassSource.kind !is KtFakeSourceElementKind) {
+                visitor?.visitClassReference(klass, getIdentifier(klassSource), context)
+            }
         }
     }
 
@@ -297,6 +303,12 @@ open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtensio
             val ktFile = context.containingFile?.sourceFile ?: return
             val visitor = visitors[ktFile]
             visitor?.visitParameter(declaration, getIdentifier(source), context)
+
+            val klass = declaration.returnTypeRef.toClassLikeSymbol(context.session)
+            val klassSource = declaration.returnTypeRef.source
+            if (klass != null && klassSource != null && klassSource.kind !is KtFakeSourceElementKind) {
+                visitor?.visitClassReference(klass, getIdentifier(klassSource), context)
+            }
         }
     }
 
