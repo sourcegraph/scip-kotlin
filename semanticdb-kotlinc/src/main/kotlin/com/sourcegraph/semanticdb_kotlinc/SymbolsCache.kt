@@ -118,7 +118,7 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
         when (symbol) {
             is FirTypeParameterSymbol ->
                 return getSymbol(symbol.containingDeclarationSymbol, locals)
-            is FirValueParameterSymbol -> return getSymbol(symbol.containingFunctionSymbol, locals)
+            is FirValueParameterSymbol -> return getSymbol(symbol.containingDeclarationSymbol, locals)
             is FirCallableSymbol -> {
                 val session = symbol.fir.moduleData.session
                 return symbol.getContainingSymbol(session)?.let { getSymbol(it, locals) }
