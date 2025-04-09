@@ -123,6 +123,76 @@ class AnalyzerTest {
     }
 
     @Test
+    fun imports(@TempDir path: Path) {
+        val document =
+            compileSemanticdb(
+                path,
+                """
+                    package sample
+
+                    import kotlin.Boolean
+                    import kotlin.Int as KInt
+                """)
+
+        val occurrences =
+            arrayOf(
+                SymbolOccurrence {
+                    role = Role.REFERENCE
+                    symbol = "sample/"
+                    range {
+                        startLine = 0
+                        startCharacter = 8
+                        endLine = 0
+                        endCharacter = 14
+                    }
+                },
+                SymbolOccurrence {
+                    role = Role.REFERENCE
+                    symbol = "kotlin/"
+                    range {
+                        startLine = 2
+                        startCharacter = 7
+                        endLine = 2
+                        endCharacter = 13
+                    }
+                },
+                SymbolOccurrence {
+                    role = Role.REFERENCE
+                    symbol = "kotlin/Boolean#"
+                    range {
+                        startLine = 2
+                        startCharacter = 14
+                        endLine = 2
+                        endCharacter = 21
+                    }
+                },
+                SymbolOccurrence {
+                    role = Role.REFERENCE
+                    symbol = "kotlin/"
+                    range {
+                        startLine = 3
+                        startCharacter = 7
+                        endLine = 3
+                        endCharacter = 13
+                    }
+                },
+                SymbolOccurrence {
+                    role = Role.REFERENCE
+                    symbol = "kotlin/Int#"
+                    range {
+                        startLine = 3
+                        startCharacter = 14
+                        endLine = 3
+                        endCharacter = 17
+                    }
+                },
+            )
+        assertSoftly(document.occurrencesList) {
+            withClue(this) { occurrences.forEach(::shouldContain) }
+        }
+    }
+
+    @Test
     fun overrides(@TempDir path: Path) {
         val document =
             compileSemanticdb(

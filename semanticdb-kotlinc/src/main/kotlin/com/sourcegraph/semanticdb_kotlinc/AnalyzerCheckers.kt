@@ -5,10 +5,7 @@ import kotlin.contracts.ExperimentalContracts
 import org.jetbrains.kotlin.*
 import org.jetbrains.kotlin.com.intellij.lang.LighterASTNode
 import org.jetbrains.kotlin.com.intellij.util.diff.FlyweightCapableTreeStructure
-import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
-import org.jetbrains.kotlin.diagnostics.collectDescendantsOfType
-import org.jetbrains.kotlin.diagnostics.findChildByType
-import org.jetbrains.kotlin.diagnostics.findLastDescendant
+import org.jetbrains.kotlin.diagnostics.*
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
@@ -141,7 +138,7 @@ open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtensio
                 val source = import.source ?: return@forEach
                 val fqName = import.importedFqName ?: return@forEach
 
-                val names = source.treeStructure.findLastDescendant(source.lighterASTNode) { true }
+                val names = source.treeStructure.findDescendantByType(source.lighterASTNode, KtNodeTypes.DOT_QUALIFIED_EXPRESSION)
                 if (names != null) {
                     eachFqNameElement(fqName, source.treeStructure, names) { fqName, name ->
                         val symbolProvider = context.session.symbolProvider
