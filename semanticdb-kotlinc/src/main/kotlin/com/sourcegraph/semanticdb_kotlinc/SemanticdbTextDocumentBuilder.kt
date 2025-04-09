@@ -153,7 +153,7 @@ class SemanticdbTextDocumentBuilder(
             propertyAccessorRenderer = null,
             callArgumentsRenderer = FirCallNoArgumentsRenderer(),
             modifierRenderer = FirAllModifierRenderer(),
-            valueParameterRenderer = FirValueParameterRendererForReadability(),
+            callableSignatureRenderer = FirCallableSignatureRendererForReadability(),
             declarationRenderer = FirDeclarationRenderer("local "),
         )
         val renderOutput = renderer.renderElementAsString(element)
