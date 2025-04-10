@@ -193,6 +193,113 @@ class AnalyzerTest {
     }
 
     @Test
+    fun `local classes`(@TempDir path: Path) {
+        val document =
+            compileSemanticdb(
+                path,
+                """
+                    package sample
+
+                    fun foo() {
+                      class LocalClass {
+                        fun localClassMethod() {}
+                      }
+                    }
+                """)
+
+        val occurrences =
+            arrayOf(
+                SymbolOccurrence {
+                    role = Role.DEFINITION
+                    symbol = "sample/foo()."
+                    range {
+                        startLine = 2
+                        startCharacter = 4
+                        endLine = 2
+                        endCharacter = 7
+                    }
+                },
+                // LocalClass
+                SymbolOccurrence {
+                    role = Role.DEFINITION
+                    symbol = "local0"
+                    range {
+                        startLine = 3
+                        startCharacter = 8
+                        endLine = 3
+                        endCharacter = 18
+                    }
+                },
+                // LocalClass constructor
+                SymbolOccurrence {
+                    role = Role.DEFINITION
+                    symbol = "local1"
+                    range {
+                        startLine = 3
+                        startCharacter = 8
+                        endLine = 3
+                        endCharacter = 18
+                    }
+                },
+                // localClassMethod
+                SymbolOccurrence {
+                    role = Role.DEFINITION
+                    symbol = "local2"
+                    range {
+                        startLine = 4
+                        startCharacter = 8
+                        endLine = 4
+                        endCharacter = 24
+                    }
+                },
+            )
+        assertSoftly(document.occurrencesList) {
+            withClue(this) { occurrences.forEach(::shouldContain) }
+        }
+
+        val symbols =
+            arrayOf(
+                SymbolInformation {
+                    symbol = "sample/foo()."
+                    displayName = "foo"
+                    language = KOTLIN
+                    documentation {
+                        message = "```kotlin\npublic final fun foo(): Unit\n```"
+                        format = Semanticdb.Documentation.Format.MARKDOWN
+                    }
+                },
+                SymbolInformation {
+                    symbol = "local0"
+                    displayName = "LocalClass"
+                    language = KOTLIN
+                    documentation {
+                        message = "```kotlin\nlocal final class LocalClass : Any\n```"
+                        format = Semanticdb.Documentation.Format.MARKDOWN
+                    }
+                },
+                SymbolInformation {
+                    symbol = "local1"
+                    displayName = "LocalClass"
+                    language = KOTLIN
+                    documentation {
+                        message = "```kotlin\npublic constructor(): LocalClass\n```"
+                        format = Semanticdb.Documentation.Format.MARKDOWN
+                    }
+                },
+                SymbolInformation {
+                    symbol = "local2"
+                    displayName = "localClassMethod"
+                    language = KOTLIN
+                    documentation {
+                        message = "```kotlin\npublic final fun localClassMethod(): Unit\n```"
+                        format = Semanticdb.Documentation.Format.MARKDOWN
+                    }
+                },
+            )
+        assertSoftly(document.symbolsList) { withClue(this) { symbols.forEach(::shouldContain) } }
+    }
+
+    @Test
     fun overrides(@TempDir path: Path) {
         val document =
             compileSemanticdb(
