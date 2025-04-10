@@ -93,6 +93,9 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
         if (symbol.fir.isLocalMember) return locals + symbol
 
         val owner = getParentSymbol(symbol, locals)
+
+        if (owner.isLocal()) return locals + symbol
+
         val semanticdbDescriptor = semanticdbDescriptor(symbol)
 
         return Symbol.createGlobal(owner, semanticdbDescriptor)
