@@ -25,7 +25,6 @@ import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFileChecker
 import org.jetbrains.kotlin.fir.declarations.FirFile
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrar
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrarAdapter
-import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent.Factory
 import org.junit.jupiter.api.Assumptions.assumeFalse
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.DynamicTest.dynamicTest
@@ -133,11 +132,8 @@ private class TestAnalyzerDeclarationCheckers(
     override val fileCheckers: Set<FirFileChecker> =
         setOf(
             object : FirFileChecker(MppCheckerKind.Common) {
-                override fun check(
-                    declaration: FirFile,
-                    context: CheckerContext,
-                    reporter: DiagnosticReporter
-                ) {
+                context(context: CheckerContext, reporter: DiagnosticReporter)
+                override fun check(declaration: FirFile) {
                     val ktFile = declaration.sourceFile ?: return
                     val lineMap = LineMap(declaration)
                     val visitor = SemanticdbVisitor(sourceRoot, ktFile, lineMap, globals, locals)

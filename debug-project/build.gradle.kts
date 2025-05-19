@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -24,12 +25,14 @@ dependencies {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
     dependsOn(":${projects.semanticdbKotlinc.name}:shadowJar")
+}
+
+kotlin {
     val targetroot = File(project.buildDir, "semanticdb-targetroot")
-    kotlinOptions {
-        jvmTarget = "11"
-        freeCompilerArgs = freeCompilerArgs + listOf(
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_11
+        freeCompilerArgs.addAll(
             "-Xplugin=${semanticdbJar.first()}",
             "-P",
             "plugin:semanticdb-kotlinc:sourceroot=${projectDir.path}",
