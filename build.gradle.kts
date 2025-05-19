@@ -1,10 +1,11 @@
 import com.palantir.gradle.gitversion.VersionDetails
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import groovy.lang.Closure
 import org.gradle.jvm.toolchain.internal.CurrentJvmToolchainSpec
 
 plugins {
-    kotlin("jvm") version "2.1.20"
+    kotlin("jvm") version "2.2.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("com.palantir.git-version") version "3.1.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
@@ -65,11 +66,10 @@ subprojects {
 
 allprojects {
     afterEvaluate {
-        tasks.withType<KotlinCompile> {
-            kotlinOptions.jvmTarget = "1.8"
-        }
-
         kotlin {
+            compilerOptions {
+                jvmTarget = JvmTarget.JVM_1_8
+            }
             jvmToolchain {
                 (this as JavaToolchainSpec).languageVersion.set(JavaLanguageVersion.of(8))
             }

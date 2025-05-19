@@ -6,6 +6,7 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.isLocalMember
 import org.jetbrains.kotlin.fir.analysis.checkers.getContainingSymbol
+import org.jetbrains.kotlin.fir.declarations.DirectDeclarationsAccess
 import org.jetbrains.kotlin.fir.declarations.FirClass
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.utils.memberDeclarationNameOrNull
@@ -174,7 +175,7 @@ class GlobalSymbolsCache(testing: Boolean = false) : Iterable<Symbol> {
         }
     }
 
-    @OptIn(SymbolInternals::class)
+    @OptIn(SymbolInternals::class, DirectDeclarationsAccess::class)
     private fun methodDisambiguator(symbol: FirFunctionSymbol<*>): String {
         val session = symbol.moduleData.session
 

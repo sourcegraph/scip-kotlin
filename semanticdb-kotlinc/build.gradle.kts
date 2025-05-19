@@ -1,4 +1,5 @@
 import java.net.URI
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.publish.maven.MavenPublication
@@ -40,7 +41,7 @@ dependencies {
     //   https://github.com/tschuchortdev/kotlin-compile-testing/issues/390
     // Until then, we use the fork from https://github.com/ZacSweers/kotlin-compile-testing instead.
     // testImplementation("com.github.tschuchortdev", "kotlin-compile-testing", "1.5.0")
-    testImplementation("dev.zacsweers.kctfork", "core", "0.7.0")
+    testImplementation("dev.zacsweers.kctfork", "core", "0.7.1")
 
     testImplementation("org.junit.jupiter", "junit-jupiter-params", "5.8.1")
     testImplementation("org.jetbrains.kotlin", "kotlin-stdlib-jdk8", "1.5.0") {
@@ -56,8 +57,14 @@ dependencies {
 
 tasks.withType<KotlinCompile> {
     dependsOn(":${projects.semanticdbKotlin.name}:build")
-    kotlinOptions {
-        freeCompilerArgs = freeCompilerArgs + listOf("-Xinline-classes")
+}
+
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.addAll(
+            "-Xinline-classes",
+            "-Xcontext-parameters",
+        )
     }
 }
 
@@ -203,10 +210,13 @@ subprojects {
         tasks.withType<KotlinCompile> {
             dependsOn(projects.semanticdbKotlinc.dependencyProject.tasks.shadowJar.get().path)
             outputs.upToDateWhen { false }
+        }
+
+        kotlin {
             val pluginJar = semanticdbJar.incoming.artifacts.artifactFiles.first().path
-            kotlinOptions {
-                jvmTarget = "1.8"
-                freeCompilerArgs = freeCompilerArgs + listOf(
+            compilerOptions {
+                jvmTarget = JvmTarget.JVM_1_8
+                freeCompilerArgs.addAll(
                     "-Xplugin=$pluginJar",
                     "-P",
                     "plugin:semanticdb-kotlinc:sourceroot=${sourceroot}",

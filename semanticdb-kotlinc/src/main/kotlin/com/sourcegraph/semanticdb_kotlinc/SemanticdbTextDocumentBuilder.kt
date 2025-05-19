@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.KtSourceFile
 import org.jetbrains.kotlin.com.intellij.lang.java.JavaLanguage
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
-import org.jetbrains.kotlin.fir.analysis.checkers.getDirectOverriddenSymbols
+import org.jetbrains.kotlin.fir.analysis.checkers.directOverriddenSymbolsSafe
 import org.jetbrains.kotlin.fir.analysis.checkers.toClassLikeSymbol
 import org.jetbrains.kotlin.fir.analysis.getChild
 import org.jetbrains.kotlin.fir.renderer.*
@@ -80,7 +80,7 @@ class SemanticdbTextDocumentBuilder(
                         .filterNotNull()
                         .flatMap { cache[it] }
                 is FirFunctionSymbol<*> ->
-                    firBasedSymbol.fir.getDirectOverriddenSymbols(context).flatMap { cache[it] }
+                    firBasedSymbol.directOverriddenSymbolsSafe(context).flatMap { cache[it] }
                 else -> emptyList<Symbol>().asIterable()
             }
         return SymbolInformation {
