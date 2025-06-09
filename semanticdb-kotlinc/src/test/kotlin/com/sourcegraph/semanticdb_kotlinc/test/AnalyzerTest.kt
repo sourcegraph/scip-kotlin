@@ -689,6 +689,50 @@ class AnalyzerTest {
     }
 
     @Test
+    fun `type operators`(@TempDir path: Path) {
+        val document =
+            compileSemanticdb(
+                path,
+                """
+            package sample
+
+            fun foo(x: Any) {
+                when (x) {
+                    is Int -> true
+                    else -> x as Float
+                }
+            }
+            """)
+
+        val occurrences =
+            arrayOf(
+                SymbolOccurrence {
+                    role = Role.REFERENCE
+                    symbol = "kotlin/Int#"
+                    range {
+                        startLine = 4
+                        startCharacter = 11
+                        endLine = 4
+                        endCharacter = 14
+                    }
+                },
+                SymbolOccurrence {
+                    role = Role.REFERENCE
+                    symbol = "kotlin/Float#"
+                    range {
+                        startLine = 5
+                        startCharacter = 21
+                        endLine = 5
+                        endCharacter = 26
+                    }
+                },
+            )
+        assertSoftly(document.occurrencesList) {
+            withClue(this) { occurrences.forEach(::shouldContain) }
+        }
+    }
+
+    @Test
     fun `exception test`(@TempDir path: Path) {
         val buildPath = File(path.resolve("build").toString()).apply { mkdir() }
         val result =
