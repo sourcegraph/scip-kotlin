@@ -111,6 +111,7 @@ open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtensio
 
                 var ancestor = fqName
                 var depth = 0
+
                 while (ancestor != FqName.ROOT) {
                     val nameNode = nameList[nameList.lastIndex - depth]
                     val nameSource = nameNode.toKtLightSourceElement(tree)
@@ -126,7 +127,9 @@ open class AnalyzerCheckers(session: FirSession) : FirAdditionalCheckersExtensio
             val fqName = packageDirective.packageFqName
             val source = packageDirective.source
             if (source != null) {
-                val names = source.treeStructure.findLastDescendant(source.lighterASTNode) { true }
+                val names = source.treeStructure.findChildByType(source.lighterASTNode, KtNodeTypes.DOT_QUALIFIED_EXPRESSION) ?:
+                    source.treeStructure.findChildByType(source.lighterASTNode, KtNodeTypes.REFERENCE_EXPRESSION)
+
                 if (names != null) {
                     eachFqNameElement(fqName, source.treeStructure, names) { fqName, name ->
                         visitor?.visitPackage(fqName, name, context)

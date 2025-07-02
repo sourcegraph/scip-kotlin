@@ -106,6 +106,7 @@ class SemanticdbSymbolsTest {
                 )
             .mapCheckExpectedSymbols()
 
+
     @TestFactory
     fun `check package symbols`() =
         listOf(
