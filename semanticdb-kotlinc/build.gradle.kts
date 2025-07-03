@@ -105,7 +105,7 @@ publishing {
                 pom {
                     name.set("semanticdb-kotlinc")
                     description.set("A kotlinc plugin to emit SemanticDB information")
-                    url.set("https://github.com/sourcegraph/lsif-kotlin")
+                    url.set("https://github.com/sourcegraph/scip-kotlin")
                     developers {
                         developer {
                             id.set("strum355")
@@ -140,9 +140,9 @@ publishing {
             name = "sonatype"
             url =
                 if (!(version as String).endsWith("-SNAPSHOT"))
-                    URI("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
+                    URI("https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/")
                 else
-                    URI("https://oss.sonatype.org/content/repositories/snapshots/")
+                    URI("https://central.sonatype.com/repository/maven-snapshots/")
             credentials {
                 username = System.getenv("SONATYPE_USERNAME")
                 password = System.getenv("SONATYPE_PASSWORD")
