@@ -52,7 +52,7 @@ dependencies {
     testImplementation(kotlin("reflect"))
     testImplementation(kotlin("script-runtime", "1.5.0"))
 
-    snapshotsImplementation("com.sourcegraph", "scip-java_2.13", "0.8.24")
+    snapshotsImplementation("com.sourcegraph", "scip-java_2.13", "0.11.2")
 }
 
 tasks.withType<KotlinCompile> {
