@@ -8,13 +8,13 @@ val x = arrayListOf<String>().forEachIndexed { i, s -> println("$i $s") }
 //    documentation ```kotlin\npublic final val x: Unit\n```
 //      ^^^^^^^^^^^ reference semanticdb maven . . kotlin/collections/arrayListOf().
 //                            ^^^^^^^^^^^^^^ reference semanticdb maven . . kotlin/collections/forEachIndexed(+9).
-//                                             ^ definition semanticdb maven . . (i)
+//                                             ^ definition local 0
 //                                               documentation ```kotlin\ni: Int\n```
-//                                                ^ definition semanticdb maven . . (s)
+//                                                ^ definition local 1
 //                                                  documentation ```kotlin\ns: String\n```
 //                                                     ^^^^^^^ reference semanticdb maven . . kotlin/io/println().
-//                                                               ^ reference semanticdb maven . . (i)
-//                                                                  ^ reference semanticdb maven . . (s)
+//                                                               ^ reference local 0
+//                                                                  ^ reference local 1
 
 val y = "fdsa".run { this.toByteArray() }
 //  ^ definition semanticdb maven . . snapshots/getY().
@@ -32,8 +32,8 @@ val z = y.let { it.size }
 //      ^ reference semanticdb maven . . snapshots/getY().
 //      ^ reference semanticdb maven . . snapshots/y.
 //        ^^^ reference semanticdb maven . . kotlin/let().
-//            ^^^^^^^^^^^ definition semanticdb maven . . (it)
+//            ^^^^^^^^^^^ definition local 2
 //                        documentation ```kotlin\nit: ByteArray\n```
-//              ^^ reference semanticdb maven . . (it)
+//              ^^ reference local 2
 //                 ^^^^ reference semanticdb maven . . kotlin/ByteArray#getSize().
 //                 ^^^^ reference semanticdb maven . . kotlin/ByteArray#size.
