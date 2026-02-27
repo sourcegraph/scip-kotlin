@@ -5,7 +5,7 @@ import groovy.lang.Closure
 import org.gradle.jvm.toolchain.internal.CurrentJvmToolchainSpec
 
 plugins {
-    kotlin("jvm") version "2.2.0"
+    kotlin("jvm") version "2.3.10"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("com.palantir.git-version") version "3.1.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
