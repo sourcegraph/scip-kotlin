@@ -43,7 +43,7 @@ dependencies {
     // testImplementation("com.github.tschuchortdev", "kotlin-compile-testing", "1.5.0")
     testImplementation("dev.zacsweers.kctfork", "core", "0.7.1")
 
-    testImplementation("org.junit.jupiter", "junit-jupiter-params", "5.8.1")
+    testImplementation("org.junit.jupiter", "junit-jupiter-params", "5.14.3")
     testImplementation("org.jetbrains.kotlin", "kotlin-stdlib-jdk8", "1.5.0") {
         version {
             strictly("1.5.0")
