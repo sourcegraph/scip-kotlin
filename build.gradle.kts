@@ -9,7 +9,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("com.palantir.git-version") version "3.1.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
-    id("com.diffplug.spotless") version "5.17.1"
+    id("com.diffplug.spotless") version "8.2.1"
 }
 
 val versionDetails: Closure<VersionDetails> by extra
