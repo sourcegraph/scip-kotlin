@@ -85,6 +85,11 @@ class AnalyzerTest {
                         endLine = 1
                         endCharacter = 12
                     }
+                    enclosingRange {
+                        startLine = 1
+                        endLine = 3
+                        endCharacter = 1
+                    }
                 },
                 SymbolOccurrence {
                     role = Role.DEFINITION
@@ -94,6 +99,12 @@ class AnalyzerTest {
                         startCharacter = 8
                         endLine = 2
                         endCharacter = 11
+                    }
+                    enclosingRange {
+                        startLine = 2
+                        startCharacter = 4
+                        endLine = 2
+                        endCharacter = 17
                     }
                 })
         assertSoftly(document.occurrencesList) {
@@ -223,6 +234,11 @@ class AnalyzerTest {
                         endLine = 2
                         endCharacter = 7
                     }
+                    enclosingRange {
+                        startLine = 2
+                        endLine = 6
+                        endCharacter = 1
+                    }
                 },
                 // LocalClass
                 SymbolOccurrence {
@@ -233,6 +249,12 @@ class AnalyzerTest {
                         startCharacter = 8
                         endLine = 3
                         endCharacter = 18
+                    }
+                    enclosingRange {
+                        startLine = 3
+                        startCharacter = 2
+                        endLine = 5
+                        endCharacter = 3
                     }
                 },
                 // LocalClass constructor
@@ -245,6 +267,12 @@ class AnalyzerTest {
                         endLine = 3
                         endCharacter = 18
                     }
+                    enclosingRange {
+                        startLine = 3
+                        startCharacter = 2
+                        endLine = 5
+                        endCharacter = 3
+                    }
                 },
                 // localClassMethod
                 SymbolOccurrence {
@@ -255,6 +283,12 @@ class AnalyzerTest {
                         startCharacter = 8
                         endLine = 4
                         endCharacter = 24
+                    }
+                    enclosingRange {
+                        startLine = 4
+                        startCharacter = 4
+                        endLine = 4
+                        endCharacter = 29
                     }
                 },
             )
@@ -343,6 +377,11 @@ class AnalyzerTest {
                         endLine = 2
                         endCharacter = 19
                     }
+                    enclosingRange {
+                        startLine = 2
+                        endLine = 4
+                        endCharacter = 1
+                    }
                 },
                 SymbolOccurrence {
                     role = Role.DEFINITION
@@ -353,6 +392,12 @@ class AnalyzerTest {
                         endLine = 3
                         endCharacter = 11
                     }
+                    enclosingRange {
+                        startLine = 3
+                        startCharacter = 4
+                        endLine = 3
+                        endCharacter = 13
+                    }
                 },
                 SymbolOccurrence {
                     role = Role.DEFINITION
@@ -362,6 +407,11 @@ class AnalyzerTest {
                         startCharacter = 6
                         endLine = 6
                         endCharacter = 11
+                    }
+                    enclosingRange {
+                        startLine = 6
+                        endLine = 8
+                        endCharacter = 1
                     }
                 },
                 SymbolOccurrence {
@@ -382,6 +432,12 @@ class AnalyzerTest {
                         startCharacter = 17
                         endLine = 7
                         endCharacter = 20
+                    }
+                    enclosingRange {
+                        startLine = 7
+                        startCharacter = 4
+                        endLine = 7
+                        endCharacter = 25
                     }
                 },
             )
@@ -477,6 +533,11 @@ class AnalyzerTest {
                         endLine = 2
                         endCharacter = 19
                     }
+                    enclosingRange {
+                        startLine = 2
+                        endLine = 4
+                        endCharacter = 1
+                    }
                 },
                 SymbolOccurrence {
                     role = Role.DEFINITION
@@ -486,6 +547,12 @@ class AnalyzerTest {
                         startCharacter = 8
                         endLine = 3
                         endCharacter = 11
+                    }
+                    enclosingRange {
+                        startLine = 3
+                        startCharacter = 4
+                        endLine = 3
+                        endCharacter = 13
                     }
                 },
                 SymbolOccurrence {
@@ -497,6 +564,12 @@ class AnalyzerTest {
                         endLine = 7
                         endCharacter = 18
                     }
+                    enclosingRange {
+                        startLine = 7
+                        startCharacter = 12
+                        endLine = 9
+                        endCharacter = 5
+                    }
                 },
                 SymbolOccurrence {
                     role = Role.DEFINITION
@@ -506,6 +579,12 @@ class AnalyzerTest {
                         startCharacter = 12
                         endLine = 7
                         endCharacter = 18
+                    }
+                    enclosingRange {
+                        startLine = 7
+                        startCharacter = 12
+                        endLine = 9
+                        endCharacter = 5
                     }
                 },
                 SymbolOccurrence {
@@ -527,6 +606,12 @@ class AnalyzerTest {
                         endLine = 8
                         endCharacter = 24
                     }
+                    enclosingRange {
+                        startLine = 8
+                        startCharacter = 8
+                        endLine = 8
+                        endCharacter = 29
+                    }
                 },
                 SymbolOccurrence {
                     role = Role.DEFINITION
@@ -537,6 +622,12 @@ class AnalyzerTest {
                         endLine = 10
                         endCharacter = 18
                     }
+                    enclosingRange {
+                        startLine = 10
+                        startCharacter = 12
+                        endLine = 12
+                        endCharacter = 5
+                    }
                 },
                 SymbolOccurrence {
                     role = Role.DEFINITION
@@ -546,6 +637,12 @@ class AnalyzerTest {
                         startCharacter = 12
                         endLine = 10
                         endCharacter = 18
+                    }
+                    enclosingRange {
+                        startLine = 10
+                        startCharacter = 12
+                        endLine = 12
+                        endCharacter = 5
                     }
                 },
                 SymbolOccurrence {
@@ -566,6 +663,12 @@ class AnalyzerTest {
                         startCharacter = 21
                         endLine = 11
                         endCharacter = 24
+                    }
+                    enclosingRange {
+                        startLine = 11
+                        startCharacter = 8
+                        endLine = 11
+                        endCharacter = 29
                     }
                 },
             )
@@ -651,6 +754,11 @@ class AnalyzerTest {
                         endLine = 2
                         endCharacter = 7
                     }
+                    enclosingRange {
+                        startLine = 2
+                        endLine = 2
+                        endCharacter = 33
+                    }
                 },
                 SymbolOccurrence {
                     role = Role.DEFINITION
@@ -660,6 +768,12 @@ class AnalyzerTest {
                         startCharacter = 8
                         endLine = 2
                         endCharacter = 11
+                    }
+                    enclosingRange {
+                        startLine = 2
+                        startCharacter = 8
+                        endLine = 2
+                        endCharacter = 16
                     }
                 },
                 SymbolOccurrence {
@@ -1236,6 +1350,11 @@ class AnalyzerTest {
                         endLine = 1
                         endCharacter = 11
                     }
+                    enclosingRange {
+                        startLine = 1
+                        endLine = 1
+                        endCharacter = 11
+                    }
                 },
                 SymbolOccurrence {
                     role = Role.DEFINITION
@@ -1243,6 +1362,11 @@ class AnalyzerTest {
                     range {
                         startLine = 1
                         startCharacter = 6
+                        endLine = 1
+                        endCharacter = 11
+                    }
+                    enclosingRange {
+                        startLine = 1
                         endLine = 1
                         endCharacter = 11
                     }
@@ -1303,6 +1427,11 @@ class AnalyzerTest {
                         endLine = 1
                         endCharacter = 12
                     }
+                    enclosingRange {
+                        startLine = 1
+                        endLine = 3
+                        endCharacter = 1
+                    }
                 },
                 SymbolOccurrence {
                     role = Role.DEFINITION
@@ -1313,6 +1442,12 @@ class AnalyzerTest {
                         endLine = 2
                         endCharacter = 11
                     }
+                    enclosingRange {
+                        startLine = 2
+                        startCharacter = 4
+                        endLine = 2
+                        endCharacter = 17
+                    }
                 },
                 SymbolOccurrence {
                     role = Role.DEFINITION
@@ -1322,6 +1457,11 @@ class AnalyzerTest {
                         startCharacter = 6
                         endLine = 1
                         endCharacter = 12
+                    }
+                    enclosingRange {
+                        startLine = 1
+                        endLine = 3
+                        endCharacter = 1
                     }
                 },
             )

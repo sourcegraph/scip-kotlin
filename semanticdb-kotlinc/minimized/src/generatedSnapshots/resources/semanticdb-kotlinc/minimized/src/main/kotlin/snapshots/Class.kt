@@ -1,6 +1,14 @@
   package snapshots
 //        ^^^^^^^^^ reference semanticdb maven . . snapshots/
   
+//⌄ enclosing_range_start semanticdb maven . . snapshots/Class#
+//            ⌄ enclosing_range_start semanticdb maven . . snapshots/Class#`<init>`().
+//                        ⌄ enclosing_range_start semanticdb maven . . snapshots/Class#`<init>`().(banana)
+//                        ⌄ enclosing_range_start semanticdb maven . . snapshots/Class#banana.
+//                        ⌄ enclosing_range_start semanticdb maven . . snapshots/Class#getBanana().
+//                        ⌄ enclosing_range_start semanticdb maven . . snapshots/Class#setBanana().
+//                        ⌄ enclosing_range_start semanticdb maven . . snapshots/Class#setBanana().(value)
+//                                                 ⌄ enclosing_range_start semanticdb maven . . snapshots/Class#`<init>`().(apple)
   class Class constructor(private var banana: Int, apple: String) :
 //      ^^^^^ definition semanticdb maven . . snapshots/Class#
 //            display_name Class
@@ -30,6 +38,13 @@
 //                                                       display_name apple
 //                                                       documentation ```kotlin\napple: String\n```
 //                                                        ^^^^^^ reference semanticdb maven . . kotlin/String#
+//                                              ⌃ enclosing_range_end semanticdb maven . . snapshots/Class#`<init>`().(banana)
+//                                              ⌃ enclosing_range_end semanticdb maven . . snapshots/Class#banana.
+//                                              ⌃ enclosing_range_end semanticdb maven . . snapshots/Class#getBanana().
+//                                              ⌃ enclosing_range_end semanticdb maven . . snapshots/Class#setBanana().
+//                                              ⌃ enclosing_range_end semanticdb maven . . snapshots/Class#setBanana().(value)
+//                                                             ⌃ enclosing_range_end semanticdb maven . . snapshots/Class#`<init>`().(apple)
+//                                                              ⌃ enclosing_range_end semanticdb maven . . snapshots/Class#`<init>`().
       Throwable(banana.toString() + apple) {
 //    ^^^^^^^^^ reference semanticdb maven . . kotlin/Throwable#
 //              ^^^^^^ reference semanticdb maven . . snapshots/Class#`<init>`().(banana)
@@ -41,6 +56,8 @@
 //    ^^^^^^^ reference semanticdb maven . . kotlin/io/println().
     }
   
+//  ⌄ enclosing_range_start semanticdb maven . . snapshots/Class#asdf.
+//  ⌄ enclosing_range_start semanticdb maven . . snapshots/Class#getAsdf().
     val asdf =
 //      ^^^^ definition semanticdb maven . . snapshots/Class#asdf.
 //           display_name asdf
@@ -48,6 +65,8 @@
 //      ^^^^ definition semanticdb maven . . snapshots/Class#getAsdf().
 //           display_name asdf
 //           documentation ```kotlin\npublic get(): Any\n```
+//      ⌄ enclosing_range_start semanticdb maven . . snapshots/`<anonymous object at 177>`#
+//      ⌄ enclosing_range_start semanticdb maven . . snapshots/`<anonymous object at 177>`#`<init>`().
         object {
 //      ^^^^^^ definition semanticdb maven . . snapshots/`<anonymous object at 177>`#
 //             display_name <anonymous>
@@ -55,17 +74,27 @@
 //      ^^^^^^ definition semanticdb maven . . snapshots/`<anonymous object at 177>`#`<init>`().
 //             display_name <anonymous>
 //             documentation ```kotlin\nprivate constructor(): <anonymous>\n```
+//        ⌄ enclosing_range_start semanticdb maven . . snapshots/`<anonymous object at 177>`#doStuff().
           fun doStuff() = Unit
 //            ^^^^^^^ definition semanticdb maven . . snapshots/`<anonymous object at 177>`#doStuff().
 //                    display_name doStuff
 //                    documentation ```kotlin\npublic final fun doStuff(): Unit\n```
+//                           ⌃ enclosing_range_end semanticdb maven . . snapshots/`<anonymous object at 177>`#doStuff().
         }
+//      ⌃ enclosing_range_end semanticdb maven . . snapshots/Class#asdf.
+//      ⌃ enclosing_range_end semanticdb maven . . snapshots/Class#getAsdf().
+//      ⌃ enclosing_range_end semanticdb maven . . snapshots/`<anonymous object at 177>`#
+//      ⌃ enclosing_range_end semanticdb maven . . snapshots/`<anonymous object at 177>`#`<init>`().
   
+//  ⌄ enclosing_range_start semanticdb maven . . snapshots/Class#`<init>`(+1).
     constructor() : this(1, "")
 //  ^^^^^^^^^^^^^^^^^^^^^^^^^^^ definition semanticdb maven . . snapshots/Class#`<init>`(+1).
 //                              display_name Class
 //                              documentation ```kotlin\npublic constructor(): Class\n```
+//                            ⌃ enclosing_range_end semanticdb maven . . snapshots/Class#`<init>`(+1).
   
+//  ⌄ enclosing_range_start semanticdb maven . . snapshots/Class#`<init>`(+2).
+//              ⌄ enclosing_range_start semanticdb maven . . snapshots/Class#`<init>`(+2).(banana)
     constructor(banana: Int) : this(banana, "")
 //  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ definition semanticdb maven . . snapshots/Class#`<init>`(+2).
 //                                              display_name Class
@@ -75,7 +104,10 @@
 //                     documentation ```kotlin\nbanana: Int\n```
 //                      ^^^ reference semanticdb maven . . kotlin/Int#
 //                                  ^^^^^^ reference semanticdb maven . . snapshots/Class#`<init>`(+2).(banana)
+//                        ⌃ enclosing_range_end semanticdb maven . . snapshots/Class#`<init>`(+2).(banana)
+//                                            ⌃ enclosing_range_end semanticdb maven . . snapshots/Class#`<init>`(+2).
   
+//  ⌄ enclosing_range_start semanticdb maven . . snapshots/Class#run().
     fun run() {
 //      ^^^ definition semanticdb maven . . snapshots/Class#run().
 //          display_name run
@@ -92,4 +124,6 @@
 //    ^^^^^^ reference semanticdb maven . . snapshots/Class#getBanana().
 //    ^^^^^^ reference semanticdb maven . . snapshots/Class#setBanana().
     }
+//  ⌃ enclosing_range_end semanticdb maven . . snapshots/Class#run().
   }
+//⌃ enclosing_range_end semanticdb maven . . snapshots/Class#
