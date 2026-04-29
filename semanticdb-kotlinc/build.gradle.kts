@@ -58,14 +58,9 @@ protobuf {
     }
 }
 
-afterEvaluate {
-    tasks.processResources {
-        dependsOn(tasks.getByName("generateProto"))
-    }
-
-    tasks.compileKotlin {
-        dependsOn(tasks.getByName("generateProto"))
-    }
+java {
+    withSourcesJar()
+    withJavadocJar()
 }
 
 kotlin {
@@ -108,18 +103,6 @@ tasks.shadowJar {
     minimize()
 }
 
-val sourceJar = task<Jar>("sourceJar") {
-    dependsOn(tasks.classes)
-    archiveClassifier.set("sources")
-    from(sourceSets.main.get().allSource)
-}
-
-val javadocJar = task<Jar>("javadocJar") {
-    dependsOn(tasks.javadoc)
-    archiveClassifier.set("javadoc")
-    from(tasks.javadoc.get().destinationDir)
-}
-
 publishing {
     publications {
         create<MavenPublication>("shadow") {
@@ -151,8 +134,8 @@ publishing {
                     }
                 }
                 shadow.component(this)
-                artifact(sourceJar)
-                artifact(javadocJar)
+                artifact(tasks["sourcesJar"])
+                artifact(tasks["javadocJar"])
             }
         }
     }
