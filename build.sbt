@@ -1,4 +1,6 @@
 import _root_.kotlin.Keys._
+import scala.xml.{Node => XmlNode, NodeSeq => XmlNodeSeq}
+import scala.xml.transform.{RewriteRule, RuleTransformer}
 
 lazy val V = new {
   val kotlin   = "2.2.0"
@@ -49,7 +51,17 @@ lazy val kotlinc = project
     kotlinVersion    := V.kotlin,
     kotlincJvmTarget := "1.8",
     kotlincOptions ++= Seq("-Xinline-classes", "-Xcontext-parameters"),
-    kotlinLib("stdlib"),
+
+    // sbt-kotlin-plugin defaults to adding `kotlin-scripting-compiler-embeddable`
+    // (and its transitive kotlin-stdlib) as a regular dependency. Mark them
+    // Provided — kotlinc supplies them at runtime, and we don't want them
+    // bundled into the fat-jar.
+    kotlinRuntimeProvided := true,
+
+    // kotlin-stdlib is supplied by kotlinc at runtime — keep on compile
+    // classpath via Provided so the assembled fat-jar does not bundle it.
+    libraryDependencies +=
+      "org.jetbrains.kotlin" % "kotlin-stdlib" % V.kotlin % Provided,
 
     // protobuf java codegen — proto file lives at src/main/proto/...
     Compile / PB.protoSources := Seq((Compile / sourceDirectory).value / "proto"),
@@ -61,6 +73,28 @@ lazy val kotlinc = project
     // kotlin-compiler-embeddable is supplied by kotlinc at runtime
     libraryDependencies +=
       "org.jetbrains.kotlin" % "kotlin-compiler-embeddable" % V.kotlin % Provided,
+
+    // ---- sbt-assembly fat-jar ---------------------------------------------
+    // Mirrors scip-java's `fatjarPackageSettings`. Produces a shaded jar that
+    // replaces the slim `packageBin` so `publishLocal` ships the shaded
+    // artifact (the same artifact Gradle's shadowJar produced previously).
+    assembly / assemblyShadeRules := Seq(
+      // Relocate any IntelliJ classes the same way kotlin-compiler-embeddable
+      // does internally. Do NOT rename `com.sourcegraph.**` — the
+      // META-INF/services files reference those FQNs.
+      ShadeRule
+        .rename("com.intellij.**" -> "org.jetbrains.kotlin.com.intellij.@1")
+        .inAll
+    ),
+    Compile / packageBin := assembly.value,
+    // Strip every <dependency> from the POM — the fat-jar absorbs the
+    // protobuf runtime, and the kotlin-* deps are Provided by kotlinc.
+    pomPostProcess := { node =>
+      new RuleTransformer(new RewriteRule {
+        override def transform(n: XmlNode): XmlNodeSeq =
+          if (n.label == "dependency") XmlNodeSeq.Empty else n
+      }).transform(node).head
+    },
 
     // tests
     libraryDependencies ++= Seq(
