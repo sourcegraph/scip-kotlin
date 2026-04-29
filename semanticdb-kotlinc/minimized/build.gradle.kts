@@ -11,6 +11,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
+    compileOnly("com.sourcegraph", "semanticdb-javac", "0.8.23")
 }
 
 val semanticdbJar: Configuration by configurations.creating {
