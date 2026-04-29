@@ -7,3 +7,12 @@ generated/*
 *.svg
 /.kotlin/
 /semanticdb-kotlinc/META-INF/
+
+# sbt specific
+target/
+project/target/
+project/project/
+.bsp/
+.bloop/
+.metals/
+metals.sbt
