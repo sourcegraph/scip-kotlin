@@ -1,4 +1,5 @@
 import java.net.URI
+import com.google.protobuf.gradle.*
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
@@ -7,8 +8,19 @@ import org.gradle.api.publish.maven.MavenPublication
 plugins {
     kotlin("jvm")
     id("com.github.johnrengelman.shadow")
+    id("com.google.protobuf") version "0.9.4"
     id("maven-publish")
     signing
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath("com.google.protobuf:protobuf-java:3.17.3")
+    }
 }
 
 repositories {
@@ -30,8 +42,8 @@ val snapshotsImplementation: Configuration by configurations.getting {
 dependencies {
     implementation(kotlin("stdlib"))
     compileOnly(kotlin("compiler-embeddable"))
-    implementation("com.google.protobuf", "protobuf-java", "3.15.7")
-    implementation(projects.semanticdbKotlin)
+    implementation("com.google.protobuf", "protobuf-java", "3.17.3")
+    compileOnly("com.sourcegraph", "semanticdb-javac", "0.8.23")
 
     testImplementation(kotlin("compiler-embeddable"))
     testImplementation(kotlin("test"))
@@ -55,8 +67,24 @@ dependencies {
     snapshotsImplementation("com.sourcegraph", "scip-java_2.13", "0.12.0")
 }
 
-tasks.withType<KotlinCompile> {
-    dependsOn(":${projects.semanticdbKotlin.name}:build")
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.17.3"
+    }
+
+    plugins {
+        kotlin { }
+    }
+}
+
+afterEvaluate {
+    tasks.processResources {
+        dependsOn(tasks.getByName("generateProto"))
+    }
+
+    tasks.compileKotlin {
+        dependsOn(tasks.getByName("generateProto"))
+    }
 }
 
 kotlin {
