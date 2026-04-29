@@ -8,6 +8,7 @@ lazy val V = new {
   val protoc   = "3.17.3"
   val kotest   = "4.6.3"
   val kctfork  = "0.7.1"
+  val scipJava = "0.12.3"
 }
 
 inThisBuild(
@@ -133,4 +134,19 @@ lazy val kotlinc = project
       }
       Attributed.blank(dir)
     }
+  )
+
+lazy val snapshotsRunner = project
+  .in(file("snapshots-runner"))
+  .enablePlugins(KotlinPlugin)
+  .settings(
+    publish / skip   := true,
+    kotlinVersion    := V.kotlin,
+    kotlincJvmTarget := "1.8",
+    kotlinLib("stdlib"),
+
+    // Pulls in com.sourcegraph.scip_java.ScipJava (the published scip-java CLI)
+    // which Snapshot.kt invokes via ScipJava.main.
+    libraryDependencies +=
+      "com.sourcegraph" % "scip-java_2.13" % V.scipJava
   )
