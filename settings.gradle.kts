@@ -1,4 +1,4 @@
-rootProject.name = "lsif-kotlin"
+rootProject.name = "scip-kotlin"
 
 include(
     "semanticdb-kotlinc",

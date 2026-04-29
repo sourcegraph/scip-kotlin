@@ -160,7 +160,7 @@ publishing {
                         }
                     }
                     scm {
-                        url.set("https://github.com/sourcegraph/lsif-kotlin")
+                        url.set("https://github.com/sourcegraph/scip-kotlin")
                     }
                 }
                 shadow.component(this)
@@ -278,7 +278,7 @@ subprojects {
                 project.tasks.compileJava.get().path
             )
             outputs.upToDateWhen { false }
-            mainClass.set("com.sourcegraph.lsif_kotlin.SnapshotKt")
+            mainClass.set("com.sourcegraph.scip_kotlin.SnapshotKt")
             // this is required as the main class SnapshotKt is in this classpath
             classpath = snapshots.runtimeClasspath
             args = listOf(
