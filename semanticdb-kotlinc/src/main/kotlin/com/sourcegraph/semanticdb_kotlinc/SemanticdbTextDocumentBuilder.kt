@@ -52,8 +52,9 @@ class SemanticdbTextDocumentBuilder(
         element: KtSourceElement,
         role: Role,
         context: CheckerContext,
+        enclosingSource: KtSourceElement? = null,
     ) {
-        symbolOccurrence(symbol, element, role).let {
+        symbolOccurrence(symbol, element, role, enclosingSource).let {
             if (!occurrences.contains(it)) {
                 occurrences.add(it)
             }
@@ -113,12 +114,16 @@ class SemanticdbTextDocumentBuilder(
     private fun symbolOccurrence(
         symbol: Symbol,
         element: KtSourceElement,
-        role: Role
+        role: Role,
+        enclosingSource: KtSourceElement? = null,
     ): Semanticdb.SymbolOccurrence {
         return SymbolOccurrence {
             this.symbol = symbol.toString()
             this.role = role
             this.range = semanticdbRange(element)
+            if (enclosingSource != null) {
+                this.enclosingRange = semanticdbEnclosingRange(enclosingSource)
+            }
         }
     }
 
@@ -128,6 +133,15 @@ class SemanticdbTextDocumentBuilder(
             startLine = lineMap.lineNumber(element) - 1
             endCharacter = lineMap.endCharacter(element)
             endLine = lineMap.lineNumber(element) - 1
+        }
+    }
+
+    private fun semanticdbEnclosingRange(element: KtSourceElement): Semanticdb.Range {
+        return Range {
+            startLine = lineMap.lineNumber(element) - 1
+            startCharacter = lineMap.startCharacter(element)
+            endLine = lineMap.lineNumberForOffset(element.endOffset) - 1
+            endCharacter = lineMap.columnForOffset(element.endOffset)
         }
     }
 

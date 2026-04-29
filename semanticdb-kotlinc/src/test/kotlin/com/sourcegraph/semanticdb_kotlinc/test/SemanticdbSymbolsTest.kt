@@ -226,6 +226,9 @@ class SemanticdbSymbolsTest {
                                             endLine = 0
                                             endCharacter = 5
                                         }
+                                        enclosingRange {
+                                            endCharacter = 14
+                                        }
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
@@ -236,6 +239,9 @@ class SemanticdbSymbolsTest {
                                             endLine = 0
                                             endCharacter = 5
                                         }
+                                        enclosingRange {
+                                            endCharacter = 14
+                                        }
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
@@ -245,6 +251,9 @@ class SemanticdbSymbolsTest {
                                             startCharacter = 4
                                             endLine = 0
                                             endCharacter = 5
+                                        }
+                                        enclosingRange {
+                                            endCharacter = 14
                                         }
                                     })),
                 ),
@@ -268,6 +277,10 @@ class SemanticdbSymbolsTest {
                                             endLine = 0
                                             endCharacter = 5
                                         }
+                                        enclosingRange {
+                                            endLine = 1
+                                            endCharacter = 22
+                                        }
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
@@ -278,6 +291,10 @@ class SemanticdbSymbolsTest {
                                             endLine = 0
                                             endCharacter = 5
                                         }
+                                        enclosingRange {
+                                            endLine = 1
+                                            endCharacter = 22
+                                        }
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
@@ -287,6 +304,12 @@ class SemanticdbSymbolsTest {
                                             startCharacter = 4
                                             endLine = 1
                                             endCharacter = 7
+                                        }
+                                        enclosingRange {
+                                            startLine = 1
+                                            startCharacter = 4
+                                            endLine = 1
+                                            endCharacter = 22
                                         }
                                     })),
                 ),
@@ -310,6 +333,10 @@ class SemanticdbSymbolsTest {
                                             endLine = 0
                                             endCharacter = 5
                                         }
+                                        enclosingRange {
+                                            endLine = 1
+                                            endCharacter = 36
+                                        }
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
@@ -320,6 +347,10 @@ class SemanticdbSymbolsTest {
                                             endLine = 0
                                             endCharacter = 5
                                         }
+                                        enclosingRange {
+                                            endLine = 1
+                                            endCharacter = 36
+                                        }
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
@@ -329,6 +360,12 @@ class SemanticdbSymbolsTest {
                                             startCharacter = 4
                                             endLine = 1
                                             endCharacter = 7
+                                        }
+                                        enclosingRange {
+                                            startLine = 1
+                                            startCharacter = 4
+                                            endLine = 1
+                                            endCharacter = 36
                                         }
                                     })),
                 ),
@@ -353,6 +390,10 @@ class SemanticdbSymbolsTest {
                                             endLine = 0
                                             endCharacter = 5
                                         }
+                                        enclosingRange {
+                                            endLine = 2
+                                            endCharacter = 37
+                                        }
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
@@ -363,6 +404,12 @@ class SemanticdbSymbolsTest {
                                             endLine = 1
                                             endCharacter = 7
                                         }
+                                        enclosingRange {
+                                            startLine = 1
+                                            startCharacter = 4
+                                            endLine = 1
+                                            endCharacter = 22
+                                        }
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
@@ -372,6 +419,12 @@ class SemanticdbSymbolsTest {
                                             startCharacter = 4
                                             endLine = 2
                                             endCharacter = 7
+                                        }
+                                        enclosingRange {
+                                            startLine = 2
+                                            startCharacter = 4
+                                            endLine = 2
+                                            endCharacter = 37
                                         }
                                     })),
                 ),
@@ -398,6 +451,10 @@ class SemanticdbSymbolsTest {
                                             endLine = 0
                                             endCharacter = 21
                                         }
+                                        enclosingRange {
+                                            startCharacter = 11
+                                            endCharacter = 26
+                                        }
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
@@ -407,6 +464,10 @@ class SemanticdbSymbolsTest {
                                             startCharacter = 15
                                             endLine = 0
                                             endCharacter = 21
+                                        }
+                                        enclosingRange {
+                                            startCharacter = 11
+                                            endCharacter = 26
                                         }
                                     },
                                     SymbolOccurrence {
@@ -418,6 +479,10 @@ class SemanticdbSymbolsTest {
                                             endLine = 0
                                             endCharacter = 21
                                         }
+                                        enclosingRange {
+                                            startCharacter = 11
+                                            endCharacter = 26
+                                        }
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
@@ -427,6 +492,10 @@ class SemanticdbSymbolsTest {
                                             startCharacter = 15
                                             endLine = 0
                                             endCharacter = 21
+                                        }
+                                        enclosingRange {
+                                            startCharacter = 11
+                                            endCharacter = 26
                                         }
                                     },
                                     SymbolOccurrence {
@@ -484,6 +553,9 @@ class SemanticdbSymbolsTest {
                                             endLine = 0
                                             endCharacter = 12
                                         }
+                                        enclosingRange {
+                                            endCharacter = 12
+                                        }
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
@@ -492,6 +564,9 @@ class SemanticdbSymbolsTest {
                                             startLine = 0
                                             startCharacter = 6
                                             endLine = 0
+                                            endCharacter = 12
+                                        }
+                                        enclosingRange {
                                             endCharacter = 12
                                         }
                                     },
@@ -515,6 +590,9 @@ class SemanticdbSymbolsTest {
                                             endLine = 0
                                             endCharacter = 12
                                         }
+                                        enclosingRange {
+                                            endCharacter = 23
+                                        }
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
@@ -524,6 +602,10 @@ class SemanticdbSymbolsTest {
                                             startCharacter = 6
                                             endLine = 0
                                             endCharacter = 12
+                                        }
+                                        enclosingRange {
+                                            startCharacter = 12
+                                            endCharacter = 23
                                         }
                                     },
                                 ))),
@@ -546,6 +628,9 @@ class SemanticdbSymbolsTest {
                                             endLine = 0
                                             endCharacter = 12
                                         }
+                                        enclosingRange {
+                                            endCharacter = 35
+                                        }
                                     },
                                     SymbolOccurrence {
                                         role = Role.DEFINITION
@@ -555,6 +640,10 @@ class SemanticdbSymbolsTest {
                                             startCharacter = 13
                                             endLine = 0
                                             endCharacter = 24
+                                        }
+                                        enclosingRange {
+                                            startCharacter = 13
+                                            endCharacter = 35
                                         }
                                     },
                                 ))))

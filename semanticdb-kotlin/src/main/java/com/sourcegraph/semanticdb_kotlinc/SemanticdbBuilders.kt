@@ -254,6 +254,10 @@ inline fun Semanticdb.SymbolOccurrence.Builder.range(block: Semanticdb.Range.Bui
         Semanticdb.SymbolOccurrence.Builder =
         this.setRange(Semanticdb.Range.newBuilder().apply(block).build())
 
+inline fun Semanticdb.SymbolOccurrence.Builder.enclosingRange(block: Semanticdb.Range.Builder.() -> Unit):
+        Semanticdb.SymbolOccurrence.Builder =
+        this.setEnclosingRange(Semanticdb.Range.newBuilder().apply(block).build())
+
 inline fun Semanticdb.Scope.copy(block: Semanticdb.Scope.Builder.() -> Unit): Semanticdb.Scope =
         this.toBuilder().apply(block).build()
 

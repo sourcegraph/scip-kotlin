@@ -2,6 +2,7 @@
 // Local modifications:
 // - Removes unused fields to minimize the amount of generated code.
 // - Adds SymbolInformation.documentation that is pending upstream approval.
+// - Adds SymbolOccurrence.enclosing_range to support SCIP's enclosing_range field.
 
 syntax = "proto3";
 
@@ -110,6 +111,8 @@ message SymbolInformation {
   Signature signature = 17;
   Access access = 18;
   repeated string overridden_symbols = 19;
+  // NOTE: this field does not exist in the upstream SemanticDB spec.
+  // It is added to support documentation strings (e.g., KDoc).
   Documentation documentation = 20;
 }
 
@@ -153,6 +156,10 @@ message SymbolOccurrence {
   Range range = 1;
   string symbol = 2;
   Role role = 3;
+  // NOTE: this field does not exist in the upstream SemanticDB spec.
+  // It is added to support SCIP's enclosing_range field.
+  // This is the range of the nearest non-trivial enclosing AST node.
+  optional Range enclosing_range = 4;
 }
 
 message Scope {
