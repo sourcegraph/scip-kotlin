@@ -13,18 +13,7 @@ plugins {
     signing
 }
 
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath("com.google.protobuf:protobuf-java:3.17.3")
-    }
-}
-
 repositories {
-    mavenLocal()
     mavenCentral()
 }
 
@@ -43,7 +32,6 @@ dependencies {
     implementation(kotlin("stdlib"))
     compileOnly(kotlin("compiler-embeddable"))
     implementation("com.google.protobuf", "protobuf-java", "3.17.3")
-    compileOnly("com.sourcegraph", "semanticdb-javac", "0.8.23")
 
     testImplementation(kotlin("compiler-embeddable"))
     testImplementation(kotlin("test"))
@@ -55,14 +43,7 @@ dependencies {
     // testImplementation("com.github.tschuchortdev", "kotlin-compile-testing", "1.5.0")
     testImplementation("dev.zacsweers.kctfork", "core", "0.7.1")
 
-    testImplementation("org.junit.jupiter", "junit-jupiter-params", "5.8.1")
-    testImplementation("org.jetbrains.kotlin", "kotlin-stdlib-jdk8", "1.5.0") {
-        version {
-            strictly("1.5.0")
-        }
-    }.because("transitive dependencies introduce 1.4.31 to the classpath which conflicts, can't use testRuntimeOnly")
     testImplementation(kotlin("reflect"))
-    testImplementation(kotlin("script-runtime", "1.5.0"))
 
     snapshotsImplementation("com.sourcegraph", "scip-java_2.13", "0.12.0")
 }
@@ -176,7 +157,6 @@ publishing {
         }
     }
     repositories {
-        mavenLocal()
         maven {
             name = "sonatype"
             url =
@@ -222,7 +202,6 @@ subprojects {
 
     dependencies {
         implementation(kotlin("stdlib"))
-        compileOnly("com.sourcegraph", "semanticdb-javac", "0.6.12")
     }
 
     afterEvaluate {
