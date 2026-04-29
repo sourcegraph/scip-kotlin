@@ -7,7 +7,7 @@ import org.gradle.api.publish.maven.MavenPublication
 plugins {
     kotlin("jvm")
     id("com.github.johnrengelman.shadow")
-    id("com.google.protobuf") version "0.9.4"
+    id("com.google.protobuf") version "0.10.0"
     id("maven-publish")
     signing
 }
