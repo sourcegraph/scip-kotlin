@@ -88,12 +88,18 @@ afterEvaluate {
 }
 
 kotlin {
+    jvmToolchain(8)
     compilerOptions {
+        jvmTarget = JvmTarget.JVM_1_8
         freeCompilerArgs.addAll(
             "-Xinline-classes",
             "-Xcontext-parameters",
         )
     }
+}
+
+tasks.withType<JavaCompile> {
+    sourceCompatibility = "1.8"
 }
 
 val semanticdbJar: Configuration by configurations.creating {
@@ -241,6 +247,7 @@ subprojects {
         }
 
         kotlin {
+            jvmToolchain(8)
             val pluginJar = semanticdbJar.incoming.artifacts.artifactFiles.first().path
             compilerOptions {
                 jvmTarget = JvmTarget.JVM_1_8
@@ -257,6 +264,7 @@ subprojects {
         tasks.withType<JavaCompile> {
             dependsOn(projects.semanticdbKotlinc.dependencyProject.tasks.shadowJar.get().path)
             outputs.upToDateWhen { false }
+            sourceCompatibility = "1.8"
             options.compilerArgs = options.compilerArgs + listOf(
                 "-Xplugin:semanticdb -sourceroot:$sourceroot -targetroot:$targetroot"
             )
