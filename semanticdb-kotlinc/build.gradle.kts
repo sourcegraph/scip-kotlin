@@ -30,7 +30,7 @@ val snapshotsImplementation: Configuration by configurations.getting {
 dependencies {
     implementation(kotlin("stdlib"))
     compileOnly(kotlin("compiler-embeddable"))
-    implementation("com.google.protobuf", "protobuf-java", "3.17.3")
+    implementation("com.google.protobuf", "protobuf-java", "3.25.9")
 
     testImplementation(kotlin("compiler-embeddable"))
     testImplementation(kotlin("test"))
@@ -49,7 +49,7 @@ dependencies {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.17.3"
+        artifact = "com.google.protobuf:protoc:3.25.9"
     }
 
     plugins {
