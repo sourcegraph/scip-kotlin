@@ -1,18 +1,18 @@
 import java.net.URI
+import com.google.protobuf.gradle.*
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.publish.maven.MavenPublication
 
 plugins {
     kotlin("jvm")
     id("com.github.johnrengelman.shadow")
+    id("com.google.protobuf") version "0.9.4"
     id("maven-publish")
     signing
 }
 
 repositories {
-    mavenLocal()
     mavenCentral()
 }
 
@@ -30,8 +30,7 @@ val snapshotsImplementation: Configuration by configurations.getting {
 dependencies {
     implementation(kotlin("stdlib"))
     compileOnly(kotlin("compiler-embeddable"))
-    implementation("com.google.protobuf", "protobuf-java", "3.15.7")
-    implementation(projects.semanticdbKotlin)
+    implementation("com.google.protobuf", "protobuf-java", "3.17.3")
 
     testImplementation(kotlin("compiler-embeddable"))
     testImplementation(kotlin("test"))
@@ -43,29 +42,39 @@ dependencies {
     // testImplementation("com.github.tschuchortdev", "kotlin-compile-testing", "1.5.0")
     testImplementation("dev.zacsweers.kctfork", "core", "0.7.1")
 
-    testImplementation("org.junit.jupiter", "junit-jupiter-params", "5.8.1")
-    testImplementation("org.jetbrains.kotlin", "kotlin-stdlib-jdk8", "1.5.0") {
-        version {
-            strictly("1.5.0")
-        }
-    }.because("transitive dependencies introduce 1.4.31 to the classpath which conflicts, can't use testRuntimeOnly")
     testImplementation(kotlin("reflect"))
-    testImplementation(kotlin("script-runtime", "1.5.0"))
 
     snapshotsImplementation("com.sourcegraph", "scip-java_2.13", "0.12.0")
 }
 
-tasks.withType<KotlinCompile> {
-    dependsOn(":${projects.semanticdbKotlin.name}:build")
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.17.3"
+    }
+
+    plugins {
+        kotlin { }
+    }
+}
+
+java {
+    withSourcesJar()
+    withJavadocJar()
 }
 
 kotlin {
+    jvmToolchain(8)
     compilerOptions {
+        jvmTarget = JvmTarget.JVM_1_8
         freeCompilerArgs.addAll(
             "-Xinline-classes",
             "-Xcontext-parameters",
         )
     }
+}
+
+tasks.withType<JavaCompile> {
+    sourceCompatibility = "1.8"
 }
 
 val semanticdbJar: Configuration by configurations.creating {
@@ -91,18 +100,6 @@ tasks.shadowJar {
     archiveClassifier.set("")
     relocate("com.intellij", "org.jetbrains.kotlin.com.intellij")
     minimize()
-}
-
-val sourceJar = task<Jar>("sourceJar") {
-    dependsOn(tasks.classes)
-    archiveClassifier.set("sources")
-    from(sourceSets.main.get().allSource)
-}
-
-val javadocJar = task<Jar>("javadocJar") {
-    dependsOn(tasks.javadoc)
-    archiveClassifier.set("javadoc")
-    from(tasks.javadoc.get().destinationDir)
 }
 
 publishing {
@@ -132,17 +129,16 @@ publishing {
                         }
                     }
                     scm {
-                        url.set("https://github.com/sourcegraph/lsif-kotlin")
+                        url.set("https://github.com/sourcegraph/scip-kotlin")
                     }
                 }
                 shadow.component(this)
-                artifact(sourceJar)
-                artifact(javadocJar)
+                artifact(tasks["sourcesJar"])
+                artifact(tasks["javadocJar"])
             }
         }
     }
     repositories {
-        mavenLocal()
         maven {
             name = "sonatype"
             url =
@@ -177,90 +173,4 @@ tasks.test {
         events("passed", "failed")
     }
     maxHeapSize = "2g"
-}
-
-subprojects {
-    apply(plugin = "org.jetbrains.kotlin.jvm")
-
-    repositories {
-        mavenCentral()
-    }
-
-    dependencies {
-        implementation(kotlin("stdlib"))
-        compileOnly("com.sourcegraph", "semanticdb-javac", "0.6.12")
-    }
-
-    afterEvaluate {
-        val semanticdbJar: Configuration by configurations.creating {
-            isCanBeConsumed = false
-            isCanBeResolved = true
-        }
-
-        dependencies {
-            semanticdbJar(project(mapOf(
-                "path" to projects.semanticdbKotlinc.dependencyProject.path,
-                "configuration" to "semanticdbJar"
-            )))
-        }
-
-        val sourceroot = rootDir.path
-        val targetroot = project.buildDir.resolve( "semanticdb-targetroot")
-
-        tasks.withType<KotlinCompile> {
-            dependsOn(projects.semanticdbKotlinc.dependencyProject.tasks.shadowJar.get().path)
-            outputs.upToDateWhen { false }
-        }
-
-        kotlin {
-            val pluginJar = semanticdbJar.incoming.artifacts.artifactFiles.first().path
-            compilerOptions {
-                jvmTarget = JvmTarget.JVM_1_8
-                freeCompilerArgs.addAll(
-                    "-Xplugin=$pluginJar",
-                    "-P",
-                    "plugin:semanticdb-kotlinc:sourceroot=${sourceroot}",
-                    "-P",
-                    "plugin:semanticdb-kotlinc:targetroot=${targetroot}",
-                )
-            }
-        }
-
-        tasks.withType<JavaCompile> {
-            dependsOn(projects.semanticdbKotlinc.dependencyProject.tasks.shadowJar.get().path)
-            outputs.upToDateWhen { false }
-            options.compilerArgs = options.compilerArgs + listOf(
-                "-Xplugin:semanticdb -sourceroot:$sourceroot -targetroot:$targetroot"
-            )
-        }
-
-        // create a sourceset in which to output the generated snapshots.
-        // we may choose to not use sourcesets down the line
-        val generatedSnapshots: SourceSet by sourceSets.creating {
-            resources.srcDir("generatedSnapshots")
-        }
-
-        // for each subproject e.g. 'minimized', create a JavaExec task that invokes the snapshot creating main class
-        task<JavaExec>("snapshots") {
-            javaLauncher.set(javaToolchains.launcherFor {
-                languageVersion.set(JavaLanguageVersion.of(8))
-            })
-            dependsOn(
-                project.tasks.compileKotlin.get().path,
-                project.tasks.compileJava.get().path
-            )
-            outputs.upToDateWhen { false }
-            mainClass.set("com.sourcegraph.lsif_kotlin.SnapshotKt")
-            // this is required as the main class SnapshotKt is in this classpath
-            classpath = snapshots.runtimeClasspath
-            args = listOf(
-                kotlin.sourceSets.main.get().kotlin.srcDirs.first().canonicalPath,
-                sourceSets.main.get().java.srcDirs.first().canonicalPath
-            )
-            systemProperties = mapOf(
-                "sourceroot" to sourceroot,
-                "targetroot" to project.buildDir.resolve("semanticdb-targetroot"),
-                "snapshotDir" to generatedSnapshots.resources.srcDirs.first())
-        }
-    }
 }

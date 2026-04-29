@@ -1,4 +1,4 @@
-package com.sourcegraph.lsif_kotlin
+package com.sourcegraph.scip_kotlin
 
 import com.sourcegraph.scip_java.ScipJava
 import kotlin.io.path.Path
