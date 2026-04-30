@@ -17,9 +17,14 @@ jobs:
           cache: 'sbt'
       - uses: sbt/setup-sbt@v1
       - name: Publish ${{ github.ref }}
-        run: sbt ci-release
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
-          PGP_SECRET: ${{ secrets.PGP_SECRET }}
+          # The secret stores the armored PGP key (the format Gradle's
+          # useInMemoryPgpKeys consumed). sbt-ci-release expects a base64
+          # blob, so re-encode it inline before invoking sbt.
+          PGP_SECRET_ARMORED: ${{ secrets.PGP_SECRET }}
           PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
+        run: |
+          export PGP_SECRET="$(printf '%s' "$PGP_SECRET_ARMORED" | base64 -w0)"
+          sbt ci-release
