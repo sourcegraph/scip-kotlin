@@ -3,12 +3,13 @@ import scala.xml.{Node => XmlNode, NodeSeq => XmlNodeSeq}
 import scala.xml.transform.{RewriteRule, RuleTransformer}
 
 lazy val V = new {
-  val kotlin   = "2.2.0"
-  val protobuf = "3.17.3"
-  val protoc   = "3.17.3"
-  val kotest   = "4.6.3"
-  val kctfork  = "0.7.1"
-  val scipJava = "0.12.3"
+  val kotlin          = "2.2.0"
+  val protobuf        = "3.17.3"
+  val protoc          = "3.17.3"
+  val kotest          = "4.6.3"
+  val kctfork         = "0.7.1"
+  val scipJava        = "0.12.3"
+  val semanticdbJavac = "0.8.23"
 }
 
 inThisBuild(
@@ -149,4 +150,126 @@ lazy val snapshotsRunner = project
     // which Snapshot.kt invokes via ScipJava.main.
     libraryDependencies +=
       "com.sourcegraph" % "scip-java_2.13" % V.scipJava
+  )
+
+// Regenerates the golden SemanticDB/SCIP snapshots checked into
+// semanticdb-kotlinc/minimized/src/generatedSnapshots/resources/. Defined at
+// the top level so it is in scope for the `minimized` project below.
+lazy val snapshots = taskKey[Unit](
+  "Run the SCIP snapshot generator over the minimized project"
+)
+
+// `minimized` mirrors the (still-present) Gradle build at
+// semanticdb-kotlinc/minimized/build.gradle.kts. It compiles a small set of
+// Kotlin and Java fixtures with the assembled `kotlinc` plugin attached to
+// kotlinc/javac, producing *.semanticdb files under target/semanticdb-targetroot/
+// which are then converted to SCIP and rendered as the human-readable golden
+// snapshots by the `snapshots` task.
+lazy val minimized = project
+  .in(file("semanticdb-kotlinc/minimized"))
+  .enablePlugins(KotlinPlugin)
+  .settings(
+    publish / skip   := true,
+    crossPaths       := false,
+    autoScalaLibrary := false,
+    kotlinVersion    := V.kotlin,
+    kotlincJvmTarget := "1.8",
+    kotlinLib("stdlib"),
+
+    // Loads the javac semanticdb plugin via -Xplugin:semanticdb. Only needed
+    // at compile time — its classes don't appear on the runtime classpath.
+    libraryDependencies +=
+      "com.sourcegraph" % "semanticdb-javac" % V.semanticdbJavac % Provided,
+
+    // Force javac to fork. Two reasons:
+    //   1. JDK 9+ strongly encapsulates jdk.compiler internals; semanticdb-javac
+    //      reflectively touches them and needs --add-exports flags. With a
+    //      forked javac we can pass `-J--add-exports=...` (mirrors scip-java).
+    //   2. sbt's in-process javac receives `vf://` virtual-file URIs from the
+    //      MappedFileConverter, which semanticdb-javac cannot resolve via
+    //      java.nio.file.Path.of. Forked javac is invoked with absolute file
+    //      paths instead, so the plugin sees real paths.
+    // Setting javaHome to Some(<current JVM home>) flips
+    // ZincUtil.compilers/JavaTools.directOrFork from direct → fork.
+    javaHome := Some(file(System.getProperty("java.home"))),
+    Compile / javacOptions ++= Seq(
+      "-J--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
+      "-J--add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED",
+      "-J--add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED",
+      "-J--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED",
+      "-J--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED"
+    ),
+
+    // The kotlinc fat-jar produced by `kotlinc / assembly` (which sbt-assembly
+    // wires up as `Compile / packageBin`). Its assembled location is
+    //     <kotlinc-target>/<kotlinc-name>-assembly-<version>.jar
+    // because sbt-assembly's defaults are
+    //     assemblyJarName  := s"${name.value}-assembly-${version.value}.jar"
+    //     assemblyOutputPath := target.value / assemblyJarName.value
+    // We compute that here from setting values so it can live inside the
+    // `kotlincOptions` SettingKey (which cannot read TaskKey values).
+    Compile / kotlincOptions ++= {
+      val pluginJar = (kotlinc / target).value /
+        s"${(kotlinc / name).value}-assembly-${(kotlinc / version).value}.jar"
+      val srcRoot   = (ThisBuild / baseDirectory).value
+      val tgtRoot   = target.value / "semanticdb-targetroot"
+      Seq(
+        s"-Xplugin=${pluginJar.getAbsolutePath}",
+        "-P",
+        s"plugin:semanticdb-kotlinc:sourceroot=${srcRoot.getAbsolutePath}",
+        "-P",
+        s"plugin:semanticdb-kotlinc:targetroot=${tgtRoot.getAbsolutePath}"
+      )
+    },
+
+    // The semanticdb javac plugin parses its own argument string, so
+    // `-Xplugin:semanticdb -sourceroot:<...> -targetroot:<...>` MUST be passed
+    // as a single javac argument (matches the existing Gradle behavior).
+    Compile / javacOptions += {
+      val srcRoot = (ThisBuild / baseDirectory).value
+      val tgtRoot = target.value / "semanticdb-targetroot"
+      s"-Xplugin:semanticdb -sourceroot:${srcRoot.getAbsolutePath} " +
+        s"-targetroot:${tgtRoot.getAbsolutePath}"
+    },
+
+    // Ensure the assembled plugin jar exists before kotlinc runs (Compile /
+    // packageBin is wired to `assembly` in the kotlinc subproject). Mirrors
+    // Gradle's `dependsOn(":semanticdb-kotlinc:shadowJar")`. Zinc will also
+    // re-run the kotlin compile when the jar's content changes because sbt
+    // tasks are recomputed when their dependencies change.
+    Compile / compile := (Compile / compile)
+      .dependsOn(kotlinc / Compile / packageBin)
+      .value,
+
+    // ----- snapshots regeneration task -----
+    // Forks a JVM running snapshotsRunner's `SnapshotKt`, which itself shells
+    // out to scip-java's `index-semanticdb` + `snapshot` subcommands. The
+    // sourceroot/targetroot/snapshotDir system properties are read by
+    // Snapshot.kt via System.getProperty.
+    snapshots := {
+      val _            = (Compile / compile).value
+      val log          = streams.value.log
+      val cp           = (snapshotsRunner / Compile / fullClasspath).value.files
+      val srcRoot      = (ThisBuild / baseDirectory).value
+      val tgtRoot      = target.value / "semanticdb-targetroot"
+      val snapDir      = baseDirectory.value / "src" / "generatedSnapshots" / "resources"
+      val kotlinSrcDir = (Compile / sourceDirectory).value / "kotlin"
+      val javaSrcDir   = (Compile / sourceDirectory).value / "java"
+      val forkOpts = ForkOptions().withRunJVMOptions(
+        Vector(
+          s"-Dsourceroot=${srcRoot.getAbsolutePath}",
+          s"-Dtargetroot=${tgtRoot.getAbsolutePath}",
+          s"-DsnapshotDir=${snapDir.getAbsolutePath}"
+        )
+      )
+      new ForkRun(forkOpts)
+        .run(
+          "com.sourcegraph.scip_kotlin.SnapshotKt",
+          cp,
+          Seq(kotlinSrcDir.getCanonicalPath, javaSrcDir.getCanonicalPath),
+          log
+        )
+        .failed
+        .foreach(e => sys.error(s"Snapshot generation failed: $e"))
+    }
   )
