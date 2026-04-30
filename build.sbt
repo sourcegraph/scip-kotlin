@@ -47,7 +47,9 @@ lazy val kotlinc = project
   .in(file("semanticdb-kotlinc"))
   .enablePlugins(KotlinPlugin)
   .settings(
+    name             := "semanticdb-kotlinc",
     moduleName       := "semanticdb-kotlinc",
+    description      := "A kotlinc plugin to emit SemanticDB information",
     crossPaths       := false,
     autoScalaLibrary := false,
     kotlinVersion    := V.kotlin,
