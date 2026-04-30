@@ -1,4 +1,5 @@
   package snapshots;
+//        ^^^^^^^^^ reference semanticdb maven . . snapshots/
   
   import kotlin.collections.CollectionsKt;
 //       ^^^^^^ reference semanticdb maven . . kotlin/

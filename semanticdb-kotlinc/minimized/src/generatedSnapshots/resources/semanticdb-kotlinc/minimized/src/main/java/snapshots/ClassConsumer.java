@@ -1,4 +1,5 @@
   package snapshots;
+//        ^^^^^^^^^ reference semanticdb maven . . snapshots/
   
   public class ClassConsumer {
 //             ^^^^^^^^^^^^^ definition semanticdb maven . . snapshots/ClassConsumer#
@@ -15,9 +16,9 @@
 //                           signature_documentation java public static void run()
 //                           kind StaticMethod
           System.out.println(new Class().getAsdf());
-//        ^^^^^^ reference semanticdb maven jdk 8 java/lang/System#
-//               ^^^ reference semanticdb maven jdk 8 java/lang/System#out.
-//                   ^^^^^^^ reference semanticdb maven jdk 8 java/io/PrintStream#println(+9).
+//        ^^^^^^ reference semanticdb maven jdk 11 java/lang/System#
+//               ^^^ reference semanticdb maven jdk 11 java/lang/System#out.
+//                   ^^^^^^^ reference semanticdb maven jdk 11 java/io/PrintStream#println(+9).
 //                               ^^^^^ reference semanticdb maven . . snapshots/Class#`<init>`(+1).
 //                                       ^^^^^^^ reference semanticdb maven . . snapshots/Class#getAsdf().
       }

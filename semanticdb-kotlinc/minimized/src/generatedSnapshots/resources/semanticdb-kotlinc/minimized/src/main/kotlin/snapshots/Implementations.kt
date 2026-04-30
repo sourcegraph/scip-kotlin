@@ -7,17 +7,17 @@
 //      ^^^^^^^^^ definition semanticdb maven . . snapshots/Overrides#
 //                display_name Overrides
 //                documentation ```kotlin\npublic final class Overrides : {kotlin/AutoCloseable=} AutoCloseable\n```
-//                relationship is_reference is_implementation semanticdb maven jdk 8 java/lang/AutoCloseable#
+//                relationship is_reference is_implementation semanticdb maven jdk 11 java/lang/AutoCloseable#
 //      ^^^^^^^^^ definition semanticdb maven . . snapshots/Overrides#`<init>`().
 //                display_name Overrides
 //                documentation ```kotlin\npublic constructor(): Overrides\n```
-//                  ^^^^^^^^^^^^^ reference semanticdb maven jdk 8 java/lang/AutoCloseable#
+//                  ^^^^^^^^^^^^^ reference semanticdb maven jdk 11 java/lang/AutoCloseable#
 //    ⌄ enclosing_range_start semanticdb maven . . snapshots/Overrides#close().
       override fun close() {
 //                 ^^^^^ definition semanticdb maven . . snapshots/Overrides#close().
 //                       display_name close
 //                       documentation ```kotlin\npublic open override fun close(): Unit\n```
-//                       relationship is_reference is_implementation semanticdb maven jdk 8 java/lang/AutoCloseable#close().
+//                       relationship is_reference is_implementation semanticdb maven jdk 11 java/lang/AutoCloseable#close().
           TODO("Not yet implemented")
 //        ^^^^ reference semanticdb maven . . kotlin/TODO(+1).
       }

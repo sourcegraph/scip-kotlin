@@ -4,7 +4,7 @@
   import java.lang.RuntimeException
 //       ^^^^ reference semanticdb maven . . java/
 //            ^^^^ reference semanticdb maven . . java/lang/
-//                 ^^^^^^^^^^^^^^^^ reference semanticdb maven jdk 8 java/lang/RuntimeException#
+//                 ^^^^^^^^^^^^^^^^ reference semanticdb maven jdk 11 java/lang/RuntimeException#
   
 //⌄ enclosing_range_start semanticdb maven . . snapshots/ObjectKt#
 //⌄ enclosing_range_start semanticdb maven . . snapshots/ObjectKt#`<init>`().
@@ -28,7 +28,7 @@
 //                              ^^^^^^^ reference semanticdb maven . . kotlin/Nothing#
 //                          ⌃ enclosing_range_end semanticdb maven . . snapshots/ObjectKt#fail().(message)
       throw RuntimeException(message)
-//          ^^^^^^^^^^^^^^^^ reference semanticdb maven jdk 8 java/lang/RuntimeException#`<init>`().
+//          ^^^^^^^^^^^^^^^^ reference semanticdb maven jdk 11 java/lang/RuntimeException#`<init>`().
 //                           ^^^^^^^ reference semanticdb maven . . snapshots/ObjectKt#fail().(message)
     }
 //  ⌃ enclosing_range_end semanticdb maven . . snapshots/ObjectKt#fail().

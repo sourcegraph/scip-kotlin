@@ -1,4 +1,5 @@
   package snapshots;
+//        ^^^^^^^^^ reference semanticdb maven . . snapshots/
   
   public class ObjectKtConsumer {
 //             ^^^^^^^^^^^^^^^^ definition semanticdb maven . . snapshots/ObjectKtConsumer#
