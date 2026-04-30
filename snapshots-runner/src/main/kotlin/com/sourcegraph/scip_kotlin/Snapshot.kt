@@ -3,10 +3,10 @@ package com.sourcegraph.scip_kotlin
 import com.sourcegraph.scip_java.ScipJava
 import kotlin.io.path.Path
 
-fun main() {
-    val snapshotDir = Path(System.getProperty("snapshotDir"))
-    val sourceroot = Path(System.getProperty("sourceroot"))
-    val targetroot = Path(System.getProperty("targetroot"))
+fun main(args: Array<String>) {
+    val sourceroot = Path(args[0])
+    val targetroot = Path(args[1])
+    val snapshotDir = Path(args[2])
 
     ScipJava.main(
         arrayOf(
