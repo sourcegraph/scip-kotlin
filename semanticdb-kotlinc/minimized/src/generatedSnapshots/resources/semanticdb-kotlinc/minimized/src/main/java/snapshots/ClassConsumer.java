@@ -1,5 +1,4 @@
   package snapshots;
-//        ^^^^^^^^^ reference semanticdb maven . . snapshots/
   
   public class ClassConsumer {
 //             ^^^^^^^^^^^^^ definition semanticdb maven . . snapshots/ClassConsumer#

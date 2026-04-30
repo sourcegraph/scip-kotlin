@@ -1,5 +1,4 @@
   package snapshots;
-//        ^^^^^^^^^ reference semanticdb maven . . snapshots/
   
   public class KotlinClass {
 //             ^^^^^^^^^^^ definition semanticdb maven . . snapshots/KotlinClass#
