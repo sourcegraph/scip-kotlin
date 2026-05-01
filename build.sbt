@@ -9,7 +9,7 @@ lazy val V = new {
   val kotest          = "4.6.3"
   val kctfork         = "0.7.1"
   val scipJava        = "0.12.3"
-  val semanticdbJavac = "0.8.23"
+  val semanticdbJavac = "0.12.3"
 }
 
 inThisBuild(
