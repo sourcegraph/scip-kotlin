@@ -6,4 +6,4 @@ addSbtPlugin("org.scalameta"       % "sbt-scalafmt"          % "2.5.5")
 addSbtPlugin("com.github.sbt.junit" % "sbt-jupiter-interface" % "0.15.1")
 
 libraryDependencies +=
-  "com.thesamet.scalapb" %% "compilerplugin" % "0.11.11"
+  "com.thesamet.scalapb" %% "compilerplugin" % "0.11.20"
