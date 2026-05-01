@@ -1,4 +1,4 @@
-addSbtPlugin("org.jetbrains.scala" % "sbt-kotlin-plugin"     % "3.1.6")
+addSbtPlugin("org.jetbrains.scala" % "sbt-kotlin-plugin"     % "3.1.7")
 addSbtPlugin("com.thesamet"        % "sbt-protoc"            % "1.0.6")
 addSbtPlugin("com.eed3si9n"        % "sbt-assembly"          % "2.3.1")
 addSbtPlugin("com.github.sbt"      % "sbt-ci-release"        % "1.11.1")
