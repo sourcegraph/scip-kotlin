@@ -141,15 +141,10 @@ lazy val kotlinc = project
 
 lazy val snapshotsRunner = project
   .in(file("snapshots-runner"))
-  .enablePlugins(KotlinPlugin)
   .settings(
     publish / skip   := true,
-    kotlinVersion    := V.kotlin,
-    kotlincJvmTarget := "1.8",
-    kotlinLib("stdlib"),
-
-    // Pulls in com.sourcegraph.scip_java.ScipJava (the published scip-java CLI)
-    // which Snapshot.kt invokes via ScipJava.main.
+    crossPaths       := false,
+    autoScalaLibrary := false,
     libraryDependencies +=
       "com.sourcegraph" % "scip-java_2.13" % V.scipJava,
 
@@ -237,15 +232,25 @@ lazy val minimized = project
     },
 
     // ----- snapshots regeneration task -----
-    // Runs snapshotsRunner's SnapshotKt in the snapshotsRunner JVM (forked —
-    // ScipJava.main calls System.exit). Snapshot.kt reads sourceroot,
-    // targetroot, snapshotDir from argv.
+    // Invokes `com.sourcegraph.scip_java.ScipJava.main` twice in the
+    // snapshotsRunner JVM (forked — ScipJava.main calls System.exit on
+    // failure). First pass converts the *.semanticdb files under
+    // target/semanticdb-targetroot/ into an index.scip; second pass renders
+    // that index as the human-readable golden snapshots.
     snapshots := Def.taskDyn {
-      val _       = (Compile / compile).value
       val srcRoot = (ThisBuild / baseDirectory).value.getAbsolutePath
       val tgtRoot = (target.value / "semanticdb-targetroot").getAbsolutePath
       val snapDir = (baseDirectory.value / "src" / "generatedSnapshots" / "resources").getAbsolutePath
-      (snapshotsRunner / Compile / runMain)
-        .toTask(s" com.sourcegraph.scip_kotlin.SnapshotKt $srcRoot $tgtRoot $snapDir")
+      val scipOut = s"$tgtRoot/index.scip"
+      val mainCls = "com.sourcegraph.scip_java.ScipJava"
+      Def.sequential(
+        Compile / compile,
+        (snapshotsRunner / Compile / runMain).toTask(
+          s" $mainCls index-semanticdb --no-emit-inverse-relationships --cwd $srcRoot --output $scipOut $tgtRoot"
+        ),
+        (snapshotsRunner / Compile / runMain).toTask(
+          s" $mainCls snapshot --cwd $srcRoot --output $snapDir $tgtRoot"
+        )
+      )
     }.value
   )
