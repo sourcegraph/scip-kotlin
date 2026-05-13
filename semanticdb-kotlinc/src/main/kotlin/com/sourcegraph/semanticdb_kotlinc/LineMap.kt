@@ -7,16 +7,9 @@ import org.jetbrains.kotlin.text
 
 /** Maps between an element and its identifier positions */
 class LineMap(private val file: FirFile) {
-    private fun offsetToLineAndCol(offset: Int): Pair<Int, Int>? =
+    /** Returns the 0-based (line, column) pair for a given offset, or null if unavailable. */
+    fun offsetToLineAndCol(offset: Int): Pair<Int, Int>? =
         file.sourceFileLinesMapping?.getLineAndColumnByOffset(offset)
-
-    /** Returns the non-0-based line number for a given offset */
-    fun lineNumberForOffset(offset: Int): Int =
-        file.sourceFileLinesMapping?.getLineByOffset(offset)?.let { it + 1 } ?: 0
-
-    /** Returns the non-0-based column number for a given offset */
-    fun columnForOffset(offset: Int): Int =
-        offsetToLineAndCol(offset)?.second ?: 0
 
     /** Returns the non-0-based start character */
     fun startCharacter(element: KtSourceElement): Int =
