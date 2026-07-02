@@ -1,4 +1,10 @@
 # Kotlin SCIP support
+
+> [!NOTE]
+> This repository has been merged into
+> [scip-java](https://github.com/scip-code/scip-java) and is no longer relevant.
+> Please refer to that repository going forward.
+
 <img src="https://img.shields.io/maven-central/v/com.sourcegraph/semanticdb-kotlinc?style=flat-square" />
 
 This codebase implements a Kotlin compiler plugin that can be used together with
