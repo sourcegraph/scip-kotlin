@@ -4,7 +4,7 @@ import scala.xml.transform.{RewriteRule, RuleTransformer}
 
 lazy val V = new {
   val kotlin          = "2.2.0"
-  val protobuf        = "3.17.3"
+  val protobuf        = "4.35.1"
   val protoc          = "3.17.3"
   val kotest          = "4.6.3"
   val kctfork         = "0.7.1"
