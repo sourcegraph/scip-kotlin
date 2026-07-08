@@ -7,7 +7,7 @@ lazy val V = new {
   val protobuf        = "3.17.3"
   val protoc          = "3.17.3"
   val kotest          = "4.6.3"
-  val kctfork         = "0.7.1"
+  val kctfork         = "0.13.0"
   val scipJava        = "0.12.3"
   val semanticdbJavac = "0.8.23"
 }
