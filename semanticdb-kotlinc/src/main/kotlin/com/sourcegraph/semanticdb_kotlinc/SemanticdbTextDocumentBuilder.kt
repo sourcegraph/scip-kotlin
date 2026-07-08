@@ -137,11 +137,12 @@ class SemanticdbTextDocumentBuilder(
     }
 
     private fun semanticdbEnclosingRange(element: KtSourceElement): Semanticdb.Range {
+        val (endLine0, endCol) = lineMap.offsetToLineAndCol(element.endOffset) ?: (0 to 0)
         return Range {
-            startLine = lineMap.lineNumber(element) - 1
             startCharacter = lineMap.startCharacter(element)
-            endLine = lineMap.lineNumberForOffset(element.endOffset) - 1
-            endCharacter = lineMap.columnForOffset(element.endOffset)
+            startLine = lineMap.lineNumber(element) - 1
+            endCharacter = endCol
+            endLine = endLine0
         }
     }
 
