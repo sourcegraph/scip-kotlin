@@ -3,7 +3,7 @@ import scala.xml.{Node => XmlNode, NodeSeq => XmlNodeSeq}
 import scala.xml.transform.{RewriteRule, RuleTransformer}
 
 lazy val V = new {
-  val kotlin          = "2.2.0"
+  val kotlin          = "2.4.0"
   val protobuf        = "3.17.3"
   val protoc          = "3.17.3"
   val kotest          = "4.6.3"
